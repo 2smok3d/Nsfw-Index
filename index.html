@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSFW Index</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;
+  --surface:#161616;
+  --surface2:#1f1f1f;
+  --surface3:#2a2a2a;
+  --accent:#e63b6f;
+  --accent2:#ff6b9d;
+  --text:#e8e8e8;
+  --text2:#aaa;
+  --text3:#666;
+  --gold:#ffd700;
+  --border:#282828;
+  --radius:8px;
+  --sidebar:220px;
+  --header:58px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;
+  overflow-x:hidden;
+}
+
+/* ── Age Gate ── */
+#age-gate{
+  position:fixed;inset:0;
+  background:#000;
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  padding:20px;
+}
+.age-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:48px 40px;
+  max-width:460px;
+  width:100%;
+  text-align:center;
+}
+.age-logo{font-size:2.5rem;font-weight:800;color:var(--accent);letter-spacing:-1px;margin-bottom:4px}
+.age-logo span{color:var(--text)}
+.age-badge{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  padding:3px 10px;
+  border-radius:20px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+}
+.age-card p{color:var(--text2);font-size:.9rem;margin-bottom:28px;line-height:1.6}
+.age-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.age-btn{
+  padding:12px 28px;
+  border-radius:8px;
+  font-size:.95rem;
+  font-weight:600;
+  cursor:pointer;
+  border:none;
+  transition:opacity .2s,transform .1s;
+  text-decoration:none;
+  display:inline-block;
+}
+.age-btn:hover{opacity:.85;transform:translateY(-1px)}
+.age-btn.primary{background:var(--accent);color:#fff}
+.age-btn.secondary{background:var(--surface3);color:var(--text2)}
+.age-disclaimer{font-size:.72rem;color:var(--text3);margin-top:20px}
+
+/* ── Header ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  height:var(--header);
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;
+}
+.logo{
+  font-size:1.2rem;font-weight:800;
+  color:var(--accent);
+  white-space:nowrap;
+  letter-spacing:-0.5px;
+  flex-shrink:0;
+}
+.logo span{color:var(--text)}
+#search{
+  flex:1;max-width:520px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:8px 18px;
+  color:var(--text);
+  font-size:.875rem;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+#search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,59,111,.12)}
+#search::placeholder{color:var(--text3)}
+.header-count{
+  margin-left:auto;
+  font-size:.78rem;
+  color:var(--text3);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+/* ── Layout ── */
+.layout{display:flex}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar);
+  flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  position:sticky;
+  top:var(--header);
+  height:calc(100vh - var(--header));
+  overflow-y:auto;
+  padding:12px 0;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sidebar-group{margin-bottom:4px}
+.sidebar-label{
+  padding:10px 18px 4px;
+  font-size:.68rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--text3);
+}
+.sidebar a{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 18px;
+  color:var(--text2);
+  text-decoration:none;
+  font-size:.825rem;
+  transition:all .15s;
+  border-left:2px solid transparent;
+}
+.sidebar a:hover{
+  color:var(--text);
+  background:var(--surface2);
+  border-left-color:var(--accent);
+}
+.sidebar a .nav-icon{font-size:.9rem;opacity:.7}
+
+/* ── Main ── */
+main{flex:1;padding:24px;min-width:0}
+
+/* ── VPN Notice ── */
+.vpn-notice{
+  display:flex;align-items:center;gap:10px;
+  background:#1a1100;
+  border:1px solid #3a2800;
+  border-radius:var(--radius);
+  padding:10px 16px;
+  font-size:.82rem;
+  color:#cc9900;
+  margin-bottom:28px;
+}
+.vpn-notice a{color:#ffa500;text-decoration:none}
+.vpn-notice a:hover{text-decoration:underline}
+
+/* ── Section ── */
+.section{margin-bottom:48px;scroll-margin-top:calc(var(--header) + 16px)}
+.section-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.section-icon{font-size:1.3rem;line-height:1}
+.section-title{font-size:1.1rem;font-weight:700}
+.section-count{
+  font-size:.72rem;
+  color:var(--text3);
+  background:var(--surface2);
+  padding:2px 8px;
+  border-radius:10px;
+  margin-left:2px;
+}
+
+/* ── Link Grid ── */
+.links-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;
+}
+.link-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:11px 13px;
+  transition:all .15s;
+  display:flex;flex-direction:column;gap:5px;
+}
+.link-card:hover{
+  background:var(--surface3);
+  border-color:#444;
+  transform:translateY(-1px);
+}
+.link-card.starred{
+  border-color:#2e2200;
+  background:#161000;
+}
+.link-card.starred:hover{border-color:#5a4200}
+.link-top{display:flex;align-items:flex-start;gap:5px}
+.star-icon{color:var(--gold);font-size:.8rem;flex-shrink:0;margin-top:2px}
+.globe-icon{font-size:.8rem;flex-shrink:0;margin-top:2px;opacity:.7}
+.link-name{
+  font-size:.855rem;font-weight:500;
+  color:var(--text);
+  text-decoration:none;
+  line-height:1.35;
+  word-break:break-word;
+}
+.link-name:hover{color:var(--accent)}
+.link-note{
+  font-size:.73rem;
+  color:var(--text3);
+  line-height:1.3;
+}
+.link-alts{
+  display:flex;gap:4px;flex-wrap:wrap;
+}
+.alt-link{
+  font-size:.7rem;
+  color:var(--text3);
+  background:var(--surface3);
+  padding:2px 7px;
+  border-radius:4px;
+  text-decoration:none;
+  transition:color .15s,background .15s;
+  border:1px solid var(--border);
+}
+.alt-link:hover{color:var(--accent2);background:#1f1015;border-color:var(--accent)}
+
+/* ── No Results ── */
+#no-results{
+  display:none;
+  text-align:center;
+  padding:80px 20px;
+  color:var(--text3);
+}
+#no-results p{font-size:1rem;margin-top:8px}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a3a3a}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .sidebar{display:none}
+}
+@media(max-width:600px){
+  main{padding:14px}
+  .links-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:400px){
+  .links-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Age Gate -->
+<div id="age-gate">
+  <div class="age-card">
+    <div class="age-logo">NSFW<span>Index</span></div>
+    <div class="age-badge">Adults Only</div>
+    <p>This site contains adult content intended for individuals aged 18 or older. By entering you confirm you are of legal age in your jurisdiction and consent to viewing explicit material.</p>
+    <div class="age-btns">
+      <button class="age-btn primary" onclick="enterSite()">I am 18+ &mdash; Enter</button>
+      <a class="age-btn secondary" href="https://www.google.com">Leave</a>
+    </div>
+    <div class="age-disclaimer">By entering you accept responsibility for compliance with local laws.</div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" style="display:none">
+  <header>
+    <div class="logo">NSFW<span>Index</span></div>
+    <input type="search" id="search" placeholder="Search sites, categories…" oninput="handleSearch(this.value)" autocomplete="off">
+    <div class="header-count" id="header-count"></div>
+  </header>
+  <div class="layout">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main id="main-content">
+      <div class="vpn-notice">
+        ⚠️ If sites are blocked in your country, use a <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank" rel="noopener">VPN</a>.
+      </div>
+      <div id="sections-container"></div>
+      <div id="no-results">
+        <div style="font-size:2rem">🔍</div>
+        <p>No results found. Try a different search term.</p>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ── Age Gate ──
+function enterSite(){
+  sessionStorage.setItem('ageVerified','1');
+  document.getElementById('age-gate').style.display='none';
+  document.getElementById('app').style.display='';
+}
+if(sessionStorage.getItem('ageVerified')){
+  document.getElementById('age-gate').style.display='none';
+  document.getElementById('app').style.display='';
+}
+
+// ── Data ──
+const sections=[
+  {
+    id:'indexes',title:'NSFW Indexes',icon:'📋',
+    links:[
+      {name:'NSFW Subreddits',url:'https://www.reddit.com/r/NSFW411/wiki/index',globe:true,alts:['https://redd.it/brypgf'],altNames:['Mirror']},
+      {name:'NSFWDOG',url:'https://nsfwdog.com/',globe:true},
+      {name:'Multireddits',url:'https://www.reddit.com/r/multihub/top/?sort=top&t=year',globe:true},
+      {name:'PornBox',url:'http://pornbox.org/'},
+      {name:'One Porn List',url:'https://onepornlist.com/'},
+      {name:'BigPornList',url:'https://bigpornlist.net/'},
+      {name:'MrPornGeek',url:'https://www.mrporngeek.com/'},
+      {name:'PornList18',url:'https://pornlist18.com/'},
+      {name:'IndianPornList',url:'https://indianpornlist.com/'},
+      {name:"Tommy's Bookmarks",url:'https://www.tommys-bookmarks.com/'},
+      {name:'ThePornDude',url:'https://pastebin.com/70C3uxJv'},
+    ]
+  },
+  {
+    id:'streaming',title:'Streaming',icon:'📺',
+    links:[
+      {name:'HQPorner',url:'https://hqporner.com/',star:true},
+      {name:'SexyPorn',url:'https://www.sxyprn.com/',star:true},
+      {name:'WatchPorn.to',url:'https://watchporn.to',star:true},
+      {name:'Porninja',url:'https://www.por.ninja/',star:true},
+      {name:'iXXX',url:'https://www.ixxx.com/',star:true},
+      {name:'PornHoarder',url:'https://pornhoarder.tv/',star:true,alts:['https://pornhoarder.org/'],altNames:['2']},
+      {name:'Noodlemagazine',url:'https://noodlemagazine.com',star:true,alts:['https://mat6tube.com/','https://18.tyler-brown.com/','https://ukdevilz.com/'],altNames:['2','3','4']},
+      {name:'NSFWBase',url:'https://www.nsfwbase.com/',star:true,note:'Multi-site search engine'},
+      {name:'Full Length Porn CSE',url:'https://cse.google.com/cse?cx=6c02fb377e50d493c',star:true,note:'Google CSE'},
+      {name:'EPorner',url:'https://www.eporner.com/'},
+      {name:'xHamster',url:'https://xhamster.com/'},
+      {name:'XVideos',url:'https://www.xvideos.com/'},
+      {name:'PornMD',url:'https://www.pornmd.com/'},
+      {name:'PlayHDPorn',url:'https://www.playhdporn.com/'},
+      {name:'SpankBang',url:'https://spankbang.com/'},
+      {name:'neporn',url:'https://neporn.com/'},
+      {name:'FreePornVideos',url:'https://www.freepornvideos.xxx/'},
+      {name:'StreamPorn',url:'https://streamporn.org/',alts:['https://xtapes.me/','https://watchpornx.com/'],altNames:['2','3']},
+      {name:'PornHub',url:'https://www.pornhub.com/'},
+      {name:'TNAFlix',url:'https://www.tnaflix.com/'},
+      {name:'ShyFap',url:'https://www.shyfap.net/'},
+      {name:'YouPorn',url:'https://www.youporn.com/'},
+      {name:'PornTrex',url:'https://www.porntrex.com/'},
+      {name:'CUMS',url:'https://cums.net/'},
+      {name:'SomePorn',url:'https://some.porn/'},
+      {name:'Xozilla',url:'https://www.xozilla.com/'},
+      {name:'5MoviesPorn',url:'https://www.5moviesporn.io/'},
+      {name:'OK.XXX',url:'https://ok.xxx/'},
+      {name:'Hotmovix',url:'https://www.hotmovix.com/'},
+      {name:'Youjizz',url:'https://www.youjizz.com/'},
+      {name:'iPornTV',url:'https://iporntv.net/',note:'Use adblocker'},
+      {name:'PornoBae',url:'https://pornobae.com/'},
+      {name:'Jizzbunker',url:'https://www.jizzbunker.com/'},
+      {name:'pornken',url:'https://pornken.com/'},
+      {name:'Heavy-R',url:'https://www.heavy-r.com/'},
+      {name:'EroticMovies',url:'https://eroticmoviesonline.me/'},
+      {name:'XNXX',url:'https://www.xnxx.com/'},
+      {name:'ThePornArea',url:'https://thepornarea.com/'},
+      {name:'DrTuber',url:'https://www.drtuber.desi/'},
+      {name:'Porndish',url:'https://www.porndish.com/'},
+      {name:'Analdin',url:'https://www.analdin.com/'},
+      {name:'Tube8',url:'https://www.tube8.com/'},
+      {name:'Porndoe',url:'https://porndoe.com/'},
+      {name:'Siska',url:'https://siska.video/'},
+      {name:'Porndig',url:'https://www.porndig.com/'},
+      {name:'anysex',url:'https://anysex.com/'},
+      {name:'Beeg',url:'https://beeg.com/'},
+      {name:'Redtube',url:'https://www.redtube.com/'},
+      {name:'SuperPorn',url:'https://www.superporn.com/'},
+      {name:'txxx',url:'https://txxx.com/'},
+      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
+      {name:'Adult TV Channels',url:'https://adult-tv-channels.com/',note:'Random live streams',alts:['https://adult-tv-channels.click/'],altNames:['2']},
+    ]
+  },
+  {
+    id:'movies',title:'Adult Movies',icon:'🎬',
+    links:[
+      {name:'NSFW Movie CSE',url:'https://cse.google.com/cse?cx=006516753008110874046:3-svpblbro8',star:true,note:'Search engine'},
+      {name:'Film1k',url:'https://www.film1k.com/',star:true},
+      {name:'EroticMV',url:'https://eroticmv.com/',star:true},
+      {name:'RareLust',url:'https://rarelust.com/movies-index/',star:true},
+      {name:'PandaMovies',url:'https://pandamovies.pw/',star:true,alts:['https://bananamovies.org/','https://speedporn.net/','https://pornkino.cc/'],altNames:['2','3','4']},
+      {name:'TubePornClassic',url:'https://tubepornclassic.com/',star:true},
+      {name:'Noodlemagazine',url:'https://noodlemagazine.com',star:true,note:'Search engine'},
+      {name:'MangoPorn',url:'https://mangoporn.net/'},
+      {name:'EroGarga',url:'https://www.erogarga.com/'},
+      {name:'EroticAge',url:'https://www.eroticage.net/'},
+      {name:'Film-Adult',url:'https://hd.film-adult.com/en/'},
+      {name:'Cat3Film',url:'https://cat3film.com/'},
+      {name:'paradisehill',url:'https://en.paradisehill.cc/'},
+      {name:'Sex Film',url:'https://en.sex-film.biz/'},
+      {name:'pornxtheatre',url:'https://pornxtheatre.com/'},
+      {name:'AdultLoad',url:'https://adultload.ws/'},
+      {name:'WIPFilms',url:'https://wipfilms.net/'},
+      {name:'VintageClassix',url:'http://www.vintageclassix.com/',note:'Google Login Required'},
+      {name:'chuyenphim18',url:'https://chuyenphim18.site/',note:'Vietnamese'},
+      {name:'Pinkueiga',url:'https://pinkueiga.net/',note:'Japanese'},
+    ]
+  },
+  {
+    id:'jav',title:'Asian / JAV',icon:'🎌',
+    links:[
+      {name:'SexTB',url:'https://sextb.net/',star:true},
+      {name:'SupJav',url:'https://supjav.com/',star:true},
+      {name:'JAVSeen',url:'https://javseen.tv/',star:true},
+      {name:'JAVGG',url:'https://javgg.net/',star:true},
+      {name:'JavGuru',url:'https://jav.guru/',star:true},
+      {name:'Javtiful',url:'https://javtiful.com/'},
+      {name:'missav',url:'https://missav.ws/dm17/en',alts:['https://missav123.com/dm19/en'],altNames:['2']},
+      {name:'JavHDPorn',url:'https://www2.javhdporn.net/'},
+      {name:'nJAV',url:'https://123av.com/',alts:['https://njav.tv/'],altNames:['2']},
+      {name:'HighPorn',url:'https://highporn.net/'},
+      {name:'KRX18',url:'https://krx18.com/'},
+      {name:'JavFan',url:'https://javfan.one/'},
+      {name:'javdoe',url:'https://javdoe.sh/'},
+      {name:'playav',url:'https://playav.tv/'},
+      {name:'JAVMost',url:'https://www5.javmost.com/'},
+      {name:'avjoy',url:'https://avjoy.me/'},
+      {name:'7MMTV',url:'https://7mmtv.sx/'},
+      {name:'KoreanPornMovies',url:'https://koreanpornmovie.com/',note:'Korean'},
+      {name:'JAVLibrary',url:'https://www.javlibrary.com/en/',note:'Video / star database'},
+    ]
+  },
+  {
+    id:'cams',title:'Cam Models',icon:'📷',
+    links:[
+      {name:'Archivebate',url:'https://archivebate.com/',star:true},
+      {name:'CamCaps',url:'https://camcaps.ac/',star:true},
+      {name:'Curbate',url:'https://curbate.tv/'},
+      {name:'eCamRips',url:'https://www.ecamrips.com'},
+      {name:'Recurbate',url:'https://recu.me/',alts:['https://recurbate1.com/'],altNames:['2']},
+      {name:'Chaturflix',url:'https://chaturflix.cam/'},
+      {name:'Camwhores Bay',url:'https://www.camwhoresbay.com/'},
+      {name:'Bestcam',url:'https://bestcam.tv/'},
+      {name:'LiveCamRips',url:'https://livecamrips.to/'},
+      {name:'OnScreens',url:'https://www.onscreens.me/'},
+      {name:'ShowCamRips',url:'https://www.showcamrips.com/'},
+      {name:'Cloudbate',url:'https://www.cloudbate.com/'},
+      {name:'Webpussi',url:'https://www.webpussi.com/'},
+      {name:'CamSeek.TV',url:'https://camseek.tv/'},
+      {name:'WebcamRips',url:'https://webcamrips.to/'},
+      {name:'StripHub',url:'https://striphub.cam/'},
+      {name:'CumCams',url:'https://cumcams.cc/'},
+      {name:'CamSmut',url:'https://camsmut.com/'},
+      {name:'SexKbj',url:'https://sexkbj.com/',note:'Asian'},
+      {name:'KBJFree',url:'https://kbjfree.com/',note:'Asian'},
+      {name:'Korean BJ',url:'https://koreanbj.club/',note:'Asian'},
+      {name:'CamGirlFinder',url:'https://camgirlfinder.net/',note:'Model database'},
+    ]
+  },
+  {
+    id:'download',title:'Download',icon:'⬇️',
+    links:[
+      {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'For AEBN.com'},
+      {name:'StashDB',url:'https://stashdb.org/',note:'Porn database / Invite required'},
+      {name:'0xxx',url:'https://0xxx.ws/'},
+      {name:'SiteRips',url:'https://www.siterips.org/'},
+      {name:'PornFactors',url:'https://pornfactors.com/'},
+      {name:'PornoRips',url:'https://pornorips.to/'},
+      {name:'XXXCollections',url:'https://xxxcollections.net/'},
+      {name:'SeaPorn',url:'https://www.seaporn.org/'},
+      {name:'BestPornstars',url:'https://www.bestpornstars.org/'},
+      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
+    ]
+  },
+  {
+    id:'torrents',title:'Torrents',icon:'🌊',
+    links:[
+      {name:'myporn.club',url:'https://myporn.club/',star:true},
+      {name:'XXXClub',url:'https://xxxclub.to/',star:true},
+      {name:'Nyaa Sukebei',url:'https://sukebei.nyaa.si/',star:true,note:'JAV'},
+      {name:'ProjectJav',url:'https://projectjav.com/',star:true,note:'JAV'},
+      {name:'OneJAV',url:'https://onejav.com/',star:true,note:'JAV'},
+      {name:'141Jav',url:'https://www.141jav.com/',star:true,note:'JAV',alts:['https://www.141ppv.com/'],altNames:['PPV']},
+      {name:'Xchina',url:'https://en.xchina.co/',star:true},
+      {name:'PornTorrent',url:'https://pornotorrent.top/'},
+      {name:'pussytorrents',url:'https://pussytorrents.org/'},
+      {name:'18Mag',url:'https://18mag.net/'},
+      {name:'PornoLab',url:'https://pornolab.net/forum/index.php'},
+      {name:'LoveTorrent',url:'https://lovetorrent.net/',alts:['https://5pornotorrent.net/'],altNames:['2']},
+      {name:'PornRips',url:'https://pornrips.to/',note:'HEVC rips'},
+      {name:'JavBus',url:'https://www.javbus.com/en',note:'JAV'},
+      {name:'Tokyo Tosho',url:'https://tokyo-tosho.net/',note:'JAV'},
+      {name:'JAVdb',url:'https://javdb.com/',note:'JAV'},
+      {name:'My JAV Bay',url:'https://myjavbay.com/',note:'JAV'},
+      {name:'JAVJunkies',url:'https://javjunkies.org/main/',note:'JAV'},
+      {name:'HappyFappy',url:'https://www.happyfappy.org/users/register',note:'Private tracker / open signup'},
+      {name:'srrXXX',url:'https://www.srrxxx.com/',note:'Scene release tracker'},
+    ]
+  },
+  {
+    id:'images',title:'Images / Reels',icon:'🖼️',
+    links:[
+      {name:'ImageFap',url:'https://www.imagefap.com/',star:true},
+      {name:'NSFWMonster',url:'https://nsfwmonster.com/',star:true},
+      {name:'FikFap',url:'https://fikfap.com/',star:true},
+      {name:'fyptt',url:'https://fyptt.to/',star:true},
+      {name:'redgifs',url:'https://www.redgifs.com/'},
+      {name:'nsfw.xxx',url:'https://nsfw.xxx/'},
+      {name:'Reddit Gone Wild',url:'https://gonewildbrowser.com/'},
+      {name:'Reddxxx',url:'https://reddxxx.com/'},
+      {name:'Sex.com',url:'https://www.sex.com/'},
+      {name:'Infini',url:'https://infini.wtf/?nsfw=true'},
+      {name:'PornPics',url:'https://www.pornpics.com/'},
+      {name:'Realbooru',url:'https://realbooru.com/'},
+      {name:'ViperGirls',url:'https://vipergirls.to/'},
+      {name:'PimpAndHost',url:'https://pimpandhost.com/site/trending'},
+      {name:'PornedUp',url:'https://pornedup.com/'},
+      {name:'xxxtik',url:'https://xxxtik.com/'},
+      {name:'Tik.porn',url:'https://tik.porn/'},
+      {name:'TikPorn.tube',url:'https://tikporn.tube/'},
+      {name:'tiktits',url:'https://tiktits.com/'},
+      {name:'OnlyTik',url:'https://onlytik.com/'},
+      {name:'Xfollow',url:'https://www.xfollow.com/'},
+      {name:'EliteBabes',url:'https://www.elitebabes.com/'},
+      {name:'GifHQ',url:'https://gifhq.com/'},
+      {name:'GifSauce',url:'https://gifsauce.com/'},
+      {name:'NSFWGify',url:'https://nsfwgify.com/'},
+      {name:'xfree',url:'https://www.xfree.com/'},
+      {name:'fap.bar',url:'https://fap.bar/'},
+      {name:'ViralPorn',url:'https://viralporn.com/'},
+      {name:'Scroller',url:'https://scrolller.com/'},
+      {name:'NSFWSwipe',url:'https://nsfwswipe.com/'},
+      {name:'SmutBase',url:'https://smutba.se/',note:'NSFW 3D models'},
+      {name:'LPSG',url:'https://www.lpsg.com/',note:'Forum / Daily limits'},
+      {name:'ArchiveOfSins',url:'https://archiveofsins.com/',note:'4Chan NSFW archive'},
+      {name:'Fap Roulette',url:'https://www.faproulette.co/',note:'Random images'},
+    ]
+  },
+  {
+    id:'leaks',title:'Leak Sites',icon:'💧',
+    links:[
+      {name:'Hotleak',url:'https://hotleak.vip/',star:true},
+      {name:'SimpCity',url:'https://simpcity.cr/',star:true},
+      {name:'Kemono',url:'https://kemono.cr/',star:true,note:'Patreon / creator leaks'},
+      {name:'Coomer',url:'https://coomer.st/',star:true},
+      {name:'OSosedki',url:'https://ososedki.com/'},
+      {name:'EroThots',url:'https://erothots.co/',alts:['https://erothots1.com/'],altNames:['2']},
+      {name:'ViperGirls',url:'https://vipergirls.to/'},
+      {name:'Faponic',url:'https://faponic.com/'},
+      {name:'Bunkr',url:'https://balbums.st/'},
+      {name:'TurboVid',url:'https://turbovid.cr/library'},
+      {name:'Nudostar',url:'https://nudostar.tv/'},
+      {name:'Fapello',url:'https://fapello.com/'},
+      {name:'ThotHub',url:'https://thothub.to/',alts:['https://thothub.org/','https://thothub.lol/','https://thothub.is/','https://thothub.win/'],altNames:['2','3','4','5']},
+      {name:'NobodyHome',url:'https://nobodyhome.tv/'},
+      {name:'OF-Scraper',url:'https://github.com/datawhores/OF-Scraper',note:'GitHub tool'},
+    ]
+  },
+  {
+    id:'magazines',title:'Magazines',icon:'📰',
+    links:[
+      {name:'Mens Magazines',url:'https://archive.org/details/mensmagazines_post70s',star:true,note:'1970s-modern archives'},
+      {name:'downmagaz',url:'https://downmagaz.net/adult_magazine/'},
+      {name:'PDF Dude',url:'https://pdfdude.com/category/adult/'},
+      {name:'adultload',url:'https://adultload.ws/category/magazines/'},
+      {name:'AdultMagazine',url:'https://adultmagazine.net/'},
+      {name:'Adult Magazines PDF',url:'https://adultmagazinespdf.com/'},
+      {name:'v9k9 Mags',url:'https://redd.it/ouuakm',note:'Japanese magazines'},
+      {name:'pdfmagazinesclub',url:'https://pdfmagazines.club/adult'},
+    ]
+  },
+  {
+    id:'ai',title:'AI Generated',icon:'🤖',
+    links:[
+      {name:'Pornify',url:'https://pornify.cc/'},
+      {name:'PornAI.tv',url:'https://pornai.tv/'},
+      {name:'r/AIpornhub',url:'https://www.reddit.com/r/AIpornhub/',note:'NSFW AI subreddit'},
+    ]
+  },
+  {
+    id:'games',title:'Games',icon:'🎮',
+    links:[
+      {name:'F95Zone',url:'https://f95zone.to/',star:true},
+      {name:'NSFW TrendingNow',url:'https://nsfw.trendingnow.games/free',note:'Free-to-play'},
+      {name:'GamCore',url:'https://gamcore.com/',note:'Browser games'},
+      {name:'jiggie',url:'https://jiggie.fun/',note:'NSFW puzzles + multiplayer'},
+      {name:'Lewdzone',url:'https://lewdzone.com/',note:'Games / animations'},
+      {name:'Lewd Patcher',url:'https://lewdpatcher.com/',note:'Adult game patches'},
+      {name:'Lovers Lab',url:'https://www.loverslab.com/',note:'Adult game mods'},
+      {name:'NakedSkins',url:'https://www.nakedskins.com/',note:'Nude game skins'},
+    ]
+  },
+  {
+    id:'communities',title:'Communities',icon:'💬',
+    links:[
+      {name:'PornBBS',url:'https://pornbbs.org/'},
+      {name:'PornBB',url:'https://www.pornbb.org/forum'},
+      {name:'Eroticity',url:'https://eroticity.net/forum.php'},
+      {name:'PlanetSuzy',url:'http://www.planetsuzy.org/'},
+      {name:'xFobo',url:'https://xfobo.com/index.php'},
+      {name:'Akiba',url:'https://www.akiba-online.com/'},
+      {name:'bdsmlr',url:'https://bdsmlr.com/',note:'NSFW Tumblr alt / Sign-up required'},
+    ]
+  },
+  {
+    id:'erotica',title:'Erotica / Fanfiction',icon:'📖',
+    links:[
+      {name:'Literotica',url:'https://www.literotica.com/',note:'Fictional'},
+      {name:'Chyoa',url:'https://chyoa.com/',note:'Fictional'},
+      {name:'Bellesa',url:'https://www.bellesa.co/story/all',note:'Fictional'},
+      {name:'SexualStories',url:'https://sexualstories.club/',note:'Fictional'},
+      {name:'TheFetLibrary',url:'https://www.thefetlibrary.com/',note:'Fictional'},
+      {name:'Adult-Fanfiction',url:'https://www.adult-fanfiction.org/',note:'Fictional'},
+      {name:'HyperDreams',url:'https://www.hyperdreams.com/',note:'Interactive'},
+      {name:'EroFights',url:'https://erofights.com/',note:'Chat-based'},
+      {name:'StoriesOnline',url:'https://storiesonline.net/'},
+      {name:'IndianSexStories',url:'https://www.indiansexstories2.net/'},
+      {name:'Sex Stories',url:'https://www.sexstories.com/'},
+      {name:'LushStories',url:'https://www.lushstories.com/'},
+    ]
+  },
+  {
+    id:'lgbtq',title:'LGBTQ',icon:'🏳️‍🌈',
+    links:[
+      {name:'MyGaySites',url:'https://mygaysites.com/',globe:true,note:'Gay porn index'},
+      {name:'PlayHDPorn Gay',url:'https://www.playhdporn.com/categories/gay/'},
+      {name:'Boyfriend.tv',url:'https://boyfriend.tv/'},
+      {name:'Gold Gay',url:'https://www.gold-gay.com/'},
+      {name:'iGay69',url:'https://igay69.com/',note:'Gay / Asian'},
+      {name:'JAVBoys',url:'https://javboys.com/',note:'Gay / JAV'},
+      {name:'Gay Torrents',url:'https://www.gay-torrents.net/',note:'Use VPN'},
+      {name:'MyReadingManga',url:'https://myreadingmanga.info/',note:'LGBTQ+ comics'},
+      {name:'Nifty',url:'https://www.nifty.org/nifty/',note:'LGBT fiction'},
+      {name:'FictionMania',url:'https://fictionmania.tv/',note:'Transgender fiction'},
+      {name:'TransVids',url:'https://transvids.wtf/',note:'OnlyFans / Patreon'},
+    ]
+  },
+  {
+    id:'tools',title:'Tools',icon:'🔧',
+    links:[
+      {name:'Stash',url:'https://stashapp.cc/',star:true,note:'Porn file manager'},
+      {name:'PornStarByFace',url:'https://pornstarbyface.com/',star:true,note:'NSFW image reverse search'},
+      {name:'SauceNao',url:'https://saucenao.com/',star:true,note:'Reverse image search'},
+      {name:'IAFD',url:'https://www.iafd.com/',star:true,note:'Adult film database'},
+      {name:'NameThatPorn',url:'https://namethatporn.com/',star:true,note:'Porn identification'},
+      {name:'Reddit NSFW Unblocker',url:'https://github.com/sixP-NaraKa/reddit-nsfw-unblocker',star:true,note:'Bypass Reddit NSFW popups'},
+      {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'AEBN downloader'},
+      {name:'Data18',url:'https://www.data18.com/',note:'Film database'},
+      {name:'MyPornStarBook',url:'https://www.mypornstarbook.net/',note:'Performer database'},
+      {name:'AVSOX',url:'https://avsox.click/en',note:'Asian film database'},
+      {name:'NameThatPornstar',url:'https://namethatpornstar.com/',note:'Performer ID'},
+      {name:'Javinizer',url:'https://github.com/javinizer/Javinizer',note:'JAV file organizer'},
+      {name:'CoomerDL',url:'https://emydevs.com/',note:'Video / image downloader'},
+      {name:'Hitomi Downloader',url:'https://github.com/KurtBestor/Hitomi-Downloader',note:'Multi-site downloader'},
+      {name:'DeepMosaics',url:'https://github.com/HypoX64/DeepMosaics',note:'Remove mosaics'},
+      {name:'ThePornDB',url:'https://theporndb.net',note:'Porn metadata'},
+      {name:'Sleazy Fork',url:'https://sleazyfork.org/en/scripts',note:'Adult user scripts'},
+      {name:'Pury.fi',url:'https://pury.fi/site/',note:'Censor NSFW images'},
+      {name:'Whisparr',url:'https://github.com/Whisparr/Whisparr',note:'Porn media manager'},
+      {name:'Porn Vault',url:'https://gitlab.com/porn-vault/porn-vault',note:'Porn file manager'},
+    ]
+  },
+];
+
+// ── Build Sidebar ──
+function buildSidebar(){
+  const nav=document.getElementById('sidebar');
+  const groups=[
+    {label:'Browse',ids:['indexes','streaming','movies','jav','cams']},
+    {label:'Files',ids:['download','torrents']},
+    {label:'Media',ids:['images','leaks','magazines','ai']},
+    {label:'More',ids:['games','communities','erotica','lgbtq','tools']},
+  ];
+  groups.forEach(g=>{
+    const div=document.createElement('div');
+    div.className='sidebar-group';
+    div.innerHTML=`<div class="sidebar-label">${g.label}</div>`;
+    g.ids.forEach(id=>{
+      const sec=sections.find(s=>s.id===id);
+      if(!sec)return;
+      const a=document.createElement('a');
+      a.href=`#${id}`;
+      a.innerHTML=`<span class="nav-icon">${sec.icon}</span>${sec.title}`;
+      div.appendChild(a);
+    });
+    nav.appendChild(div);
+  });
+}
+
+// ── Render ──
+function renderSections(data){
+  const container=document.getElementById('sections-container');
+  container.innerHTML='';
+  const noRes=document.getElementById('no-results');
+  const hc=document.getElementById('header-count');
+  const totalLinks=data.reduce((a,s)=>a+s.links.length,0);
+
+  if(data.length===0||totalLinks===0){
+    noRes.style.display='block';
+    hc.textContent='';
+    return;
+  }
+  noRes.style.display='none';
+  hc.textContent=`${totalLinks} sites`;
+
+  data.forEach(section=>{
+    if(!section.links.length)return;
+    const el=document.createElement('div');
+    el.className='section';
+    el.id=section.id;
+    el.innerHTML=`
+      <div class="section-header">
+        <span class="section-icon">${section.icon}</span>
+        <h2 class="section-title">${section.title}</h2>
+        <span class="section-count">${section.links.length}</span>
+      </div>
+      <div class="links-grid">
+        ${section.links.map(link=>`
+          <div class="link-card${link.star?' starred':''}">
+            <div class="link-top">
+              ${link.star?'<span class="star-icon">⭐</span>':''}
+              ${link.globe&&!link.star?'<span class="globe-icon">🌐</span>':''}
+              <a class="link-name" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
+            </div>
+            ${link.note?`<div class="link-note">${link.note}</div>`:''}
+            ${link.alts?`<div class="link-alts">${link.alts.map((a,i)=>`<a class="alt-link" href="${a}" target="_blank" rel="noopener noreferrer">${link.altNames?link.altNames[i]:`Alt ${i+1}`}</a>`).join('')}</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+// ── Search ──
+function handleSearch(query){
+  const q=query.trim().toLowerCase();
+  if(!q){renderSections(sections);return;}
+  const filtered=sections.map(sec=>{
+    const sectionMatch=sec.title.toLowerCase().includes(q);
+    const links=sectionMatch?sec.links:sec.links.filter(l=>
+      l.name.toLowerCase().includes(q)||
+      (l.note&&l.note.toLowerCase().includes(q))
+    );
+    return{...sec,links};
+  }).filter(s=>s.links.length>0);
+  renderSections(filtered);
+}
+
+// ── Init ──
+buildSidebar();
+renderSections(sections);
+</script>
+</body>
+</html>
