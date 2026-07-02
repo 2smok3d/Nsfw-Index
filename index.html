@@ -316,7 +316,7 @@ main{flex:1;padding:22px 24px;min-width:0;position:relative;z-index:1}
   background:var(--surface2);border:1px solid var(--border);
   border-radius:var(--radius);padding:12px 13px;
   transition:all .2s;display:flex;flex-direction:column;gap:6px;
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;cursor:pointer;
 }
 .link-card::after{
   content:'';position:absolute;inset:0;
@@ -884,6 +884,14 @@ function toast(msg,ok){
 }
 
 // ──────────────────────────────────────────
+// CARD CLICK — whole card opens the link
+// ──────────────────────────────────────────
+function cardOpen(e,url){
+  if(e.target.closest('button,.alt-link,.link-name'))return;
+  window.open(url,'_blank','noopener,noreferrer');
+}
+
+// ──────────────────────────────────────────
 // COPY URL
 // ──────────────────────────────────────────
 function copyUrl(url){
@@ -1042,7 +1050,8 @@ function buildSidebar(){
 function renderCard(link){
   const isFav=S.favs.has(link.url);
   const classes=['link-card',link.star?'starred':'',isFav?'favorited':''].filter(Boolean).join(' ');
-  return`<div class="${classes}">
+  const eu=link.url.replace(/'/g,"\\'");
+  return`<div class="${classes}" onclick="cardOpen(event,'${eu}')">
     <div class="card-body">
       <div class="link-top">
         ${link.star?'<span class="star-icon">⭐</span>':''}
@@ -1053,8 +1062,8 @@ function renderCard(link){
       ${link.alts?`<div class="link-alts">${link.alts.map((u,i)=>`<a class="alt-link" href="${u}" target="_blank" rel="noopener noreferrer">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
     </div>
     <div class="card-actions">
-      <button class="card-btn fav-btn${isFav?' is-fav':''}" onclick="toggleFav('${link.url.replace(/'/g,"\\'")}');" title="${isFav?'Remove from favorites':'Add to favorites'}">❤</button>
-      <button class="card-btn" onclick="copyUrl('${link.url.replace(/'/g,"\\'")}');" title="Copy URL">📋</button>
+      <button class="card-btn fav-btn${isFav?' is-fav':''}" onclick="toggleFav('${eu}');" title="${isFav?'Remove from favorites':'Add to favorites'}">❤</button>
+      <button class="card-btn" onclick="copyUrl('${eu}');" title="Copy URL">📋</button>
     </div>
   </div>`;
 }
