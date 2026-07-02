@@ -2,398 +2,336 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NSFW Index</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#06060f;
-  --surface:#0c0c1e;
-  --surface2:#111128;
-  --surface3:#171735;
-  --surface4:#1e1e42;
-  --accent:#e91e8c;
-  --accent2:#c2185b;
-  --accent3:#9c27b0;
-  --grad:linear-gradient(135deg,#e91e8c 0%,#9c27b0 100%);
-  --grad-r:linear-gradient(135deg,#9c27b0 0%,#e91e8c 100%);
-  --text:#f0f0fa;
-  --text2:#8888b0;
-  --text3:#444466;
+  --bg:#000;
+  --s1:#0c0c0c;
+  --s2:#131313;
+  --s3:#1a1a1a;
+  --s4:#222;
+  --red:#ff2255;
+  --red2:#ff4d73;
+  --text:#fff;
+  --t2:#888;
+  --t3:#444;
   --gold:#ffd700;
-  --border:#1a1a36;
-  --border2:#222248;
-  --glow:rgba(233,30,140,.25);
+  --border:#1e1e1e;
+  --b2:#2a2a2a;
   --radius:10px;
-  --sidebar:232px;
-  --header:60px;
-  --toolbar:48px;
+  --hh:56px;
+  --nh:44px;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.5;
-  overflow-x:hidden;
+  background:var(--bg);color:var(--text);
+  line-height:1.5;overflow-x:hidden;
 }
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 900px 700px at 5% 10%, rgba(233,30,140,.06) 0%,transparent 60%),
-    radial-gradient(ellipse 700px 900px at 95% 90%, rgba(156,39,176,.07) 0%,transparent 60%),
-    radial-gradient(ellipse 500px 500px at 50% 50%, rgba(103,58,183,.04) 0%,transparent 70%);
-  pointer-events:none;z-index:0;
-}
+*{-webkit-tap-highlight-color:transparent}
 
 /* ─── Age Gate ─── */
-#age-gate{
-  position:fixed;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  z-index:9999;padding:20px;overflow:hidden;
+#gate{
+  position:fixed;inset:0;z-index:9999;
   background:#000;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
 }
-.gate-orb{
-  position:absolute;border-radius:50%;
-  filter:blur(70px);pointer-events:none;
-  animation:orbFloat 12s ease-in-out infinite;
-}
-.gate-orb-1{width:500px;height:500px;background:rgba(233,30,140,.18);top:-100px;left:-100px;animation-delay:0s}
-.gate-orb-2{width:600px;height:600px;background:rgba(156,39,176,.15);bottom:-150px;right:-100px;animation-delay:-4s}
-.gate-orb-3{width:300px;height:300px;background:rgba(103,58,183,.2);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-8s}
-@keyframes orbFloat{
-  0%,100%{transform:translate(0,0) scale(1)}
-  33%{transform:translate(40px,-30px) scale(1.08)}
-  66%{transform:translate(-30px,40px) scale(.94)}
-}
-.gate-grid{
+.gate-bg{
   position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(233,30,140,.05) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(233,30,140,.05) 1px,transparent 1px);
-  background-size:60px 60px;
-  animation:gridScroll 25s linear infinite;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 30%,rgba(255,34,85,.12) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 70%,rgba(255,34,85,.08) 0%,transparent 70%);
+  pointer-events:none;
 }
-@keyframes gridScroll{from{transform:translate(0,0)}to{transform:translate(60px,60px)}}
-.age-card{
+.gate-card{
   position:relative;z-index:1;
-  background:rgba(10,10,25,.88);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(233,30,140,.22);
-  border-radius:22px;
-  padding:54px 46px 44px;
-  max-width:490px;width:100%;
+  max-width:460px;width:100%;
   text-align:center;
-  box-shadow:
-    0 0 0 1px rgba(156,39,176,.1),
-    0 0 80px rgba(233,30,140,.18),
-    0 0 160px rgba(156,39,176,.12),
-    0 30px 60px rgba(0,0,0,.7);
 }
-.age-logo{
-  font-size:3rem;font-weight:800;letter-spacing:-1.5px;
-  background:var(--grad);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 24px rgba(233,30,140,.5));
-  margin-bottom:6px;line-height:1;
+.gate-logo{
+  font-size:3.5rem;font-weight:900;letter-spacing:-2px;
+  color:var(--red);
+  text-shadow:0 0 40px rgba(255,34,85,.5);
+  margin-bottom:4px;
+  line-height:1;
 }
-.age-sub{
-  font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:16px;
-}
-.age-badge{
+.gate-logo em{color:var(--text);font-style:normal;font-weight:300}
+.gate-badge{
   display:inline-block;
-  background:var(--grad);
-  color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.12em;
-  padding:4px 14px;border-radius:20px;text-transform:uppercase;margin-bottom:24px;
-  box-shadow:0 4px 14px rgba(233,30,140,.35);
+  border:1px solid rgba(255,34,85,.4);
+  color:var(--red);
+  font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  padding:4px 14px;border-radius:20px;margin-bottom:24px;
 }
-.age-card p{color:var(--text2);font-size:.88rem;margin-bottom:30px;line-height:1.75}
-.age-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.age-btn{
-  padding:13px 32px;border-radius:10px;
-  font-size:.95rem;font-weight:700;
-  cursor:pointer;border:none;
-  transition:all .2s;text-decoration:none;display:inline-block;letter-spacing:.01em;
+.gate-card p{
+  color:var(--t2);font-size:.88rem;line-height:1.75;
+  margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto;
 }
-.age-btn.primary{
-  background:var(--grad);color:#fff;
-  box-shadow:0 4px 24px rgba(233,30,140,.45);
+.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.gate-enter{
+  padding:14px 36px;border-radius:var(--radius);
+  background:var(--red);border:none;
+  color:#fff;font-size:.95rem;font-weight:700;
+  cursor:pointer;letter-spacing:.02em;
+  transition:all .2s;
+  box-shadow:0 4px 24px rgba(255,34,85,.4);
 }
-.age-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(233,30,140,.65)}
-.age-btn.secondary{background:var(--surface3);color:var(--text2);border:1px solid var(--border2)}
-.age-btn.secondary:hover{opacity:.85;transform:translateY(-1px)}
-.age-disclaimer{font-size:.7rem;color:var(--text3);margin-top:20px;line-height:1.6}
+.gate-enter:hover{background:var(--red2);transform:translateY(-1px);box-shadow:0 6px 32px rgba(255,34,85,.6)}
+.gate-leave{
+  padding:14px 24px;border-radius:var(--radius);
+  background:transparent;border:1px solid var(--border);
+  color:var(--t2);font-size:.95rem;font-weight:600;
+  cursor:pointer;text-decoration:none;display:inline-block;
+  transition:all .2s;
+}
+.gate-leave:hover{border-color:var(--b2);color:var(--t2)}
+.gate-note{font-size:.7rem;color:var(--t3);margin-top:20px}
+@media(max-width:420px){
+  .gate-logo{font-size:2.8rem}
+  .gate-btns{flex-direction:column}
+  .gate-enter,.gate-leave{width:100%;text-align:center}
+}
 
 /* ─── Header ─── */
 header{
   position:sticky;top:0;z-index:100;
-  background:rgba(8,8,20,.88);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  background:rgba(0,0,0,.9);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  height:var(--header);
-  display:flex;align-items:center;gap:12px;
-  padding:0 18px;
-  box-shadow:0 1px 0 rgba(233,30,140,.08);
+  height:var(--hh);
+  display:flex;align-items:center;gap:10px;
+  padding:0 16px;
 }
 .logo{
-  font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;
-  background:var(--grad);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 10px rgba(233,30,140,.35));
-  white-space:nowrap;flex-shrink:0;
+  font-size:1.2rem;font-weight:900;letter-spacing:-0.5px;
+  color:var(--red);white-space:nowrap;flex-shrink:0;
+  text-shadow:0 0 16px rgba(255,34,85,.4);
 }
-.search-wrap{position:relative;flex:1;max-width:520px}
-.search-icon{
-  position:absolute;left:13px;top:50%;transform:translateY(-50%);
-  color:var(--text3);font-size:.85rem;pointer-events:none;
+.logo em{color:var(--text);font-style:normal;font-weight:300}
+.sw{position:relative;flex:1;max-width:480px}
+.si{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--t3);font-size:.85rem;pointer-events:none;
 }
 #search{
-  width:100%;
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:24px;
-  padding:8px 36px 8px 36px;
-  color:var(--text);font-size:.875rem;
-  outline:none;transition:all .2s;
+  width:100%;background:var(--s2);
+  border:1px solid var(--border);border-radius:24px;
+  padding:8px 34px 8px 34px;
+  color:var(--text);font-size:.875rem;outline:none;
+  transition:border-color .2s,box-shadow .2s;
 }
-#search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.14)}
-#search::placeholder{color:var(--text3)}
-.search-clear{
-  position:absolute;right:13px;top:50%;transform:translateY(-50%);
-  background:none;border:none;color:var(--text3);cursor:pointer;
-  font-size:.85rem;padding:2px;display:none;transition:color .15s;
+#search:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,34,85,.12)}
+#search::placeholder{color:var(--t3)}
+.sc{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--t3);cursor:pointer;
+  font-size:.8rem;display:none;
 }
-.search-clear:hover{color:var(--text)}
-.show-clear .search-clear{display:block}
-.header-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
-.hdr-btn{
+.sc:hover{color:var(--text)}
+.show-sc .sc{display:block}
+.hbtns{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.hbtn{
   display:flex;align-items:center;justify-content:center;
-  width:34px;height:34px;
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:8px;color:var(--text2);cursor:pointer;font-size:.9rem;
-  transition:all .15s;flex-shrink:0;
+  min-width:34px;height:34px;padding:0 8px;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:8px;color:var(--t2);cursor:pointer;font-size:.85rem;
+  transition:all .15s;white-space:nowrap;gap:5px;
 }
-.hdr-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--border2)}
-.hdr-btn.active{background:rgba(233,30,140,.14);border-color:rgba(233,30,140,.38);color:var(--accent)}
-.random-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:0 14px;height:34px;
-  background:var(--grad);border:none;border-radius:8px;
-  color:#fff;cursor:pointer;font-size:.8rem;font-weight:700;
-  white-space:nowrap;transition:all .2s;
-  box-shadow:0 2px 14px rgba(233,30,140,.35);flex-shrink:0;
+.hbtn:hover{background:var(--s3);color:var(--text);border-color:var(--b2)}
+.hbtn.on{background:rgba(255,34,85,.12);border-color:rgba(255,34,85,.35);color:var(--red)}
+.rnd-btn{
+  background:var(--red);border:none;color:#fff;
+  font-weight:700;font-size:.78rem;
+  box-shadow:0 2px 12px rgba(255,34,85,.35);
 }
-.random-btn:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(233,30,140,.55)}
+.rnd-btn:hover{background:var(--red2);border-color:transparent;color:#fff;box-shadow:0 4px 20px rgba(255,34,85,.55)}
 .sort-wrap{position:relative}
-.sort-btn{padding:0 10px;gap:5px;width:auto;font-size:.75rem;white-space:nowrap}
 .sort-menu{
   position:absolute;right:0;top:calc(100% + 6px);
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:10px;padding:5px;min-width:160px;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:200;
-  display:none;
+  background:var(--s2);border:1px solid var(--b2);
+  border-radius:var(--radius);padding:5px;min-width:155px;
+  box-shadow:0 10px 40px rgba(0,0,0,.7);z-index:200;display:none;
 }
 .sort-menu.open{display:block}
-.sort-opt{
-  padding:8px 12px;border-radius:7px;font-size:.82rem;
-  color:var(--text2);cursor:pointer;
+.sopt{
+  padding:8px 12px;border-radius:6px;font-size:.82rem;
+  color:var(--t2);cursor:pointer;
   display:flex;align-items:center;justify-content:space-between;
   transition:all .12s;
 }
-.sort-opt:hover{background:var(--surface3);color:var(--text)}
-.sort-opt.active{color:var(--accent)}
-.sort-opt.active::after{content:'✓';font-size:.8rem}
-
-/* ─── Toolbar ─── */
-.toolbar{
-  position:sticky;top:var(--header);z-index:90;
-  background:rgba(7,7,18,.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  height:var(--toolbar);
-  display:flex;align-items:center;gap:8px;padding:0 18px;
+.sopt:hover{background:var(--s3);color:var(--text)}
+.sopt.on{color:var(--red)}
+.sopt.on::after{content:'✓';font-size:.8rem}
+@media(max-width:680px){
+  .hbtns .hbtn:not(.rnd-btn){display:none}
+  .sw{max-width:none}
 }
-.chips{display:flex;align-items:center;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{
-  display:flex;align-items:center;gap:5px;
-  padding:5px 14px;border-radius:20px;
-  font-size:.78rem;font-weight:600;
+
+/* ─── Category Nav ─── */
+.cat-nav{
+  position:sticky;top:var(--hh);z-index:90;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  height:var(--nh);
+  display:flex;align-items:center;gap:4px;
+  padding:0 16px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.cat-nav::-webkit-scrollbar{display:none}
+.cpill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 13px;border-radius:20px;
+  font-size:.77rem;font-weight:600;
   cursor:pointer;white-space:nowrap;flex-shrink:0;
-  border:1px solid var(--border2);background:var(--surface2);color:var(--text2);
+  border:1px solid var(--border);background:transparent;color:var(--t2);
   transition:all .15s;
 }
-.chip:hover{border-color:#333360;color:var(--text)}
-.chip.active{
-  background:rgba(233,30,140,.14);
-  border-color:rgba(233,30,140,.45);
-  color:var(--accent);
+.cpill:hover{border-color:var(--b2);color:var(--t2)}
+.cpill.on{background:var(--red);border-color:var(--red);color:#fff}
+.cpill-n{
+  font-size:.65rem;opacity:.7;
+  background:rgba(255,255,255,.1);
+  padding:1px 5px;border-radius:6px;
 }
-.chip-n{
-  font-size:.68rem;background:var(--surface3);
-  padding:1px 6px;border-radius:8px;color:var(--text3);
-}
-.chip.active .chip-n{background:rgba(233,30,140,.2);color:var(--accent)}
-.toolbar-count{
-  font-size:.75rem;color:var(--text3);white-space:nowrap;flex-shrink:0;margin-left:auto;
-}
-
-/* ─── Layout ─── */
-.layout{display:flex}
-
-/* ─── Sidebar ─── */
-.sidebar{
-  width:var(--sidebar);flex-shrink:0;
-  background:var(--surface);border-right:1px solid var(--border);
-  position:sticky;top:calc(var(--header) + var(--toolbar));
-  height:calc(100vh - var(--header) - var(--toolbar));
-  overflow-y:auto;padding:10px 0;
-}
-.sidebar::-webkit-scrollbar{width:3px}
-.sidebar::-webkit-scrollbar-track{background:transparent}
-.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sb-group{margin-bottom:6px}
-.sb-label{
-  padding:10px 16px 5px;
-  font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
-  color:var(--text3);
-}
-.sb-link{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:7px 16px;color:var(--text2);text-decoration:none;
-  font-size:.79rem;transition:all .15s;
-  border-left:2px solid transparent;
-}
-.sb-link:hover{color:var(--text);background:var(--surface2);border-left-color:rgba(233,30,140,.5)}
-.sb-link.active{color:var(--accent);background:rgba(233,30,140,.07);border-left-color:var(--accent)}
-.sb-left{display:flex;align-items:center;gap:7px}
-.sb-icon{font-size:.82rem;opacity:.65}
-.sb-count{
-  font-size:.63rem;background:var(--surface3);
-  padding:1px 6px;border-radius:7px;color:var(--text3);
-}
-.sb-link.active .sb-count{background:rgba(233,30,140,.18);color:var(--accent)}
+.cpill.on .cpill-n{background:rgba(255,255,255,.2)}
+.cdiv{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px}
 
 /* ─── Main ─── */
-main{flex:1;padding:22px 24px;min-width:0;position:relative;z-index:1}
+main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
 
 /* ─── Notice ─── */
 .notice{
   display:flex;align-items:center;gap:10px;
-  background:rgba(50,35,0,.5);border:1px solid rgba(90,65,0,.4);
-  border-radius:var(--radius);padding:10px 16px;
-  font-size:.81rem;color:#cc9900;margin-bottom:26px;
+  background:rgba(40,28,0,.6);border:1px solid rgba(80,55,0,.5);
+  border-radius:var(--radius);padding:10px 14px;
+  font-size:.8rem;color:#cc9900;margin-bottom:24px;
 }
 .notice a{color:#ffaa00;text-decoration:none}
 .notice a:hover{text-decoration:underline}
 
+/* ─── Stats bar ─── */
+.stats{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:24px;flex-wrap:wrap;
+}
+.stat{
+  font-size:.75rem;color:var(--t3);
+  display:flex;align-items:center;gap:5px;
+}
+.stat strong{color:var(--t2)}
+.filter-chips{display:flex;gap:6px;margin-left:auto}
+.fchip{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 12px;border-radius:16px;
+  font-size:.75rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);
+  background:transparent;color:var(--t3);
+  transition:all .15s;
+}
+.fchip:hover{border-color:var(--b2);color:var(--t2)}
+.fchip.on{border-color:rgba(255,34,85,.4);background:rgba(255,34,85,.1);color:var(--red)}
+
 /* ─── Section ─── */
-.section{margin-bottom:44px;scroll-margin-top:calc(var(--header) + var(--toolbar) + 16px)}
-.section-hdr{
+.sec{margin-bottom:44px;scroll-margin-top:calc(var(--hh)+var(--nh)+16px)}
+.sec-hdr{
   display:flex;align-items:center;gap:10px;
-  margin-bottom:15px;padding-bottom:12px;
+  margin-bottom:14px;padding-bottom:12px;
   border-bottom:1px solid var(--border);
 }
-.section-icon{font-size:1.15rem}
-.section-title{font-size:1.05rem;font-weight:700}
-.section-count{
-  font-size:.68rem;color:var(--text3);
-  background:var(--surface2);padding:2px 8px;border-radius:10px;margin-left:2px;
+.sec-icon{font-size:1.1rem}
+.sec-title{font-size:1rem;font-weight:700}
+.sec-ct{
+  font-size:.68rem;color:var(--t3);
+  background:var(--s2);padding:2px 8px;border-radius:8px;
 }
 
-/* ─── Grids ─── */
-.links-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(198px,1fr));
-  gap:8px;
-}
-.links-list{display:flex;flex-direction:column;gap:5px}
+/* ─── Grid / List ─── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.lst{display:flex;flex-direction:column;gap:4px}
 
-/* ─── Cards ─── */
-.link-card{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px 13px;
-  transition:all .2s;display:flex;flex-direction:column;gap:6px;
-  position:relative;overflow:hidden;cursor:pointer;
+/* ─── Card ─── */
+.card{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px;
+  transition:all .2s;
+  display:flex;flex-direction:column;gap:6px;
+  position:relative;cursor:pointer;
+  overflow:hidden;
 }
-.link-card::after{
+.card::before{
   content:'';position:absolute;inset:0;
-  border-radius:var(--radius);
-  background:var(--grad);opacity:0;
-  transition:opacity .2s;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,34,85,.06),transparent);
+  opacity:0;transition:opacity .2s;pointer-events:none;
 }
-.link-card:hover{
-  border-color:rgba(233,30,140,.32);
-  box-shadow:0 0 22px rgba(233,30,140,.14),0 4px 18px rgba(0,0,0,.4);
+.card:hover{
+  border-color:rgba(255,34,85,.3);
+  box-shadow:0 0 20px rgba(255,34,85,.1),0 4px 16px rgba(0,0,0,.5);
   transform:translateY(-2px);
 }
-.link-card:hover::after{opacity:.025}
-.link-card.starred{
-  border-color:rgba(70,50,0,.6);
-  background:rgba(20,14,0,.55);
-}
-.link-card.starred:hover{border-color:rgba(233,30,140,.38)}
-.link-card.favorited{
-  border-color:rgba(233,30,140,.28);
-  background:rgba(233,30,140,.04);
-}
+.card:hover::before{opacity:1}
+.card.starred{border-color:rgba(60,45,0,.8);background:rgba(12,10,0,.6)}
+.card.starred:hover{border-color:rgba(255,34,85,.35)}
+.card.faved{border-color:rgba(255,34,85,.25);background:rgba(255,34,85,.04)}
 /* List mode */
-.links-list .link-card{
-  flex-direction:row;align-items:center;
-  padding:9px 13px;gap:12px;
-}
-.links-list .card-body{flex:1;min-width:0}
-.links-list .link-alts,.links-list .link-note{margin:0}
-.card-body{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
-.link-top{display:flex;align-items:flex-start;gap:6px}
-.star-icon{color:var(--gold);font-size:.72rem;flex-shrink:0;margin-top:3px}
-.link-name{
+.lst .card{flex-direction:row;align-items:center;padding:9px 12px;gap:10px}
+.lst .cbody{flex:1;min-width:0}
+.cbody{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.ctop{display:flex;align-items:flex-start;gap:5px}
+.star{color:var(--gold);font-size:.7rem;flex-shrink:0;margin-top:3px}
+.cname{
   font-size:.855rem;font-weight:500;color:var(--text);
   text-decoration:none;line-height:1.35;word-break:break-word;
   transition:color .15s;
 }
-.link-name:hover{color:var(--accent)}
-.link-note{font-size:.71rem;color:var(--text3);line-height:1.35}
-.link-alts{display:flex;gap:4px;flex-wrap:wrap}
-.alt-link{
-  font-size:.68rem;color:var(--text3);
-  background:var(--surface3);padding:2px 7px;border-radius:4px;
+.cname:hover{color:var(--red)}
+.cnote{font-size:.71rem;color:var(--t3);line-height:1.3}
+.calts{display:flex;gap:4px;flex-wrap:wrap}
+.calt{
+  font-size:.67rem;color:var(--t3);
+  background:var(--s3);padding:2px 6px;border-radius:4px;
   text-decoration:none;border:1px solid var(--border);
   transition:all .15s;
 }
-.alt-link:hover{color:var(--accent);background:rgba(233,30,140,.1);border-color:rgba(233,30,140,.3)}
+.calt:hover{color:var(--red);background:rgba(255,34,85,.1);border-color:rgba(255,34,85,.3)}
 
 /* ─── Card Actions ─── */
-.card-actions{
+.cacts{
   display:flex;align-items:center;gap:4px;flex-shrink:0;
   opacity:0;transition:opacity .15s;
 }
-.link-card:hover .card-actions{opacity:1}
-.links-list .link-card:hover .card-actions{opacity:1}
-.card-btn{
-  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
-  background:var(--surface3);border:1px solid var(--border2);
-  border-radius:6px;cursor:pointer;font-size:.75rem;color:var(--text3);
+.card:hover .cacts,.lst .card:hover .cacts{opacity:1}
+@media(hover:none){.cacts{opacity:1}}
+.cact{
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--s3);border:1px solid var(--border);
+  border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--t3);
   transition:all .15s;
 }
-.card-btn:hover{background:var(--surface4);color:var(--text);border-color:#333360}
-.fav-btn.is-fav{color:#ff4488;border-color:rgba(255,68,136,.35);background:rgba(255,68,136,.1)}
-.fav-btn:hover{color:#ff4488 !important}
+.cact:hover{background:var(--s4);color:var(--text)}
+.fav.is-fav{color:#ff3366;border-color:rgba(255,51,102,.35);background:rgba(255,51,102,.1)}
+.fav:hover{color:#ff3366 !important}
 
-/* ─── Floating Scroll-to-Top ─── */
-#scroll-top{
-  position:fixed;bottom:24px;right:24px;
-  width:42px;height:42px;
-  background:var(--grad);border:none;border-radius:50%;
-  color:#fff;font-size:1rem;cursor:pointer;
+/* ─── No results ─── */
+#nores{display:none;text-align:center;padding:80px 20px;color:var(--t3)}
+#nores .nri{font-size:2.5rem;opacity:.2;margin-bottom:10px}
+
+/* ─── Scroll top ─── */
+#stb{
+  position:fixed;bottom:24px;right:20px;
+  width:40px;height:40px;
+  background:var(--red);border:none;border-radius:50%;
+  color:#fff;font-size:.95rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 22px rgba(233,30,140,.45);
-  transition:all .22s;opacity:0;pointer-events:none;z-index:500;
+  box-shadow:0 4px 20px rgba(255,34,85,.5);
+  transition:all .2s;opacity:0;pointer-events:none;z-index:500;
 }
-#scroll-top.visible{opacity:1;pointer-events:auto}
-#scroll-top:hover{transform:translateY(-3px) scale(1.07);box-shadow:0 7px 32px rgba(233,30,140,.65)}
+#stb.vis{opacity:1;pointer-events:auto}
+#stb:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 28px rgba(255,34,85,.7)}
 
 /* ─── Toasts ─── */
 #toasts{
@@ -402,217 +340,162 @@ main{flex:1;padding:22px 24px;min-width:0;position:relative;z-index:1}
   z-index:9998;pointer-events:none;
 }
 .toast{
-  background:rgba(12,12,30,.96);backdrop-filter:blur(12px);
-  border:1px solid var(--border2);border-radius:9px;
-  padding:9px 18px;font-size:.82rem;color:var(--text);
-  box-shadow:0 5px 24px rgba(0,0,0,.5);
-  animation:toastIn .18s ease;white-space:nowrap;
-  display:flex;align-items:center;gap:8px;
+  background:rgba(10,10,10,.96);backdrop-filter:blur(10px);
+  border:1px solid var(--b2);border-radius:8px;
+  padding:8px 16px;font-size:.82rem;color:var(--text);
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  animation:tin .16s ease;white-space:nowrap;
 }
-.toast.ok{border-color:rgba(233,30,140,.38);color:var(--accent)}
-@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.toast.ok{border-color:rgba(255,34,85,.4);color:var(--red)}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─── No Results ─── */
-#no-results{
-  display:none;text-align:center;padding:80px 20px;color:var(--text3);
+/* ─── Mobile bottom bar ─── */
+.mob{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(0,0,0,.97);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:8px 12px;
+  padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  gap:4px;align-items:center;justify-content:space-around;
+  z-index:300;
 }
-#no-results .nr-icon{font-size:3rem;opacity:.25;margin-bottom:12px}
+.mb{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--t3);
+  cursor:pointer;padding:6px 8px;border-radius:8px;
+  font-size:.62rem;font-weight:600;letter-spacing:.03em;
+  min-width:48px;min-height:48px;justify-content:center;
+  transition:all .15s;
+}
+.mb:active{background:var(--s2)}
+.mb .mi{font-size:1.05rem;line-height:1}
+.mb.on{color:var(--red)}
+.mob-sort{position:relative}
+.mob-sort .sort-menu{
+  bottom:calc(100% + 8px);top:auto;
+  left:50%;right:auto;transform:translateX(-50%);
+  min-width:155px;
+}
 
-/* ─── Kbd Hint ─── */
-.kbd-row{
-  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
-  padding:8px 16px;font-size:.7rem;color:var(--text3);border-top:1px solid var(--border);margin-top:auto;
+/* ─── Mobile overrides ─── */
+@media(max-width:700px){
+  :root{--hh:52px;--nh:42px}
+  header{padding:0 12px;gap:8px}
+  .logo{font-size:1.1rem}
+  .sw{max-width:none}
+  main{padding:12px;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .grid{grid-template-columns:1fr 1fr;gap:6px}
+  .card{padding:10px 10px}
+  .cname{font-size:.82rem}
+  .mob{display:flex}
+  #stb{bottom:calc(64px + env(safe-area-inset-bottom) + 10px);right:12px;width:36px;height:36px;font-size:.85rem}
+  .filter-chips{display:none}
+  .stats{margin-bottom:14px}
+  .cat-nav{padding:0 12px}
 }
-kbd{
-  display:inline-block;background:var(--surface3);border:1px solid var(--border2);
-  border-radius:4px;padding:1px 6px;font-family:inherit;font-size:.68rem;color:var(--text3);
+@media(max-width:400px){
+  .grid{grid-template-columns:1fr}
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#282860}
-
-/* ─── Mobile bottom bar ─── */
-.mob-bar{
-  display:none;
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(7,7,18,.97);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);
-  padding:10px 16px;
-  padding-bottom:calc(10px + env(safe-area-inset-bottom));
-  gap:8px;align-items:center;justify-content:space-around;
-  z-index:300;
-}
-.mob-btn{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:none;border:none;color:var(--text3);
-  cursor:pointer;padding:6px 10px;border-radius:8px;
-  font-size:.7rem;font-weight:600;letter-spacing:.02em;
-  min-width:52px;min-height:48px;justify-content:center;
-  transition:all .15s;-webkit-tap-highlight-color:transparent;
-}
-.mob-btn:active{background:var(--surface2);color:var(--accent)}
-.mob-btn .mob-icon{font-size:1.1rem;line-height:1}
-.mob-btn.active{color:var(--accent)}
-
-/* ─── Responsive ─── */
-html{-webkit-text-size-adjust:100%}
-*{-webkit-tap-highlight-color:transparent}
-
-@media(max-width:900px){
-  .sidebar{display:none}
-}
-
-@media(max-width:700px){
-  :root{--header:54px;--toolbar:44px}
-  header{padding:0 12px;gap:8px}
-  .logo{font-size:1.1rem}
-  .search-wrap{max-width:none}
-  .header-actions{display:none}
-  .toolbar{padding:0 12px}
-  main{padding:12px 12px;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
-  .links-grid{grid-template-columns:1fr 1fr;gap:6px}
-  .link-card{padding:10px 11px}
-  .link-name{font-size:.82rem}
-  .mob-bar{display:flex}
-  #scroll-top{bottom:calc(72px + env(safe-area-inset-bottom) + 12px);right:14px;width:38px;height:38px;font-size:.9rem}
-  .sort-menu{bottom:calc(100% + 8px);top:auto;right:0;left:auto}
-}
-
-@media(max-width:420px){
-  .links-grid{grid-template-columns:1fr}
-  .age-card{padding:36px 20px 28px;border-radius:16px}
-  .age-logo{font-size:2.4rem}
-  .age-btns{flex-direction:column}
-  .age-btn{width:100%;text-align:center}
-  .vpn-notice{font-size:.78rem;padding:8px 12px}
-}
-
-/* always show card actions on touch devices */
-@media(hover:none){
-  .card-actions{opacity:1}
-  .card-btn{width:30px;height:30px;font-size:.8rem}
-}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--s4)}
 </style>
 </head>
 <body>
 
-<!-- ─── Age Gate ─── -->
-<div id="age-gate">
-  <div class="gate-orb gate-orb-1"></div>
-  <div class="gate-orb gate-orb-2"></div>
-  <div class="gate-orb gate-orb-3"></div>
-  <div class="gate-grid"></div>
-  <div class="age-card">
-    <div class="age-logo">NSFWIndex</div>
-    <div class="age-sub">Adult Content Directory</div>
-    <div class="age-badge">18+ Only</div>
-    <p>This directory contains explicit adult content intended for individuals 18 years of age or older. By entering you confirm you are of legal age in your jurisdiction and accept full responsibility for compliance with local laws.</p>
-    <div class="age-btns">
-      <button class="age-btn primary" onclick="enterSite()">I am 18+ &mdash; Enter</button>
-      <a class="age-btn secondary" href="https://www.google.com">Leave</a>
+<!-- Age Gate -->
+<div id="gate">
+  <div class="gate-bg"></div>
+  <div class="gate-card">
+    <div class="gate-logo">NSFW<em>Index</em></div>
+    <div class="gate-badge">Adults Only · 18+</div>
+    <p>This directory contains explicit adult content. By entering you confirm you are 18 or older and of legal age in your jurisdiction.</p>
+    <div class="gate-btns">
+      <button class="gate-enter" onclick="enter()">I'm 18+ &mdash; Enter</button>
+      <a class="gate-leave" href="https://www.google.com">Leave</a>
     </div>
-    <div class="age-disclaimer">Adult content ahead. You must be 18+ or the age of majority in your country.</div>
+    <div class="gate-note">By entering you accept responsibility for compliance with local laws.</div>
   </div>
 </div>
 
-<!-- ─── App ─── -->
+<!-- App -->
 <div id="app" style="display:none">
+
   <!-- Header -->
   <header>
-    <div class="logo">NSFW<span style="font-weight:400;opacity:.7">Index</span></div>
-    <div class="search-wrap" id="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="search" id="search" placeholder="Search 300+ sites…" autocomplete="off"
-        oninput="onSearch(this.value)" onkeydown="onSearchKey(event)">
-      <button class="search-clear" onclick="clearSearch()" title="Clear">✕</button>
+    <div class="logo">NSFW<em>Index</em></div>
+    <div class="sw" id="sw">
+      <span class="si">🔍</span>
+      <input id="search" type="search" placeholder="Search sites…" autocomplete="off"
+        oninput="onSearch(this.value)" onkeydown="onKey(event)">
+      <button class="sc" onclick="clearSearch()">✕</button>
     </div>
-    <div class="header-actions">
-      <button class="random-btn" onclick="randomSite()" title="Random starred site [R]">🎲 <span>Surprise Me</span></button>
+    <div class="hbtns">
+      <button class="hbtn rnd-btn" onclick="rnd()" title="Random starred site [R]">🎲 Random</button>
+      <button class="hbtn on" id="bg" onclick="setView('grid')" title="Grid [G]">▦</button>
+      <button class="hbtn" id="bl" onclick="setView('list')" title="List [L]">≡</button>
       <div class="sort-wrap">
-        <button class="hdr-btn sort-btn" onclick="toggleSortMenu()" title="Sort" id="sort-lbl">⇅ <span id="sort-lbl-txt">Default</span></button>
-        <div class="sort-menu" id="sort-menu">
-          <div class="sort-opt active" data-sort="default" onclick="setSort('default')">Default order</div>
-          <div class="sort-opt" data-sort="az" onclick="setSort('az')">A → Z</div>
-          <div class="sort-opt" data-sort="za" onclick="setSort('za')">Z → A</div>
-          <div class="sort-opt" data-sort="star" onclick="setSort('star')">⭐ Starred first</div>
+        <button class="hbtn" onclick="toggleSort()" title="Sort">⇅ <span id="slbl">Default</span></button>
+        <div class="sort-menu" id="sm">
+          <div class="sopt on" data-s="default" onclick="setSort('default')">Default order</div>
+          <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
+          <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
+          <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
         </div>
       </div>
-      <button class="hdr-btn active" id="btn-grid" onclick="setView('grid')" title="Grid view [G]">▦</button>
-      <button class="hdr-btn" id="btn-list" onclick="setView('list')" title="List view [L]">≡</button>
     </div>
   </header>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="chips">
-      <button class="chip active" data-f="all" onclick="setFilter('all')">All <span class="chip-n" id="cnt-all">0</span></button>
-      <button class="chip" data-f="starred" onclick="setFilter('starred')">⭐ Starred <span class="chip-n" id="cnt-star">0</span></button>
-      <button class="chip" data-f="fav" onclick="setFilter('fav')">❤️ Favorites <span class="chip-n" id="cnt-fav">0</span></button>
+  <!-- Category Nav -->
+  <nav class="cat-nav" id="catnav"></nav>
+
+  <!-- Main -->
+  <main>
+    <div class="notice">⚠️ If sites are blocked in your region, use a <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank" rel="noopener">VPN</a>. Always use an adblocker.</div>
+    <div class="stats">
+      <div class="stat"><strong id="st-total">0</strong> sites</div>
+      <div class="stat"><strong id="st-sec">0</strong> sections</div>
+      <div class="filter-chips">
+        <button class="fchip on" data-f="all" onclick="setFilter('all')">All</button>
+        <button class="fchip" data-f="starred" onclick="setFilter('starred')">⭐ Starred</button>
+        <button class="fchip" data-f="fav" onclick="setFilter('fav')">❤️ Favorites</button>
+      </div>
     </div>
-    <div class="toolbar-count" id="toolbar-count"></div>
-  </div>
+    <div id="secs"></div>
+    <div id="nores"><div class="nri">🔍</div><p>No results for "<span id="nq"></span>"</p></div>
+  </main>
 
-  <!-- Layout -->
-  <div class="layout">
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-      <div id="sb-content"></div>
-      <div class="kbd-row">
-        <kbd>/</kbd> search &nbsp;
-        <kbd>R</kbd> random &nbsp;
-        <kbd>G</kbd>/<kbd>L</kbd> view
-      </div>
-    </nav>
-
-    <!-- Main -->
-    <main id="main">
-      <div class="notice">
-        ⚠️ If sites are blocked in your region, use a
-        <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank" rel="noopener">VPN</a>.
-        Always use an adblocker.
-      </div>
-      <div id="sections"></div>
-      <div id="no-results">
-        <div class="nr-icon">🔍</div>
-        <p>No results for "<span id="nr-q"></span>"</p>
-        <p style="margin-top:6px;font-size:.8rem">Try a different search term.</p>
-      </div>
-    </main>
-  </div>
 </div>
 
-<!-- Mobile Bottom Bar -->
-<div class="mob-bar" id="mob-bar">
-  <button class="mob-btn" onclick="randomSite()"><span class="mob-icon">🎲</span>Random</button>
-  <button class="mob-btn" id="mob-grid" onclick="setView('grid')"><span class="mob-icon">▦</span>Grid</button>
-  <button class="mob-btn" id="mob-list" onclick="setView('list')"><span class="mob-icon">≡</span>List</button>
-  <div class="sort-wrap" style="position:relative">
-    <button class="mob-btn" onclick="toggleSortMenu()"><span class="mob-icon">⇅</span>Sort</button>
-    <div class="sort-menu" id="mob-sort-menu" style="bottom:calc(100% + 8px);top:auto;left:50%;transform:translateX(-50%);min-width:160px">
-      <div class="sort-opt active" data-sort="default" onclick="setSort('default')">Default order</div>
-      <div class="sort-opt" data-sort="az" onclick="setSort('az')">A → Z</div>
-      <div class="sort-opt" data-sort="za" onclick="setSort('za')">Z → A</div>
-      <div class="sort-opt" data-sort="star" onclick="setSort('star')">⭐ Starred first</div>
+<!-- Mobile Bar -->
+<div class="mob" id="mob">
+  <button class="mb" onclick="rnd()"><span class="mi">🎲</span>Random</button>
+  <button class="mb on" id="mbg" onclick="setView('grid')"><span class="mi">▦</span>Grid</button>
+  <button class="mb" id="mbl" onclick="setView('list')"><span class="mi">≡</span>List</button>
+  <div class="mob-sort sort-wrap">
+    <button class="mb" onclick="toggleSort()"><span class="mi">⇅</span>Sort</button>
+    <div class="sort-menu" id="msm" style="bottom:calc(100% + 8px);top:auto;left:50%;right:auto;transform:translateX(-50%)">
+      <div class="sopt on" data-s="default" onclick="setSort('default')">Default order</div>
+      <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
+      <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
+      <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
     </div>
   </div>
-  <button class="mob-btn" onclick="setFilter(S.filter==='all'?'starred':'all')"><span class="mob-icon">⭐</span>Starred</button>
+  <button class="mb" onclick="cycleFilter()"><span class="mi">⭐</span>Filter</button>
 </div>
 
-<!-- Scroll to Top -->
-<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
-
-<!-- Toasts -->
+<!-- Scroll Top -->
+<button id="stb" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 <div id="toasts"></div>
 
 <script>
-// ──────────────────────────────────────────
-// DATA
-// ──────────────────────────────────────────
-const SECTIONS=[
+// ── Data ──────────────────────────────────
+const DATA=[
   {
     id:'streaming',title:'Streaming',icon:'📺',
     links:[
@@ -625,6 +508,10 @@ const SECTIONS=[
       {name:'Noodlemagazine',url:'https://noodlemagazine.com',star:true,alts:['https://mat6tube.com/','https://18.tyler-brown.com/','https://ukdevilz.com/'],altNames:['2','3','4']},
       {name:'NSFWBase',url:'https://www.nsfwbase.com/',star:true,note:'Multi-site search'},
       {name:'Full Length Porn CSE',url:'https://cse.google.com/cse?cx=6c02fb377e50d493c',star:true,note:'Google CSE'},
+      {name:'GoodPorn.to',url:'https://goodporn.to/',star:true,note:'Full scenes, minimal ads'},
+      {name:'VPorn',url:'https://www.vporn.com/',star:true,note:'HD focused'},
+      {name:'Pornhat',url:'https://www.pornhat.com/',star:true},
+      {name:'HotMovs',url:'https://hotmovs.com/',star:true},
       {name:'EPorner',url:'https://www.eporner.com/'},
       {name:'xHamster',url:'https://xhamster.com/'},
       {name:'XVideos',url:'https://www.xvideos.com/'},
@@ -636,42 +523,19 @@ const SECTIONS=[
       {name:'StreamPorn',url:'https://streamporn.org/',alts:['https://xtapes.me/','https://watchpornx.com/'],altNames:['2','3']},
       {name:'PornHub',url:'https://www.pornhub.com/'},
       {name:'TNAFlix',url:'https://www.tnaflix.com/'},
-      {name:'ShyFap',url:'https://www.shyfap.net/'},
       {name:'YouPorn',url:'https://www.youporn.com/'},
       {name:'PornTrex',url:'https://www.porntrex.com/'},
       {name:'CUMS',url:'https://cums.net/'},
       {name:'SomePorn',url:'https://some.porn/'},
-      {name:'Xozilla',url:'https://www.xozilla.com/'},
-      {name:'5MoviesPorn',url:'https://www.5moviesporn.io/'},
-      {name:'OK.XXX',url:'https://ok.xxx/'},
-      {name:'Hotmovix',url:'https://www.hotmovix.com/'},
-      {name:'Youjizz',url:'https://www.youjizz.com/'},
-      {name:'iPornTV',url:'https://iporntv.net/',note:'Use adblocker'},
-      {name:'PornoBae',url:'https://pornobae.com/'},
-      {name:'Jizzbunker',url:'https://www.jizzbunker.com/'},
-      {name:'pornken',url:'https://pornken.com/'},
-      {name:'Heavy-R',url:'https://www.heavy-r.com/'},
-      {name:'EroticMovies',url:'https://eroticmoviesonline.me/'},
       {name:'XNXX',url:'https://www.xnxx.com/'},
-      {name:'ThePornArea',url:'https://thepornarea.com/'},
-      {name:'DrTuber',url:'https://www.drtuber.desi/'},
-      {name:'Porndish',url:'https://www.porndish.com/'},
-      {name:'Analdin',url:'https://www.analdin.com/'},
-      {name:'Tube8',url:'https://www.tube8.com/'},
-      {name:'Porndoe',url:'https://porndoe.com/'},
-      {name:'Siska',url:'https://siska.video/'},
-      {name:'Porndig',url:'https://www.porndig.com/'},
-      {name:'anysex',url:'https://anysex.com/'},
       {name:'Beeg',url:'https://beeg.com/'},
       {name:'Redtube',url:'https://www.redtube.com/'},
-      {name:'SuperPorn',url:'https://www.superporn.com/'},
       {name:'txxx',url:'https://txxx.com/'},
-      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
-      {name:'Adult TV Channels',url:'https://adult-tv-channels.com/',note:'Random live streams',alts:['https://adult-tv-channels.click/'],altNames:['2']},
-      {name:'GoodPorn.to',url:'https://goodporn.to/',star:true,note:'Full scenes, minimal ads'},
-      {name:'VPorn',url:'https://www.vporn.com/',star:true,note:'HD focused'},
-      {name:'Pornhat',url:'https://www.pornhat.com/',star:true},
-      {name:'HotMovs',url:'https://hotmovs.com/',star:true},
+      {name:'Analdin',url:'https://www.analdin.com/'},
+      {name:'Porndoe',url:'https://porndoe.com/'},
+      {name:'Porndig',url:'https://www.porndig.com/'},
+      {name:'anysex',url:'https://anysex.com/'},
+      {name:'SuperPorn',url:'https://www.superporn.com/'},
       {name:'Pornone',url:'https://pornone.com/'},
       {name:'Tubxporn',url:'https://www.tubxporn.xxx/'},
       {name:'Empflix',url:'https://www.empflix.com/'},
@@ -688,6 +552,8 @@ const SECTIONS=[
       {name:'Pornez',url:'https://pornez.net/'},
       {name:'FreshPorn',url:'https://freshporn.to/'},
       {name:'PornFlip',url:'https://www.pornflip.com/'},
+      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
+      {name:'Adult TV Channels',url:'https://adult-tv-channels.com/',note:'Random live streams',alts:['https://adult-tv-channels.click/'],altNames:['2']},
     ]
   },
   {
@@ -709,7 +575,7 @@ const SECTIONS=[
       {name:'MilfFox',url:'https://www.milffox.com/'},
       {name:'Milftube',url:'https://www.milftube.xxx/'},
       {name:'MomXXX',url:'https://momxxx.com/',note:'Clips + trailers'},
-      {name:'MILF Dude',url:'https://milfdude.com/',globe:true,note:'MILF site directory'},
+      {name:'MILF Dude',url:'https://milfdude.com/',note:'MILF site directory'},
       {name:'Mature.nl',url:'https://mature.nl/',note:'Trailers free'},
       {name:'YouMilf',url:'https://youmilf.com/'},
       {name:'MilfPorn',url:'https://www.milfporn.com/'},
@@ -811,7 +677,7 @@ const SECTIONS=[
     ]
   },
   {
-    id:'tools',title:'Tools & Utilities',icon:'🔧',
+    id:'tools',title:'Tools',icon:'🔧',
     links:[
       {name:'Stash',url:'https://stashapp.cc/',star:true,note:'Porn file manager'},
       {name:'PornStarByFace',url:'https://pornstarbyface.com/',star:true,note:'NSFW image reverse search'},
@@ -820,6 +686,9 @@ const SECTIONS=[
       {name:'NameThatPorn',url:'https://namethatporn.com/',star:true,note:'Porn identification'},
       {name:'Reddit NSFW Unblocker',url:'https://github.com/sixP-NaraKa/reddit-nsfw-unblocker',star:true,note:'Bypass Reddit NSFW popups'},
       {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'AEBN downloader'},
+      {name:'yt-dlp',url:'https://github.com/yt-dlp/yt-dlp',star:true,note:'Universal video downloader'},
+      {name:'Gallery-DL',url:'https://github.com/mikf/gallery-dl',star:true,note:'Image & gallery downloader'},
+      {name:'Hydrus Network',url:'https://hydrusnetwork.github.io/hydrus/',star:true,note:'Media library manager'},
       {name:'Data18',url:'https://www.data18.com/',note:'Film database'},
       {name:'MyPornStarBook',url:'https://www.mypornstarbook.net/',note:'Performer database'},
       {name:'NameThatPornstar',url:'https://namethatpornstar.com/',note:'Performer ID'},
@@ -828,12 +697,8 @@ const SECTIONS=[
       {name:'DeepMosaics',url:'https://github.com/HypoX64/DeepMosaics',note:'Remove mosaics'},
       {name:'ThePornDB',url:'https://theporndb.net',note:'Porn metadata'},
       {name:'Sleazy Fork',url:'https://sleazyfork.org/en/scripts',note:'Adult user scripts'},
-      {name:'Pury.fi',url:'https://pury.fi/site/',note:'Censor NSFW images'},
       {name:'Whisparr',url:'https://github.com/Whisparr/Whisparr',note:'Porn media manager'},
       {name:'Porn Vault',url:'https://gitlab.com/porn-vault/porn-vault',note:'Porn file manager'},
-      {name:'yt-dlp',url:'https://github.com/yt-dlp/yt-dlp',star:true,note:'Universal video downloader'},
-      {name:'Gallery-DL',url:'https://github.com/mikf/gallery-dl',star:true,note:'Image & gallery downloader'},
-      {name:'Hydrus Network',url:'https://hydrusnetwork.github.io/hydrus/',star:true,note:'Media library manager'},
       {name:'XBVR',url:'https://github.com/xbapps/xbvr',note:'VR porn media manager'},
       {name:'JDownloader 2',url:'https://jdownloader.org/',note:'General download manager'},
       {name:'N_m3u8DL-RE',url:'https://github.com/nilaoda/N_m3u8DL-RE',note:'HLS/DASH stream downloader'},
@@ -846,323 +711,270 @@ const SECTIONS=[
   },
 ];
 
-// ──────────────────────────────────────────
-// STATE
-// ──────────────────────────────────────────
+// ── State ──────────────────────────────────
 const S={
-  filter:'all',
-  sort:'default',
-  view:'grid',
-  query:'',
-  favs:new Set(JSON.parse(localStorage.getItem('nsfw_favs')||'[]')),
+  filter:'all',sort:'default',view:'grid',query:'',
+  favs:new Set(JSON.parse(localStorage.getItem('nf')||'[]')),
 };
+const saveFavs=()=>localStorage.setItem('nf',JSON.stringify([...S.favs]));
 
-function saveFavs(){localStorage.setItem('nsfw_favs',JSON.stringify([...S.favs]))}
-
-// ──────────────────────────────────────────
-// AGE GATE
-// ──────────────────────────────────────────
-function enterSite(){
-  localStorage.setItem('nsfw_age','1');
-  document.getElementById('age-gate').style.display='none';
+// ── Age Gate ──────────────────────────────
+function enter(){
+  localStorage.setItem('na','1');
+  document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='';
 }
-if(localStorage.getItem('nsfw_age')){
-  document.getElementById('age-gate').style.display='none';
+if(localStorage.getItem('na')){
+  document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='';
 }
 
-// ──────────────────────────────────────────
-// TOAST
-// ──────────────────────────────────────────
+// ── Toast ──────────────────────────────────
 function toast(msg,ok){
   const el=document.createElement('div');
   el.className='toast'+(ok?' ok':'');
   el.textContent=msg;
   document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>el.remove(),2500);
+  setTimeout(()=>el.remove(),2400);
 }
 
-// ──────────────────────────────────────────
-// CARD CLICK — whole card opens the link
-// ──────────────────────────────────────────
+// ── Card click ─────────────────────────────
 function cardOpen(e,url){
-  if(e.target.closest('button,.alt-link,.link-name'))return;
+  if(e.target.closest('button,.calt,.cname'))return;
   window.open(url,'_blank','noopener,noreferrer');
 }
 
-// ──────────────────────────────────────────
-// COPY URL
-// ──────────────────────────────────────────
+// ── Copy ───────────────────────────────────
 function copyUrl(url){
   navigator.clipboard.writeText(url).then(()=>toast('📋 Copied!',true)).catch(()=>toast('Copy failed'));
 }
 
-// ──────────────────────────────────────────
-// FAVORITES
-// ──────────────────────────────────────────
+// ── Favorites ──────────────────────────────
 function toggleFav(url){
   if(S.favs.has(url)){S.favs.delete(url);toast('Removed from favorites')}
   else{S.favs.add(url);toast('❤️ Added to favorites',true)}
-  saveFavs();
-  render();
+  saveFavs();render();
 }
 
-// ──────────────────────────────────────────
-// RANDOM SITE
-// ──────────────────────────────────────────
-function randomSite(){
-  const starred=SECTIONS.flatMap(s=>s.links.filter(l=>l.star));
-  if(!starred.length)return;
-  const pick=starred[Math.floor(Math.random()*starred.length)];
-  toast('🎲 Opening '+pick.name+'…',true);
-  setTimeout(()=>window.open(pick.url,'_blank','noopener'),300);
+// ── Random ─────────────────────────────────
+function rnd(){
+  const pool=DATA.flatMap(s=>s.links.filter(l=>l.star));
+  if(!pool.length)return;
+  const p=pool[Math.floor(Math.random()*pool.length)];
+  toast('🎲 Opening '+p.name+'…',true);
+  setTimeout(()=>window.open(p.url,'_blank','noopener'),300);
 }
 
-// ──────────────────────────────────────────
-// SORT / FILTER / VIEW
-// ──────────────────────────────────────────
+// ── Sort ───────────────────────────────────
+const SLABELS={default:'Default',az:'A → Z',za:'Z → A',star:'Starred'};
 function setSort(v){
   S.sort=v;
-  document.querySelectorAll('.sort-opt').forEach(el=>{
-    el.classList.toggle('active',el.dataset.sort===v);
-  });
-  const labels={default:'Default',az:'A → Z',za:'Z → A',star:'⭐ Starred'};
-  document.getElementById('sort-lbl-txt').textContent=labels[v]||'Default';
-  document.getElementById('sort-menu').classList.remove('open');
-  const mm=document.getElementById('mob-sort-menu');
-  if(mm)mm.classList.remove('open');
+  document.querySelectorAll('.sopt').forEach(el=>el.classList.toggle('on',el.dataset.s===v));
+  document.getElementById('slbl').textContent=SLABELS[v]||'Default';
+  document.getElementById('sm').classList.remove('open');
+  const ms=document.getElementById('msm');if(ms)ms.classList.remove('open');
   render();
 }
-function toggleSortMenu(){
-  document.getElementById('sort-menu').classList.toggle('open');
-  const mm=document.getElementById('mob-sort-menu');
-  if(mm)mm.classList.toggle('open');
+function toggleSort(){
+  document.getElementById('sm').classList.toggle('open');
+  const ms=document.getElementById('msm');if(ms)ms.classList.toggle('open');
 }
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.sort-wrap'))
-    document.getElementById('sort-menu').classList.remove('open');
+  if(!e.target.closest('.sort-wrap')){
+    document.getElementById('sm').classList.remove('open');
+    const ms=document.getElementById('msm');if(ms)ms.classList.remove('open');
+  }
 });
 
-function setFilter(f){
-  S.filter=f;
-  document.querySelectorAll('.chip').forEach(el=>{
-    el.classList.toggle('active',el.dataset.f===f);
-  });
-  render();
-}
-
+// ── View ───────────────────────────────────
 function setView(v){
   S.view=v;
-  document.getElementById('btn-grid').classList.toggle('active',v==='grid');
-  document.getElementById('btn-list').classList.toggle('active',v==='list');
-  const mg=document.getElementById('mob-grid');
-  const ml=document.getElementById('mob-list');
-  if(mg)mg.classList.toggle('active',v==='grid');
-  if(ml)ml.classList.toggle('active',v==='list');
+  document.getElementById('bg').classList.toggle('on',v==='grid');
+  document.getElementById('bl').classList.toggle('on',v==='list');
+  const mg=document.getElementById('mbg'),ml=document.getElementById('mbl');
+  if(mg)mg.classList.toggle('on',v==='grid');
+  if(ml)ml.classList.toggle('on',v==='list');
   render();
 }
 
-// ──────────────────────────────────────────
-// SEARCH
-// ──────────────────────────────────────────
+// ── Filter ─────────────────────────────────
+function setFilter(f){
+  S.filter=f;
+  document.querySelectorAll('.fchip').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
+  render();
+}
+function cycleFilter(){
+  const order=['all','starred','fav'];
+  const i=(order.indexOf(S.filter)+1)%order.length;
+  setFilter(order[i]);
+  toast({all:'Showing all',starred:'⭐ Starred only',fav:'❤️ Favorites only'}[order[i]],true);
+}
+
+// ── Search ─────────────────────────────────
 function onSearch(q){
   S.query=q.trim().toLowerCase();
-  document.getElementById('search-wrap').classList.toggle('show-clear',q.length>0);
+  document.getElementById('sw').classList.toggle('show-sc',q.length>0);
   render();
 }
-function onSearchKey(e){
-  if(e.key==='Escape'){clearSearch();document.getElementById('search').blur()}
-}
+function onKey(e){if(e.key==='Escape'){clearSearch();e.target.blur()}}
 function clearSearch(){
-  const inp=document.getElementById('search');
-  inp.value='';
-  document.getElementById('search-wrap').classList.remove('show-clear');
-  S.query='';
+  const i=document.getElementById('search');
+  i.value='';S.query='';
+  document.getElementById('sw').classList.remove('show-sc');
   render();
 }
 
-// ──────────────────────────────────────────
-// FILTER + SORT DATA
-// ──────────────────────────────────────────
-function applyFilters(){
-  let data=SECTIONS.map(sec=>{
+// ── Apply filters ──────────────────────────
+function filtered(){
+  return DATA.map(sec=>{
     let links=[...sec.links];
-
-    // text search
     if(S.query){
-      const q=S.query;
-      const secMatch=sec.title.toLowerCase().includes(q);
-      if(!secMatch){
-        links=links.filter(l=>
-          l.name.toLowerCase().includes(q)||
-          (l.note&&l.note.toLowerCase().includes(q))
-        );
-      }
+      const q=S.query,sm=sec.title.toLowerCase().includes(q);
+      if(!sm)links=links.filter(l=>l.name.toLowerCase().includes(q)||(l.note&&l.note.toLowerCase().includes(q)));
     }
-
-    // filter
-    if(S.filter==='starred') links=links.filter(l=>l.star);
-    if(S.filter==='fav') links=links.filter(l=>S.favs.has(l.url));
-
-    // sort
-    if(S.sort==='az') links=[...links].sort((a,b)=>a.name.localeCompare(b.name));
-    if(S.sort==='za') links=[...links].sort((a,b)=>b.name.localeCompare(a.name));
-    if(S.sort==='star') links=[...links].sort((a,b)=>(b.star?1:0)-(a.star?1:0));
-
+    if(S.filter==='starred')links=links.filter(l=>l.star);
+    if(S.filter==='fav')links=links.filter(l=>S.favs.has(l.url));
+    if(S.sort==='az')links=[...links].sort((a,b)=>a.name.localeCompare(b.name));
+    if(S.sort==='za')links=[...links].sort((a,b)=>b.name.localeCompare(a.name));
+    if(S.sort==='star')links=[...links].sort((a,b)=>(b.star?1:0)-(a.star?1:0));
     return{...sec,links};
-  }).filter(s=>s.links.length>0);
-  return data;
+  }).filter(s=>s.links.length);
 }
 
-// ──────────────────────────────────────────
-// BUILD SIDEBAR
-// ──────────────────────────────────────────
-const SB_GROUPS=[
-  {label:'Browse',ids:['streaming','milf','movies']},
-  {label:'Files',ids:['download','torrents']},
-  {label:'Media',ids:['reels','ai']},
-  {label:'More',ids:['tools']},
-];
-function buildSidebar(){
-  const sb=document.getElementById('sb-content');
-  SB_GROUPS.forEach(g=>{
-    const div=document.createElement('div');
-    div.className='sb-group';
-    div.innerHTML=`<div class="sb-label">${g.label}</div>`;
-    g.ids.forEach(id=>{
-      const sec=SECTIONS.find(s=>s.id===id);
-      if(!sec)return;
-      const a=document.createElement('a');
-      a.href='#'+id;
-      a.className='sb-link';
-      a.dataset.id=id;
-      a.innerHTML=`<span class="sb-left"><span class="sb-icon">${sec.icon}</span>${sec.title}</span><span class="sb-count" id="sbc-${id}">${sec.links.length}</span>`;
-      div.appendChild(a);
-    });
-    sb.appendChild(div);
+// ── Build Category Nav ─────────────────────
+function buildNav(){
+  const nav=document.getElementById('catnav');
+  DATA.forEach((sec,i)=>{
+    if(i===0){
+      // filter pills first
+      ['All','⭐','❤️'].forEach((lbl,fi)=>{
+        const f=['all','starred','fav'][fi];
+        const b=document.createElement('button');
+        b.className='cpill'+(fi===0?' on':'');
+        b.dataset.f=f;
+        b.textContent=lbl;
+        b.onclick=()=>setFilter(f);
+        nav.appendChild(b);
+      });
+      const d=document.createElement('span');d.className='cdiv';nav.appendChild(d);
+    }
+    const b=document.createElement('button');
+    b.className='cpill';
+    b.dataset.id=sec.id;
+    b.innerHTML=`${sec.icon} ${sec.title} <span class="cpill-n" id="cn-${sec.id}">${sec.links.length}</span>`;
+    b.onclick=()=>document.getElementById(sec.id)?.scrollIntoView({behavior:'smooth',block:'start'});
+    nav.appendChild(b);
   });
 }
 
-// ──────────────────────────────────────────
-// RENDER CARD
-// ──────────────────────────────────────────
-function renderCard(link){
+function syncNavFilter(f){
+  document.querySelectorAll('.cpill[data-f]').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
+}
+
+// ── Card ───────────────────────────────────
+function card(link){
   const isFav=S.favs.has(link.url);
-  const classes=['link-card',link.star?'starred':'',isFav?'favorited':''].filter(Boolean).join(' ');
   const eu=link.url.replace(/'/g,"\\'");
-  return`<div class="${classes}" onclick="cardOpen(event,'${eu}')">
-    <div class="card-body">
-      <div class="link-top">
-        ${link.star?'<span class="star-icon">⭐</span>':''}
-        ${link.globe&&!link.star?'<span class="star-icon" style="opacity:.5">🌐</span>':''}
-        <a class="link-name" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
+  const cls=['card',link.star?'starred':'',isFav?'faved':''].filter(Boolean).join(' ');
+  return`<div class="${cls}" onclick="cardOpen(event,'${eu}')">
+    <div class="cbody">
+      <div class="ctop">
+        ${link.star?'<span class="star">⭐</span>':''}
+        <a class="cname" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
       </div>
-      ${link.note?`<div class="link-note">${link.note}</div>`:''}
-      ${link.alts?`<div class="link-alts">${link.alts.map((u,i)=>`<a class="alt-link" href="${u}" target="_blank" rel="noopener noreferrer">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
+      ${link.note?`<div class="cnote">${link.note}</div>`:''}
+      ${link.alts?`<div class="calts">${link.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank" rel="noopener noreferrer">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
     </div>
-    <div class="card-actions">
-      <button class="card-btn fav-btn${isFav?' is-fav':''}" onclick="toggleFav('${eu}');" title="${isFav?'Remove from favorites':'Add to favorites'}">❤</button>
-      <button class="card-btn" onclick="copyUrl('${eu}');" title="Copy URL">📋</button>
+    <div class="cacts">
+      <button class="cact fav${isFav?' is-fav':''}" onclick="toggleFav('${eu}')" title="${isFav?'Remove':'Favorite'}">❤</button>
+      <button class="cact" onclick="copyUrl('${eu}')" title="Copy URL">📋</button>
     </div>
   </div>`;
 }
 
-// ──────────────────────────────────────────
-// RENDER
-// ──────────────────────────────────────────
+// ── Render ─────────────────────────────────
 function render(){
-  const data=applyFilters();
-  const container=document.getElementById('sections');
-  const noRes=document.getElementById('no-results');
+  const data=filtered();
   const total=data.reduce((a,s)=>a+s.links.length,0);
-  const allLinks=SECTIONS.flatMap(s=>s.links);
-  const starCount=allLinks.filter(l=>l.star).length;
-  const favCount=allLinks.filter(l=>S.favs.has(l.url)).length;
+  const allTotal=DATA.reduce((a,s)=>a+s.links.length,0);
+  const favCt=DATA.flatMap(s=>s.links).filter(l=>S.favs.has(l.url)).length;
 
-  // Update chip counts
-  document.getElementById('cnt-all').textContent=allLinks.length;
-  document.getElementById('cnt-star').textContent=starCount;
-  document.getElementById('cnt-fav').textContent=favCount;
-  document.getElementById('toolbar-count').textContent=total?`${total} site${total!==1?'s':''}`:'' ;
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-sec').textContent=data.length;
 
-  // Update sidebar counts
-  SECTIONS.forEach(sec=>{
-    const el=document.getElementById('sbc-'+sec.id);
-    if(el){
-      const filtered=data.find(s=>s.id===sec.id);
-      el.textContent=filtered?filtered.links.length:0;
-      el.style.opacity=filtered?1:.3;
-    }
+  DATA.forEach(sec=>{
+    const el=document.getElementById('cn-'+sec.id);
+    if(!el)return;
+    const fd=data.find(s=>s.id===sec.id);
+    el.textContent=fd?fd.links.length:0;
+    el.closest('.cpill')?.classList.toggle('on',false);
   });
+
+  syncNavFilter(S.filter);
+
+  const container=document.getElementById('secs');
+  const nores=document.getElementById('nores');
 
   if(!total){
     container.innerHTML='';
-    noRes.style.display='block';
-    document.getElementById('nr-q').textContent=S.query;
+    nores.style.display='block';
+    document.getElementById('nq').textContent=S.query;
     return;
   }
-  noRes.style.display='none';
+  nores.style.display='none';
 
-  const gridClass=S.view==='list'?'links-list':'links-grid';
+  const gc=S.view==='list'?'lst':'grid';
   container.innerHTML=data.map(sec=>`
-    <div class="section" id="${sec.id}">
-      <div class="section-hdr">
-        <span class="section-icon">${sec.icon}</span>
-        <h2 class="section-title">${sec.title}</h2>
-        <span class="section-count">${sec.links.length}</span>
+    <div class="sec" id="${sec.id}">
+      <div class="sec-hdr">
+        <span class="sec-icon">${sec.icon}</span>
+        <h2 class="sec-title">${sec.title}</h2>
+        <span class="sec-ct">${sec.links.length}</span>
       </div>
-      <div class="${gridClass}">
-        ${sec.links.map(renderCard).join('')}
-      </div>
+      <div class="${gc}">${sec.links.map(card).join('')}</div>
     </div>
   `).join('');
 
-  setupObserver();
+  setupObs();
 }
 
-// ──────────────────────────────────────────
-// INTERSECTION OBSERVER (active nav)
-// ──────────────────────────────────────────
-let observer=null;
-function setupObserver(){
-  if(observer)observer.disconnect();
-  observer=new IntersectionObserver(entries=>{
+// ── Intersection observer ──────────────────
+let obs=null;
+function setupObs(){
+  if(obs)obs.disconnect();
+  const off=-(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'))+parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nh'))+10);
+  obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
-      const link=document.querySelector(`.sb-link[data-id="${e.target.id}"]`);
-      if(link)link.classList.toggle('active',e.isIntersecting);
+      const pill=document.querySelector(`.cpill[data-id="${e.target.id}"]`);
+      if(pill){
+        pill.classList.toggle('on',e.isIntersecting);
+        if(e.isIntersecting){
+          pill.scrollIntoView({block:'nearest',inline:'nearest'});
+        }
+      }
     });
-  },{rootMargin:`-${parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header'))+parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar'))+10}px 0px -55% 0px`});
-  document.querySelectorAll('.section').forEach(el=>observer.observe(el));
+  },{rootMargin:`${off}px 0px -50% 0px`});
+  document.querySelectorAll('.sec').forEach(el=>obs.observe(el));
 }
 
-// ──────────────────────────────────────────
-// SCROLL TO TOP
-// ──────────────────────────────────────────
-const scrollTopBtn=document.getElementById('scroll-top');
-window.addEventListener('scroll',()=>{
-  scrollTopBtn.classList.toggle('visible',window.scrollY>400);
-},{ passive:true });
+// ── Scroll top ─────────────────────────────
+const stb=document.getElementById('stb');
+window.addEventListener('scroll',()=>stb.classList.toggle('vis',scrollY>350),{passive:true});
 
-// ──────────────────────────────────────────
-// KEYBOARD SHORTCUTS
-// ──────────────────────────────────────────
+// ── Keyboard shortcuts ─────────────────────
 document.addEventListener('keydown',e=>{
-  const tag=document.activeElement.tagName;
-  const inInput=tag==='INPUT'||tag==='TEXTAREA';
-  if(e.key==='/'&&!inInput){e.preventDefault();document.getElementById('search').focus()}
-  if(e.key==='Escape'&&inInput){clearSearch();document.activeElement.blur()}
-  if(!inInput){
-    if(e.key.toLowerCase()==='r')randomSite();
+  const inp=document.activeElement.tagName==='INPUT';
+  if(e.key==='/'&&!inp){e.preventDefault();document.getElementById('search').focus()}
+  if(e.key==='Escape'&&inp){clearSearch();document.activeElement.blur()}
+  if(!inp){
+    if(e.key.toLowerCase()==='r')rnd();
     if(e.key.toLowerCase()==='g')setView('grid');
     if(e.key.toLowerCase()==='l')setView('list');
   }
 });
 
-// ──────────────────────────────────────────
-// INIT
-// ──────────────────────────────────────────
-buildSidebar();
+// ── Init ───────────────────────────────────
+buildNav();
 render();
 </script>
 </body>
