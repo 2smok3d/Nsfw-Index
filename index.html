@@ -664,30 +664,6 @@ const SECTIONS=[
     ]
   },
   {
-    id:'cams',title:'Cam Models',icon:'📷',
-    links:[
-      {name:'Archivebate',url:'https://archivebate.com/',star:true},
-      {name:'CamCaps',url:'https://camcaps.ac/',star:true},
-      {name:'Curbate',url:'https://curbate.tv/'},
-      {name:'eCamRips',url:'https://www.ecamrips.com'},
-      {name:'Recurbate',url:'https://recu.me/',alts:['https://recurbate1.com/'],altNames:['2']},
-      {name:'Chaturflix',url:'https://chaturflix.cam/'},
-      {name:'Camwhores Bay',url:'https://www.camwhoresbay.com/'},
-      {name:'Bestcam',url:'https://bestcam.tv/'},
-      {name:'LiveCamRips',url:'https://livecamrips.to/'},
-      {name:'OnScreens',url:'https://www.onscreens.me/'},
-      {name:'ShowCamRips',url:'https://www.showcamrips.com/'},
-      {name:'Cloudbate',url:'https://www.cloudbate.com/'},
-      {name:'Webpussi',url:'https://www.webpussi.com/'},
-      {name:'CamSeek.TV',url:'https://camseek.tv/'},
-      {name:'WebcamRips',url:'https://webcamrips.to/'},
-      {name:'StripHub',url:'https://striphub.cam/'},
-      {name:'CumCams',url:'https://cumcams.cc/'},
-      {name:'CamSmut',url:'https://camsmut.com/'},
-      {name:'CamGirlFinder',url:'https://camgirlfinder.net/',note:'Model database'},
-    ]
-  },
-  {
     id:'download',title:'Download',icon:'⬇️',
     links:[
       {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'For AEBN.com'},
@@ -743,48 +719,6 @@ const SECTIONS=[
       {name:'Pornify',url:'https://pornify.cc/'},
       {name:'PornAI.tv',url:'https://pornai.tv/'},
       {name:'r/AIpornhub',url:'https://www.reddit.com/r/AIpornhub/',note:'NSFW AI subreddit'},
-    ]
-  },
-  {
-    id:'games',title:'Games',icon:'🎮',
-    links:[
-      {name:'F95Zone',url:'https://f95zone.to/',star:true},
-      {name:'NSFW TrendingNow',url:'https://nsfw.trendingnow.games/free',note:'Free-to-play'},
-      {name:'GamCore',url:'https://gamcore.com/',note:'Browser games'},
-      {name:'jiggie',url:'https://jiggie.fun/',note:'NSFW puzzles + multiplayer'},
-      {name:'Lewdzone',url:'https://lewdzone.com/',note:'Games / animations'},
-      {name:'Lewd Patcher',url:'https://lewdpatcher.com/',note:'Adult game patches'},
-      {name:'Lovers Lab',url:'https://www.loverslab.com/',note:'Adult game mods'},
-      {name:'NakedSkins',url:'https://www.nakedskins.com/',note:'Nude game skins'},
-    ]
-  },
-  {
-    id:'communities',title:'Communities',icon:'💬',
-    links:[
-      {name:'PornBBS',url:'https://pornbbs.org/'},
-      {name:'PornBB',url:'https://www.pornbb.org/forum'},
-      {name:'Eroticity',url:'https://eroticity.net/forum.php'},
-      {name:'PlanetSuzy',url:'http://www.planetsuzy.org/'},
-      {name:'xFobo',url:'https://xfobo.com/index.php'},
-      {name:'Akiba',url:'https://www.akiba-online.com/'},
-      {name:'bdsmlr',url:'https://bdsmlr.com/',note:'NSFW Tumblr alt / Sign-up required'},
-    ]
-  },
-  {
-    id:'erotica',title:'Erotica & Fiction',icon:'📖',
-    links:[
-      {name:'Literotica',url:'https://www.literotica.com/',note:'Fictional'},
-      {name:'Chyoa',url:'https://chyoa.com/',note:'Interactive fiction'},
-      {name:'Bellesa',url:'https://www.bellesa.co/story/all',note:'Fictional'},
-      {name:'SexualStories',url:'https://sexualstories.club/',note:'Fictional'},
-      {name:'TheFetLibrary',url:'https://www.thefetlibrary.com/',note:'Fictional'},
-      {name:'Adult-Fanfiction',url:'https://www.adult-fanfiction.org/',note:'Fictional'},
-      {name:'HyperDreams',url:'https://www.hyperdreams.com/',note:'Interactive'},
-      {name:'EroFights',url:'https://erofights.com/',note:'Chat-based'},
-      {name:'StoriesOnline',url:'https://storiesonline.net/'},
-      {name:'IndianSexStories',url:'https://www.indiansexstories2.net/'},
-      {name:'Sex Stories',url:'https://www.sexstories.com/'},
-      {name:'LushStories',url:'https://www.lushstories.com/'},
     ]
   },
   {
@@ -980,10 +914,10 @@ function applyFilters(){
 // BUILD SIDEBAR
 // ──────────────────────────────────────────
 const SB_GROUPS=[
-  {label:'Browse',ids:['streaming','milf','movies','cams']},
+  {label:'Browse',ids:['streaming','milf','movies']},
   {label:'Files',ids:['download','torrents']},
   {label:'Media',ids:['reels','ai']},
-  {label:'More',ids:['games','communities','erotica','tools']},
+  {label:'More',ids:['tools']},
 ];
 function buildSidebar(){
   const sb=document.getElementById('sb-content');
