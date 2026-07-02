@@ -288,9 +288,7 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
   text-decoration:none;line-height:1.35;word-break:break-word;
   transition:color .15s;
 }
-/* stretch-link: cname::after covers the whole card so clicking anywhere opens the site */
-.cname::after{content:'';position:absolute;inset:0;z-index:0}
-.card:hover .cname{color:var(--accent)}
+.cname:hover{color:var(--accent)}
 .cnote{font-size:.71rem;color:var(--t3);line-height:1.3}
 .calts{display:flex;gap:4px;flex-wrap:wrap}
 .calt{
@@ -298,7 +296,6 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
   background:var(--s3);padding:2px 6px;border-radius:4px;
   text-decoration:none;border:1px solid var(--border);
   transition:all .15s;
-  position:relative;z-index:1;
 }
 .calt:hover{color:var(--accent);background:rgba(233,30,140,.1);border-color:rgba(233,30,140,.3)}
 
@@ -306,7 +303,6 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
 .cacts{
   display:flex;align-items:center;gap:4px;flex-shrink:0;
   opacity:0;transition:opacity .15s;
-  position:relative;z-index:1;
 }
 .card:hover .cacts,.lst .card:hover .cacts{opacity:1}
 @media(hover:none){.cacts{opacity:1}}
@@ -743,6 +739,9 @@ function toast(msg,ok){
   setTimeout(()=>el.remove(),2400);
 }
 
+// ── Open link ──────────────────────────────
+function oLink(u){window.open(u,'_blank')}
+
 // ── Copy ───────────────────────────────────
 function copyUrl(url){
   navigator.clipboard.writeText(url).then(()=>toast('📋 Copied!',true)).catch(()=>toast('Copy failed'));
@@ -875,18 +874,18 @@ function card(link){
   const isFav=S.favs.has(link.url);
   const eu=link.url.replace(/'/g,"\\'");
   const cls=['card',link.star?'starred':'',isFav?'faved':''].filter(Boolean).join(' ');
-  return`<div class="${cls}">
+  return`<div class="${cls}" onclick="oLink('${eu}')">
     <div class="cbody">
       <div class="ctop">
         ${link.star?'<span class="star">⭐</span>':''}
-        <a class="cname" href="${link.url}" target="_blank">${link.name}</a>
+        <a class="cname" href="${link.url}" target="_blank" onclick="event.stopPropagation()">${link.name}</a>
       </div>
       ${link.note?`<div class="cnote">${link.note}</div>`:''}
-      ${link.alts?`<div class="calts">${link.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
+      ${link.alts?`<div class="calts">${link.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank" onclick="event.stopPropagation()">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
     </div>
     <div class="cacts">
-      <button class="cact fav${isFav?' is-fav':''}" onclick="toggleFav('${eu}')" title="${isFav?'Remove':'Favorite'}">❤</button>
-      <button class="cact" onclick="copyUrl('${eu}')" title="Copy URL">📋</button>
+      <button class="cact fav${isFav?' is-fav':''}" onclick="event.stopPropagation();toggleFav('${eu}')" title="${isFav?'Remove':'Favorite'}">❤</button>
+      <button class="cact" onclick="event.stopPropagation();copyUrl('${eu}')" title="Copy URL">📋</button>
     </div>
   </div>`;
 }
