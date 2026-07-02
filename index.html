@@ -434,10 +434,68 @@ kbd{
 ::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#282860}
 
+/* ─── Mobile bottom bar ─── */
+.mob-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(7,7,18,.97);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:10px 16px;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  gap:8px;align-items:center;justify-content:space-around;
+  z-index:300;
+}
+.mob-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;color:var(--text3);
+  cursor:pointer;padding:6px 10px;border-radius:8px;
+  font-size:.7rem;font-weight:600;letter-spacing:.02em;
+  min-width:52px;min-height:48px;justify-content:center;
+  transition:all .15s;-webkit-tap-highlight-color:transparent;
+}
+.mob-btn:active{background:var(--surface2);color:var(--accent)}
+.mob-btn .mob-icon{font-size:1.1rem;line-height:1}
+.mob-btn.active{color:var(--accent)}
+
 /* ─── Responsive ─── */
-@media(max-width:900px){.sidebar{display:none}}
-@media(max-width:700px){main{padding:14px}.links-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:500px){.links-grid{grid-template-columns:1fr}.random-btn{display:none}header{padding:0 10px;gap:8px}}
+html{-webkit-text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+}
+
+@media(max-width:700px){
+  :root{--header:54px;--toolbar:44px}
+  header{padding:0 12px;gap:8px}
+  .logo{font-size:1.1rem}
+  .search-wrap{max-width:none}
+  .header-actions{display:none}
+  .toolbar{padding:0 12px}
+  main{padding:12px 12px;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+  .links-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .link-card{padding:10px 11px}
+  .link-name{font-size:.82rem}
+  .mob-bar{display:flex}
+  #scroll-top{bottom:calc(72px + env(safe-area-inset-bottom) + 12px);right:14px;width:38px;height:38px;font-size:.9rem}
+  .sort-menu{bottom:calc(100% + 8px);top:auto;right:0;left:auto}
+}
+
+@media(max-width:420px){
+  .links-grid{grid-template-columns:1fr}
+  .age-card{padding:36px 20px 28px;border-radius:16px}
+  .age-logo{font-size:2.4rem}
+  .age-btns{flex-direction:column}
+  .age-btn{width:100%;text-align:center}
+  .vpn-notice{font-size:.78rem;padding:8px 12px}
+}
+
+/* always show card actions on touch devices */
+@media(hover:none){
+  .card-actions{opacity:1}
+  .card-btn{width:30px;height:30px;font-size:.8rem}
+}
 </style>
 </head>
 <body>
@@ -525,6 +583,23 @@ kbd{
       </div>
     </main>
   </div>
+</div>
+
+<!-- Mobile Bottom Bar -->
+<div class="mob-bar" id="mob-bar">
+  <button class="mob-btn" onclick="randomSite()"><span class="mob-icon">🎲</span>Random</button>
+  <button class="mob-btn" id="mob-grid" onclick="setView('grid')"><span class="mob-icon">▦</span>Grid</button>
+  <button class="mob-btn" id="mob-list" onclick="setView('list')"><span class="mob-icon">≡</span>List</button>
+  <div class="sort-wrap" style="position:relative">
+    <button class="mob-btn" onclick="toggleSortMenu()"><span class="mob-icon">⇅</span>Sort</button>
+    <div class="sort-menu" id="mob-sort-menu" style="bottom:calc(100% + 8px);top:auto;left:50%;transform:translateX(-50%);min-width:160px">
+      <div class="sort-opt active" data-sort="default" onclick="setSort('default')">Default order</div>
+      <div class="sort-opt" data-sort="az" onclick="setSort('az')">A → Z</div>
+      <div class="sort-opt" data-sort="za" onclick="setSort('za')">Z → A</div>
+      <div class="sort-opt" data-sort="star" onclick="setSort('star')">⭐ Starred first</div>
+    </div>
+  </div>
+  <button class="mob-btn" onclick="setFilter(S.filter==='all'?'starred':'all')"><span class="mob-icon">⭐</span>Starred</button>
 </div>
 
 <!-- Scroll to Top -->
@@ -626,6 +701,11 @@ const SECTIONS=[
       {name:'xHamster MILF',url:'https://xhamster.com/categories/milf',star:true,note:'Category'},
       {name:'HQPorner MILF',url:'https://hqporner.com/hdporn/milf.html',star:true,note:'HD category'},
       {name:'EPorner MILF',url:'https://www.eporner.com/category/MILF/',star:true,note:'HD category'},
+      {name:'MilfZr',url:'https://milfzr.com/',star:true,note:'MILF search engine'},
+      {name:'ILoveMature',url:'https://ilovemature.tv/',star:true},
+      {name:'ThisVid MILF',url:'https://thisvid.com/categories/milf/',star:true,note:'Large community'},
+      {name:'Porn.com MILF',url:'https://www.porn.com/milf/',star:true},
+      {name:'WifeBucket',url:'https://wifebucket.com/',star:true,note:'Amateur wife/MILF'},
       {name:'MilfFox',url:'https://www.milffox.com/'},
       {name:'Milftube',url:'https://www.milftube.xxx/'},
       {name:'MomXXX',url:'https://momxxx.com/',note:'Clips + trailers'},
@@ -633,11 +713,20 @@ const SECTIONS=[
       {name:'Mature.nl',url:'https://mature.nl/',note:'Trailers free'},
       {name:'YouMilf',url:'https://youmilf.com/'},
       {name:'MilfPorn',url:'https://www.milfporn.com/'},
+      {name:'MomLust',url:'https://www.momlust.com/'},
+      {name:'FreeOnes MILF',url:'https://www.freeones.com/female/milf',note:'Performer database'},
+      {name:'VPorn MILF',url:'https://www.vporn.com/milf/',note:'HD category'},
+      {name:'PornTrex MILF',url:'https://www.porntrex.com/categories/milf',note:'HD category'},
+      {name:'GotPorn MILF',url:'https://gotporn.com/milf',note:'Category'},
+      {name:'Nuvid MILF',url:'https://www.nuvid.com/category/milf',note:'Category'},
+      {name:'Txxx MILF',url:'https://txxx.com/milf/',note:'Category'},
       {name:'XNXX MILF',url:'https://www.xnxx.com/search/milf',note:'Search'},
       {name:'SpankBang Stepmom',url:'https://spankbang.com/s/stepmom/',note:'Category'},
       {name:'XVideos Stepmom',url:'https://www.xvideos.com/c/stepmom_pov-195',note:'Category'},
       {name:'Beeg MILF',url:'https://beeg.com/sex/milf',note:'Category'},
       {name:'GoodPorn MILF',url:'https://goodporn.to/categories/milf/',note:'HD category'},
+      {name:'Empflix MILF',url:'https://www.empflix.com/category/milf/',note:'Category'},
+      {name:'BravoTube MILF',url:'https://www.bravotube.net/milf/',note:'Category'},
     ]
   },
   {
@@ -833,10 +922,14 @@ function setSort(v){
   const labels={default:'Default',az:'A → Z',za:'Z → A',star:'⭐ Starred'};
   document.getElementById('sort-lbl-txt').textContent=labels[v]||'Default';
   document.getElementById('sort-menu').classList.remove('open');
+  const mm=document.getElementById('mob-sort-menu');
+  if(mm)mm.classList.remove('open');
   render();
 }
 function toggleSortMenu(){
   document.getElementById('sort-menu').classList.toggle('open');
+  const mm=document.getElementById('mob-sort-menu');
+  if(mm)mm.classList.toggle('open');
 }
 document.addEventListener('click',e=>{
   if(!e.target.closest('.sort-wrap'))
@@ -855,6 +948,10 @@ function setView(v){
   S.view=v;
   document.getElementById('btn-grid').classList.toggle('active',v==='grid');
   document.getElementById('btn-list').classList.toggle('active',v==='list');
+  const mg=document.getElementById('mob-grid');
+  const ml=document.getElementById('mob-list');
+  if(mg)mg.classList.toggle('active',v==='grid');
+  if(ml)ml.classList.toggle('active',v==='list');
   render();
 }
 
