@@ -742,7 +742,7 @@ function toast(msg,ok){
 // ── Card click ─────────────────────────────
 function cardOpen(e,url){
   if(e.target.closest('button,.calt,.cname'))return;
-  window.open(url,'_blank');
+  const a=document.createElement('a');a.href=url;a.target='_blank';a.click();
 }
 
 // ── Copy ───────────────────────────────────
@@ -763,7 +763,7 @@ function rnd(){
   if(!pool.length)return;
   const p=pool[Math.floor(Math.random()*pool.length)];
   toast('🎲 Opening '+p.name+'…',true);
-  setTimeout(()=>window.open(p.url,'_blank'),300);
+  const a=document.createElement('a');a.href=p.url;a.target='_blank';a.click();
 }
 
 // ── Sort ───────────────────────────────────
