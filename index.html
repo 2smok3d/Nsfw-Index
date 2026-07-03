@@ -2,408 +2,189 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>NSFW Index</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#06060f;
-  --s1:#0c0c1e;
-  --s2:#111128;
-  --s3:#171735;
-  --s4:#1e1e42;
-  --accent:#e91e8c;
-  --accent2:#9c27b0;
+  --bg:#06060f;--s1:#0d0d20;--s2:#111128;--s3:#181836;--s4:#1e1e42;
+  --accent:#e91e8c;--accent2:#9c27b0;
   --grad:linear-gradient(135deg,#e91e8c 0%,#9c27b0 100%);
-  --text:#f0f0fa;
-  --t2:#8888b0;
-  --t3:#444466;
-  --gold:#ffd700;
-  --border:#1a1a36;
-  --b2:#222248;
-  --radius:10px;
-  --hh:56px;
-  --nh:44px;
+  --text:#f0f0fa;--t2:#8888b0;--t3:#44446a;
+  --gold:#ffd700;--border:#1a1a36;--b2:#252550;
+  --radius:10px;--hh:56px;--nh:44px;
 }
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--bg);color:var(--text);
-  line-height:1.5;overflow-x:hidden;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
 *{-webkit-tap-highlight-color:transparent}
 
-/* ─── Age Gate ─── */
-#gate{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--bg);
-  display:flex;align-items:center;justify-content:center;
-  padding:20px;
-}
-.gate-bg{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 30%,rgba(233,30,140,.12) 0%,transparent 70%),
-    radial-gradient(ellipse 50% 60% at 80% 70%,rgba(233,30,140,.08) 0%,transparent 70%);
-  pointer-events:none;
-}
-.gate-card{
-  position:relative;z-index:1;
-  max-width:460px;width:100%;
-  text-align:center;
-}
-.gate-logo{
-  font-size:3.5rem;font-weight:900;letter-spacing:-2px;
-  color:var(--accent);
-  text-shadow:0 0 36px rgba(233,30,140,.55);
-  margin-bottom:4px;
-  line-height:1;
-}
+/* Age Gate */
+#gate{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 30% 40%,rgba(233,30,140,.13) 0%,transparent 60%),radial-gradient(ellipse 60% 70% at 75% 65%,rgba(156,39,176,.10) 0%,transparent 60%)}
+.gate-box{position:relative;z-index:1;max-width:420px;width:100%;text-align:center;background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:40px 32px;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.gate-logo{font-size:2.8rem;font-weight:900;letter-spacing:-2px;color:var(--accent);line-height:1;margin-bottom:6px;text-shadow:0 0 30px rgba(233,30,140,.4)}
 .gate-logo em{color:var(--text);font-style:normal;font-weight:300}
-.gate-badge{
-  display:inline-block;
-  border:1px solid rgba(233,30,140,.4);
-  color:var(--accent);
-  font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
-  padding:4px 14px;border-radius:20px;margin-bottom:24px;
-}
-.gate-card p{
-  color:var(--t2);font-size:.88rem;line-height:1.75;
-  margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto;
-}
-.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.gate-enter{
-  padding:14px 36px;border-radius:var(--radius);
-  background:var(--grad);border:none;
-  color:#fff;font-size:.95rem;font-weight:700;
-  cursor:pointer;letter-spacing:.02em;
-  transition:all .2s;
-  box-shadow:0 4px 24px rgba(233,30,140,.35);
-}
-.gate-enter:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 32px rgba(233,30,140,.6)}
-.gate-leave{
-  padding:14px 24px;border-radius:var(--radius);
-  background:transparent;border:1px solid var(--border);
-  color:var(--t2);font-size:.95rem;font-weight:600;
-  cursor:pointer;text-decoration:none;display:inline-block;
-  transition:all .2s;
-}
-.gate-leave:hover{border-color:var(--b2);color:var(--t2)}
-.gate-note{font-size:.7rem;color:var(--t3);margin-top:20px}
-@media(max-width:420px){
-  .gate-logo{font-size:2.8rem}
-  .gate-btns{flex-direction:column}
-  .gate-enter,.gate-leave{width:100%;text-align:center}
-}
+.gate-sub{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);opacity:.8;margin-bottom:20px}
+.gate-text{color:var(--t2);font-size:.86rem;line-height:1.7;margin-bottom:28px}
+.gate-enter{width:100%;padding:14px;border-radius:10px;background:var(--grad);border:none;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(233,30,140,.35);margin-bottom:12px;display:block}
+.gate-enter:hover{filter:brightness(1.1);box-shadow:0 6px 28px rgba(233,30,140,.55);transform:translateY(-1px)}
+.gate-leave{color:var(--t3);font-size:.82rem;text-decoration:none;cursor:pointer;transition:color .15s;display:block}
+.gate-leave:hover{color:var(--t2)}
+.gate-note{margin-top:20px;font-size:.67rem;color:var(--t3)}
+@media(max-width:440px){.gate-box{border-radius:0;border-left:none;border-right:none;padding:32px 20px}}
 
-/* ─── Header ─── */
-header{
-  position:sticky;top:0;z-index:100;
-  background:rgba(6,6,15,.92);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  height:var(--hh);
-  display:flex;align-items:center;gap:10px;
-  padding:0 16px;
-}
-.logo{
-  font-size:1.2rem;font-weight:900;letter-spacing:-0.5px;
-  color:var(--accent);white-space:nowrap;flex-shrink:0;
-  text-shadow:0 0 16px rgba(233,30,140,.4);
-}
+/* Header */
+header{position:sticky;top:0;z-index:200;height:var(--hh);background:rgba(6,6,15,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px}
+.logo{font-size:1.15rem;font-weight:900;letter-spacing:-.5px;color:var(--accent);white-space:nowrap;flex-shrink:0;text-shadow:0 0 16px rgba(233,30,140,.3)}
 .logo em{color:var(--text);font-style:normal;font-weight:300}
-.sw{position:relative;flex:1;max-width:480px}
-.si{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  color:var(--t3);font-size:.85rem;pointer-events:none;
-}
-#search{
-  width:100%;background:var(--s2);
-  border:1px solid var(--border);border-radius:24px;
-  padding:8px 34px 8px 34px;
-  color:var(--text);font-size:.875rem;outline:none;
-  transition:border-color .2s,box-shadow .2s;
-}
+.sw{position:relative;flex:1;max-width:500px}
+.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.85rem;pointer-events:none}
+#search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:22px;padding:9px 36px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
 #search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.12)}
 #search::placeholder{color:var(--t3)}
-.sc{
-  position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  background:none;border:none;color:var(--t3);cursor:pointer;
-  font-size:.8rem;display:none;
-}
+#search::-webkit-search-cancel-button{-webkit-appearance:none}
+.sc{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t3);cursor:pointer;font-size:.9rem;padding:2px;display:none;line-height:1}
+.has-q .sc{display:block}
 .sc:hover{color:var(--text)}
-.show-sc .sc{display:block}
 .hbtns{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
-.hbtn{
-  display:flex;align-items:center;justify-content:center;
-  min-width:34px;height:34px;padding:0 8px;
-  background:var(--s2);border:1px solid var(--border);
-  border-radius:8px;color:var(--t2);cursor:pointer;font-size:.85rem;
-  transition:all .15s;white-space:nowrap;gap:5px;
-}
+.hbtn{display:flex;align-items:center;justify-content:center;gap:5px;height:34px;padding:0 10px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--t2);cursor:pointer;font-size:.82rem;transition:all .15s;white-space:nowrap}
 .hbtn:hover{background:var(--s3);color:var(--text);border-color:var(--b2)}
-.hbtn.on{background:rgba(233,30,140,.12);border-color:rgba(233,30,140,.35);color:var(--accent)}
-.rnd-btn{
-  background:var(--grad);border:none;color:#fff;
-  font-weight:700;font-size:.78rem;
-  box-shadow:0 2px 12px rgba(233,30,140,.3);
-}
-.rnd-btn:hover{filter:brightness(1.1);border-color:transparent;color:#fff;box-shadow:0 4px 20px rgba(233,30,140,.55)}
+.hbtn.on{background:rgba(233,30,140,.12);border-color:rgba(233,30,140,.3);color:var(--accent)}
+.rnd{background:var(--grad);border:none;color:#fff;font-weight:700;box-shadow:0 2px 12px rgba(233,30,140,.3)}
+.rnd:hover{filter:brightness(1.1);box-shadow:0 4px 20px rgba(233,30,140,.5);color:#fff}
+@media(max-width:680px){.hbtns .hbtn:not(.rnd){display:none}.sw{max-width:none}}
+
+/* Category Nav */
+.cat-nav{position:sticky;top:var(--hh);z-index:190;background:rgba(6,6,15,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:var(--nh);display:flex;align-items:center;gap:6px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.cat-nav::-webkit-scrollbar{display:none}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .15s}
+.pill:hover{border-color:var(--b2);color:var(--text)}
+.pill.on{background:var(--grad);border-color:transparent;color:#fff}
+.pct{font-size:.62rem;opacity:.75;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:8px}
+.ndiv{width:1px;height:18px;background:var(--border);flex-shrink:0}
+
+/* Cross-site search bar */
+#csbar{display:none;background:rgba(6,6,15,.98);border-bottom:1px solid var(--border);padding:8px 16px;overflow-x:auto;scrollbar-width:none}
+#csbar::-webkit-scrollbar{display:none}
+.cs-inner{display:flex;align-items:center;gap:8px;min-width:max-content}
+.cs-lbl{font-size:.71rem;color:var(--t2);white-space:nowrap;flex-shrink:0}
+.cs-chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:14px;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:var(--s2);color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .13s}
+.cs-chip:hover{background:rgba(233,30,140,.12);border-color:rgba(233,30,140,.35);color:var(--accent)}
+
+/* Sort menu */
 .sort-wrap{position:relative}
-.sort-menu{
-  position:absolute;right:0;top:calc(100% + 6px);
-  background:var(--s2);border:1px solid var(--b2);
-  border-radius:var(--radius);padding:5px;min-width:155px;
-  box-shadow:0 10px 40px rgba(0,0,0,.7);z-index:200;display:none;
-}
+.sort-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--s2);border:1px solid var(--b2);border-radius:var(--radius);padding:5px;min-width:160px;box-shadow:0 10px 40px rgba(0,0,0,.7);z-index:300;display:none}
 .sort-menu.open{display:block}
-.sopt{
-  padding:8px 12px;border-radius:6px;font-size:.82rem;
-  color:var(--t2);cursor:pointer;
-  display:flex;align-items:center;justify-content:space-between;
-  transition:all .12s;
-}
+.sopt{padding:9px 12px;border-radius:6px;font-size:.82rem;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .1s}
 .sopt:hover{background:var(--s3);color:var(--text)}
 .sopt.on{color:var(--accent)}
-.sopt.on::after{content:'✓';font-size:.8rem}
-@media(max-width:680px){
-  .hbtns .hbtn:not(.rnd-btn){display:none}
-  .sw{max-width:none}
-}
+.sopt.on::after{content:'✓';font-size:.75rem}
 
-/* ─── Category Nav ─── */
-.cat-nav{
-  position:sticky;top:var(--hh);z-index:90;
-  background:rgba(6,6,15,.94);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  height:var(--nh);
-  display:flex;align-items:center;gap:4px;
-  padding:0 16px;overflow-x:auto;
-  scrollbar-width:none;
-}
-.cat-nav::-webkit-scrollbar{display:none}
-.cpill{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 13px;border-radius:20px;
-  font-size:.77rem;font-weight:600;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;
-  border:1px solid var(--border);background:transparent;color:var(--t2);
-  transition:all .15s;
-}
-.cpill:hover{border-color:var(--b2);color:var(--t2)}
-.cpill.on{background:var(--grad);border-color:transparent;color:#fff}
-.cpill-n{
-  font-size:.65rem;opacity:.7;
-  background:rgba(255,255,255,.1);
-  padding:1px 5px;border-radius:6px;
-}
-.cpill.on .cpill-n{background:rgba(255,255,255,.2)}
-.cdiv{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px}
+/* Main */
+main{max-width:1400px;margin:0 auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
 
-/* ─── Main ─── */
-main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+/* Notice */
+.notice{display:flex;align-items:flex-start;gap:8px;background:rgba(50,35,0,.5);border:1px solid rgba(90,65,0,.5);border-radius:8px;padding:10px 14px;font-size:.78rem;color:#cc9900;margin-bottom:20px;line-height:1.5}
+.notice a{color:#ffaa00}
 
-/* ─── Notice ─── */
-.notice{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(40,28,0,.6);border:1px solid rgba(80,55,0,.5);
-  border-radius:var(--radius);padding:10px 14px;
-  font-size:.8rem;color:#cc9900;margin-bottom:24px;
-}
-.notice a{color:#ffaa00;text-decoration:none}
-.notice a:hover{text-decoration:underline}
-
-/* ─── Stats bar ─── */
-.stats{
-  display:flex;align-items:center;gap:16px;
-  margin-bottom:24px;flex-wrap:wrap;
-}
-.stat{
-  font-size:.75rem;color:var(--t3);
-  display:flex;align-items:center;gap:5px;
-}
+/* Stats */
+.stats{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.stat{font-size:.74rem;color:var(--t3)}
 .stat strong{color:var(--t2)}
-.filter-chips{display:flex;gap:6px;margin-left:auto}
-.fchip{
-  display:flex;align-items:center;gap:4px;
-  padding:4px 12px;border-radius:16px;
-  font-size:.75rem;font-weight:600;
-  cursor:pointer;border:1px solid var(--border);
-  background:transparent;color:var(--t3);
-  transition:all .15s;
-}
+.fchips{display:flex;gap:6px;margin-left:auto}
+.fchip{display:flex;align-items:center;gap:4px;padding:4px 12px;border-radius:14px;font-size:.74rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t3);transition:all .15s}
 .fchip:hover{border-color:var(--b2);color:var(--t2)}
 .fchip.on{border-color:rgba(233,30,140,.4);background:rgba(233,30,140,.1);color:var(--accent)}
 
-/* ─── Section ─── */
-.sec{margin-bottom:44px;scroll-margin-top:calc(var(--hh)+var(--nh)+16px)}
-.sec-hdr{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:14px;padding-bottom:12px;
-  border-bottom:1px solid var(--border);
-}
-.sec-icon{font-size:1.1rem}
-.sec-title{font-size:1rem;font-weight:700}
-.sec-ct{
-  font-size:.68rem;color:var(--t3);
-  background:var(--s2);padding:2px 8px;border-radius:8px;
-}
+/* Section */
+.sec{margin-bottom:44px;scroll-margin-top:calc(var(--hh) + var(--nh) + 16px)}
+.sec-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.sec-icon{font-size:1.05rem}
+.sec-title{font-size:.98rem;font-weight:700}
+.sec-ct{font-size:.66rem;color:var(--t3);background:var(--s2);padding:2px 8px;border-radius:8px}
 
-/* ─── Grid / List ─── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+/* Grid / List */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
 .lst{display:flex;flex-direction:column;gap:4px}
 
-/* ─── Card ─── */
-.card{
-  background:var(--s1);
-  border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px;
-  transition:all .2s;
-  display:flex;flex-direction:column;gap:6px;
-  position:relative;cursor:pointer;
-  overflow:hidden;
-}
-.card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(233,30,140,.06),rgba(156,39,176,.03));
-  opacity:0;transition:opacity .2s;pointer-events:none;
-}
-.card:hover{
-  border-color:rgba(233,30,140,.3);
-  box-shadow:0 0 20px rgba(233,30,140,.1),0 4px 16px rgba(0,0,0,.5);
-  transform:translateY(-2px);
-}
+/* Card */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:12px 12px 10px;transition:transform .18s,border-color .18s,box-shadow .18s;display:flex;flex-direction:column;gap:6px;cursor:pointer;position:relative;overflow:hidden;-webkit-user-select:none;user-select:none}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(233,30,140,.05),rgba(156,39,176,.03));opacity:0;transition:opacity .18s;pointer-events:none}
+.card:hover{transform:translateY(-2px);border-color:rgba(233,30,140,.3);box-shadow:0 6px 24px rgba(233,30,140,.1),0 4px 12px rgba(0,0,0,.4)}
 .card:hover::before{opacity:1}
-.card.starred{border-color:rgba(233,30,140,.2);background:rgba(12,12,30,.7)}
-.card.starred:hover{border-color:rgba(233,30,140,.45)}
+.card:active{transform:translateY(0);transition-duration:.08s}
+.card.starred{border-color:rgba(233,30,140,.18);background:rgba(13,13,32,.8)}
+.card.starred:hover{border-color:rgba(233,30,140,.4)}
 .card.faved{border-color:rgba(233,30,140,.25);background:rgba(233,30,140,.04)}
-/* List mode */
-.lst .card{flex-direction:row;align-items:center;padding:9px 12px;gap:10px}
+.lst .card{flex-direction:row;align-items:center;gap:12px;padding:9px 12px}
 .lst .cbody{flex:1;min-width:0}
 .cbody{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
 .ctop{display:flex;align-items:flex-start;gap:5px}
-.star{color:var(--gold);font-size:.7rem;flex-shrink:0;margin-top:3px}
-.cname{
-  font-size:.855rem;font-weight:500;color:var(--text);
-  text-decoration:none;line-height:1.35;word-break:break-word;
-  transition:color .15s;
-}
-.cname:hover{color:var(--accent)}
-.cnote{font-size:.71rem;color:var(--t3);line-height:1.3}
-.calts{display:flex;gap:4px;flex-wrap:wrap}
-.calt{
-  font-size:.67rem;color:var(--t3);
-  background:var(--s3);padding:2px 6px;border-radius:4px;
-  text-decoration:none;border:1px solid var(--border);
-  transition:all .15s;
-}
+.cstar{color:var(--gold);font-size:.7rem;flex-shrink:0;margin-top:2px;line-height:1.5}
+.cname{font-size:.84rem;font-weight:500;color:var(--text);line-height:1.35;word-break:break-word;transition:color .15s}
+.card:hover .cname{color:var(--accent)}
+.cnote{font-size:.7rem;color:var(--t3);line-height:1.3}
+.calts{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.calt{font-size:.66rem;color:var(--t3);background:var(--s3);padding:2px 7px;border-radius:4px;text-decoration:none;border:1px solid var(--border);transition:all .13s}
 .calt:hover{color:var(--accent);background:rgba(233,30,140,.1);border-color:rgba(233,30,140,.3)}
 
-/* ─── Card Actions ─── */
-.cacts{
-  display:flex;align-items:center;gap:4px;flex-shrink:0;
-  opacity:0;transition:opacity .15s;
-}
-.card:hover .cacts,.lst .card:hover .cacts{opacity:1}
+/* Card actions */
+.cacts{display:flex;align-items:center;gap:3px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.card:hover .cacts{opacity:1}
 @media(hover:none){.cacts{opacity:1}}
-.cact{
-  width:28px;height:28px;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--s3);border:1px solid var(--border);
-  border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--t3);
-  transition:all .15s;
-}
-.cact:hover{background:var(--s4);color:var(--text)}
-.fav.is-fav{color:var(--accent);border-color:rgba(233,30,140,.35);background:rgba(233,30,140,.1)}
+.lst .cacts{opacity:1}
+.cact{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--s3);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.82rem;color:var(--t3);transition:all .13s;flex-shrink:0}
+.cact:hover{background:var(--s4);color:var(--text);border-color:var(--b2)}
+.fav.is-fav{color:var(--accent);border-color:rgba(233,30,140,.3);background:rgba(233,30,140,.1)}
 .fav:hover{color:var(--accent) !important}
 
-/* ─── No results ─── */
-#nores{display:none;text-align:center;padding:80px 20px;color:var(--t3)}
-#nores .nri{font-size:2.5rem;opacity:.2;margin-bottom:10px}
+/* No results */
+#nores{display:none;text-align:center;padding:80px 20px}
+.nri{font-size:2.5rem;opacity:.2;margin-bottom:10px}
+.nrt{color:var(--t3);font-size:.9rem}
 
-/* ─── Scroll top ─── */
-#stb{
-  position:fixed;bottom:24px;right:20px;
-  width:40px;height:40px;
-  background:var(--grad);border:none;border-radius:50%;
-  color:#fff;font-size:.95rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 20px rgba(233,30,140,.5);
-  transition:all .2s;opacity:0;pointer-events:none;z-index:500;
-}
+/* Scroll top */
+#stb{position:fixed;bottom:24px;right:20px;z-index:400;width:42px;height:42px;border-radius:50%;background:var(--grad);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(233,30,140,.4);transition:all .2s;opacity:0;pointer-events:none}
 #stb.vis{opacity:1;pointer-events:auto}
-#stb:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 28px rgba(233,30,140,.7)}
+#stb:hover{transform:translateY(-2px) scale(1.05)}
 
-/* ─── Toasts ─── */
-#toasts{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column-reverse;gap:8px;align-items:center;
-  z-index:9998;pointer-events:none;
-}
-.toast{
-  background:rgba(6,6,15,.97);backdrop-filter:blur(10px);
-  border:1px solid var(--b2);border-radius:8px;
-  padding:8px 16px;font-size:.82rem;color:var(--text);
-  box-shadow:0 4px 20px rgba(0,0,0,.5);
-  animation:tin .16s ease;white-space:nowrap;
-}
+/* Toast */
+#toasts{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column-reverse;gap:8px;align-items:center;z-index:9990;pointer-events:none}
+.toast{background:rgba(6,6,15,.97);backdrop-filter:blur(12px);border:1px solid var(--b2);border-radius:8px;padding:9px 18px;font-size:.82rem;color:var(--text);box-shadow:0 4px 20px rgba(0,0,0,.5);animation:tin .15s ease;white-space:nowrap;max-width:280px;text-align:center}
 .toast.ok{border-color:rgba(233,30,140,.4);color:var(--accent)}
-@keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─── Mobile bottom bar ─── */
-.mob{
-  display:none;
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(6,6,15,.98);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);
-  padding:8px 12px;
-  padding-bottom:calc(8px + env(safe-area-inset-bottom));
-  gap:4px;align-items:center;justify-content:space-around;
-  z-index:300;
-}
-.mb{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  background:none;border:none;color:var(--t3);
-  cursor:pointer;padding:6px 8px;border-radius:8px;
-  font-size:.62rem;font-weight:600;letter-spacing:.03em;
-  min-width:48px;min-height:48px;justify-content:center;
-  transition:all .15s;
-}
-.mb:active{background:var(--s2)}
-.mb .mi{font-size:1.05rem;line-height:1}
+/* Mobile bottom bar */
+.mob{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:rgba(6,6,15,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));align-items:center;justify-content:space-around;gap:2px}
+.mb{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--t3);cursor:pointer;padding:6px 4px;border-radius:8px;font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;min-width:54px;flex:1;justify-content:center;transition:color .15s}
+.mb .mi{font-size:1.15rem;line-height:1;display:block;margin-bottom:1px}
+.mb:active{background:rgba(233,30,140,.08)}
 .mb.on{color:var(--accent)}
-.mob-sort{position:relative}
-.mob-sort .sort-menu{
-  bottom:calc(100% + 8px);top:auto;
-  left:50%;right:auto;transform:translateX(-50%);
-  min-width:155px;
-}
+.msw{position:relative;flex:1;display:flex;justify-content:center}
+.mob-sm{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b2);border-radius:var(--radius);padding:5px;min-width:160px;box-shadow:0 -10px 40px rgba(0,0,0,.7);z-index:500;display:none}
+.mob-sm.open{display:block}
 
-/* ─── Mobile overrides ─── */
+/* Mobile overrides */
 @media(max-width:700px){
   :root{--hh:52px;--nh:42px}
   header{padding:0 12px;gap:8px}
-  .logo{font-size:1.1rem}
-  .sw{max-width:none}
-  main{padding:12px;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .logo{font-size:1.05rem}
+  main{padding:14px 12px calc(80px + env(safe-area-inset-bottom))}
   .grid{grid-template-columns:1fr 1fr;gap:6px}
-  .card{padding:10px 10px}
-  .cname{font-size:.82rem}
+  .card{padding:10px 10px 8px}
+  .cname{font-size:.8rem}
   .mob{display:flex}
-  #stb{bottom:calc(64px + env(safe-area-inset-bottom) + 10px);right:12px;width:36px;height:36px;font-size:.85rem}
-  .filter-chips{display:none}
+  #stb{bottom:calc(72px + env(safe-area-inset-bottom));right:12px;width:38px;height:38px;font-size:.95rem}
+  .fchips{display:none}
   .stats{margin-bottom:14px}
   .cat-nav{padding:0 12px}
+  #csbar{padding:7px 12px}
 }
-@media(max-width:400px){
-  .grid{grid-template-columns:1fr}
-}
-
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar{width:4px}
+@media(max-width:380px){.grid{grid-template-columns:1fr}}
+@media(min-width:1100px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--s4)}
 </style>
 </head>
@@ -412,38 +193,34 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
 <!-- Age Gate -->
 <div id="gate">
   <div class="gate-bg"></div>
-  <div class="gate-card">
+  <div class="gate-box">
     <div class="gate-logo">NSFW<em>Index</em></div>
-    <div class="gate-badge">Adults Only · 18+</div>
-    <p>This directory contains explicit adult content. By entering you confirm you are 18 or older and of legal age in your jurisdiction.</p>
-    <div class="gate-btns">
-      <button class="gate-enter" onclick="enter()">I'm 18+ &mdash; Enter</button>
-      <a class="gate-leave" href="https://www.google.com">Leave</a>
-    </div>
-    <div class="gate-note">By entering you accept responsibility for compliance with local laws.</div>
+    <div class="gate-sub">Adults Only · 18+</div>
+    <p class="gate-text">This directory contains explicit adult content. By entering you confirm you are 18 or older and of legal age in your jurisdiction.</p>
+    <button class="gate-enter" onclick="enterSite()">I am 18+ — Enter</button>
+    <a class="gate-leave" href="https://www.google.com">Leave this site</a>
+    <div class="gate-note">By continuing you accept responsibility for compliance with local laws.</div>
   </div>
 </div>
 
 <!-- App -->
 <div id="app" style="display:none">
-
-  <!-- Header -->
   <header>
     <div class="logo">NSFW<em>Index</em></div>
-    <div class="sw" id="sw">
+    <div class="sw has-q" id="sw">
       <span class="si">🔍</span>
       <input id="search" type="search" placeholder="Search sites…" autocomplete="off"
-        oninput="onSearch(this.value)" onkeydown="onKey(event)">
-      <button class="sc" onclick="clearSearch()">✕</button>
+        oninput="doSearch(this.value)" onkeydown="searchKey(event)">
+      <button class="sc" onclick="clearSearch()" title="Clear">✕</button>
     </div>
     <div class="hbtns">
-      <button class="hbtn rnd-btn" onclick="rnd()" title="Random starred site [R]">🎲 Random</button>
+      <button class="hbtn rnd" onclick="rnd()" title="Random starred site [R]">🎲 Random</button>
       <button class="hbtn on" id="bg" onclick="setView('grid')" title="Grid [G]">▦</button>
       <button class="hbtn" id="bl" onclick="setView('list')" title="List [L]">≡</button>
       <div class="sort-wrap">
-        <button class="hbtn" onclick="toggleSort()" title="Sort">⇅ <span id="slbl">Default</span></button>
+        <button class="hbtn" onclick="toggleSort('sm')" title="Sort">⇅ <span id="slbl">Default</span></button>
         <div class="sort-menu" id="sm">
-          <div class="sopt on" data-s="default" onclick="setSort('default')">Default order</div>
+          <div class="sopt on" data-s="def" onclick="setSort('def')">Default order</div>
           <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
           <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
           <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
@@ -452,25 +229,29 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
     </div>
   </header>
 
-  <!-- Category Nav -->
   <nav class="cat-nav" id="catnav"></nav>
 
-  <!-- Main -->
+  <div id="csbar">
+    <div class="cs-inner">
+      <span class="cs-lbl">🔍 Search on:</span>
+      <div id="cschips"></div>
+    </div>
+  </div>
+
   <main>
-    <div class="notice">⚠️ If sites are blocked in your region, use a <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank">VPN</a>. Always use an adblocker.</div>
+    <div class="notice">⚠️ Sites may be geo-blocked — use a <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank" onclick="event.stopPropagation()">VPN</a>. Always use an adblocker like uBlock Origin.</div>
     <div class="stats">
-      <div class="stat"><strong id="st-total">0</strong> sites</div>
-      <div class="stat"><strong id="st-sec">0</strong> sections</div>
-      <div class="filter-chips">
+      <div class="stat"><strong id="st-s">0</strong> sites</div>
+      <div class="stat"><strong id="st-c">0</strong> sections</div>
+      <div class="fchips">
         <button class="fchip on" data-f="all" onclick="setFilter('all')">All</button>
         <button class="fchip" data-f="starred" onclick="setFilter('starred')">⭐ Starred</button>
-        <button class="fchip" data-f="fav" onclick="setFilter('fav')">❤️ Favorites</button>
+        <button class="fchip" data-f="fav" onclick="setFilter('fav')">❤️ Favs</button>
       </div>
     </div>
     <div id="secs"></div>
-    <div id="nores"><div class="nri">🔍</div><p>No results for "<span id="nq"></span>"</p></div>
+    <div id="nores"><div class="nri">🔍</div><p class="nrt">No results for "<span id="nq"></span>"</p></div>
   </main>
-
 </div>
 
 <!-- Mobile Bar -->
@@ -478,10 +259,10 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
   <button class="mb" onclick="rnd()"><span class="mi">🎲</span>Random</button>
   <button class="mb on" id="mbg" onclick="setView('grid')"><span class="mi">▦</span>Grid</button>
   <button class="mb" id="mbl" onclick="setView('list')"><span class="mi">≡</span>List</button>
-  <div class="mob-sort sort-wrap">
-    <button class="mb" onclick="toggleSort()"><span class="mi">⇅</span>Sort</button>
-    <div class="sort-menu" id="msm" style="bottom:calc(100% + 8px);top:auto;left:50%;right:auto;transform:translateX(-50%)">
-      <div class="sopt on" data-s="default" onclick="setSort('default')">Default order</div>
+  <div class="msw sort-wrap">
+    <button class="mb" onclick="toggleSort('msm')"><span class="mi">⇅</span>Sort</button>
+    <div class="sort-menu mob-sm" id="msm">
+      <div class="sopt on" data-s="def" onclick="setSort('def')">Default order</div>
       <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
       <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
       <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
@@ -490,312 +271,243 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px;padding-bottom:calc(24px +
   <button class="mb" onclick="cycleFilter()"><span class="mi">⭐</span>Filter</button>
 </div>
 
-<!-- Scroll Top -->
-<button id="stb" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+<button id="stb" onclick="scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 <div id="toasts"></div>
 
 <script>
-// ── Data ──────────────────────────────────
+// ── Data ────────────────────────────────────────────────────────────────────
 const DATA=[
-  {
-    id:'streaming',title:'Streaming',icon:'📺',
-    links:[
-      {name:'HQPorner',url:'https://hqporner.com/',star:true},
-      {name:'SexyPorn',url:'https://www.sxyprn.com/',star:true},
-      {name:'WatchPorn.to',url:'https://watchporn.to',star:true},
-      {name:'Porninja',url:'https://www.por.ninja/',star:true},
-      {name:'iXXX',url:'https://www.ixxx.com/',star:true},
-      {name:'PornHoarder',url:'https://pornhoarder.tv/',star:true,alts:['https://pornhoarder.org/'],altNames:['2']},
-      {name:'Noodlemagazine',url:'https://noodlemagazine.com',star:true,alts:['https://mat6tube.com/','https://18.tyler-brown.com/','https://ukdevilz.com/'],altNames:['2','3','4']},
-      {name:'NSFWBase',url:'https://www.nsfwbase.com/',star:true,note:'Multi-site search'},
-      {name:'Full Length Porn CSE',url:'https://cse.google.com/cse?cx=6c02fb377e50d493c',star:true,note:'Google CSE'},
-      {name:'GoodPorn.to',url:'https://goodporn.to/',star:true,note:'Full scenes, minimal ads'},
-      {name:'VPorn',url:'https://www.vporn.com/',star:true,note:'HD focused'},
-      {name:'Pornhat',url:'https://www.pornhat.com/',star:true},
-      {name:'HotMovs',url:'https://hotmovs.com/',star:true},
-      {name:'EPorner',url:'https://www.eporner.com/'},
-      {name:'xHamster',url:'https://xhamster.com/'},
-      {name:'XVideos',url:'https://www.xvideos.com/'},
-      {name:'PornMD',url:'https://www.pornmd.com/'},
-      {name:'PlayHDPorn',url:'https://www.playhdporn.com/'},
-      {name:'SpankBang',url:'https://spankbang.com/'},
-      {name:'neporn',url:'https://neporn.com/'},
-      {name:'FreePornVideos',url:'https://www.freepornvideos.xxx/'},
-      {name:'StreamPorn',url:'https://streamporn.org/',alts:['https://xtapes.me/','https://watchpornx.com/'],altNames:['2','3']},
-      {name:'PornHub',url:'https://www.pornhub.com/'},
-      {name:'TNAFlix',url:'https://www.tnaflix.com/'},
-      {name:'YouPorn',url:'https://www.youporn.com/'},
-      {name:'PornTrex',url:'https://www.porntrex.com/'},
-      {name:'CUMS',url:'https://cums.net/'},
-      {name:'SomePorn',url:'https://some.porn/'},
-      {name:'XNXX',url:'https://www.xnxx.com/'},
-      {name:'Beeg',url:'https://beeg.com/'},
-      {name:'Redtube',url:'https://www.redtube.com/'},
-      {name:'txxx',url:'https://txxx.com/'},
-      {name:'Analdin',url:'https://www.analdin.com/'},
-      {name:'Porndoe',url:'https://porndoe.com/'},
-      {name:'Porndig',url:'https://www.porndig.com/'},
-      {name:'anysex',url:'https://anysex.com/'},
-      {name:'SuperPorn',url:'https://www.superporn.com/'},
-      {name:'Pornone',url:'https://pornone.com/'},
-      {name:'Tubxporn',url:'https://www.tubxporn.xxx/'},
-      {name:'Empflix',url:'https://www.empflix.com/'},
-      {name:'4tube',url:'https://www.4tube.com/'},
-      {name:'SlutLoad',url:'https://www.slutload.com/'},
-      {name:'BravoTube',url:'https://www.bravotube.net/'},
-      {name:'Fuq.com',url:'https://www.fuq.com/'},
-      {name:'Nuvid',url:'https://www.nuvid.com/'},
-      {name:'PornerBros',url:'https://www.pornerbros.com/'},
-      {name:'Xcafe',url:'https://xcafe.com/'},
-      {name:'GotPorn',url:'https://gotporn.com/'},
-      {name:'SexVid',url:'https://sexvid.xxx/'},
-      {name:'PornLib',url:'https://pornlib.com/'},
-      {name:'Pornez',url:'https://pornez.net/'},
-      {name:'FreshPorn',url:'https://freshporn.to/'},
-      {name:'PornFlip',url:'https://www.pornflip.com/'},
-      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
-      {name:'Adult TV Channels',url:'https://adult-tv-channels.com/',note:'Random live streams',alts:['https://adult-tv-channels.click/'],altNames:['2']},
-    ]
-  },
-  {
-    id:'milf',title:'Stepmom / MILF',icon:'🔥',
-    links:[
-      {name:'MomVids',url:'https://www.momvids.com/',star:true,note:'Free aggregator'},
-      {name:'HotMilf',url:'https://hotmilf.com/',star:true},
-      {name:'MomPorno',url:'https://momporno.net/',star:true},
-      {name:'MrBonham',url:'https://www.mrbonham.net/',star:true,note:'Classic free content'},
-      {name:'PornHub Stepmom',url:'https://www.pornhub.com/categories/step-mom',star:true,note:'Category'},
-      {name:'xHamster MILF',url:'https://xhamster.com/categories/milf',star:true,note:'Category'},
-      {name:'HQPorner MILF',url:'https://hqporner.com/hdporn/milf.html',star:true,note:'HD category'},
-      {name:'EPorner MILF',url:'https://www.eporner.com/category/MILF/',star:true,note:'HD category'},
-      {name:'MilfZr',url:'https://milfzr.com/',star:true,note:'MILF search engine'},
-      {name:'ILoveMature',url:'https://ilovemature.tv/',star:true},
-      {name:'ThisVid MILF',url:'https://thisvid.com/categories/milf/',star:true,note:'Large community'},
-      {name:'Porn.com MILF',url:'https://www.porn.com/milf/',star:true},
-      {name:'WifeBucket',url:'https://wifebucket.com/',star:true,note:'Amateur wife/MILF'},
-      {name:'MilfFox',url:'https://www.milffox.com/'},
-      {name:'Milftube',url:'https://www.milftube.xxx/'},
-      {name:'MomXXX',url:'https://momxxx.com/',note:'Clips + trailers'},
-      {name:'MILF Dude',url:'https://milfdude.com/',note:'MILF site directory'},
-      {name:'Mature.nl',url:'https://mature.nl/',note:'Trailers free'},
-      {name:'YouMilf',url:'https://youmilf.com/'},
-      {name:'MilfPorn',url:'https://www.milfporn.com/'},
-      {name:'MomLust',url:'https://www.momlust.com/'},
-      {name:'FreeOnes MILF',url:'https://www.freeones.com/female/milf',note:'Performer database'},
-      {name:'VPorn MILF',url:'https://www.vporn.com/milf/',note:'HD category'},
-      {name:'PornTrex MILF',url:'https://www.porntrex.com/categories/milf',note:'HD category'},
-      {name:'GotPorn MILF',url:'https://gotporn.com/milf',note:'Category'},
-      {name:'Nuvid MILF',url:'https://www.nuvid.com/category/milf',note:'Category'},
-      {name:'Txxx MILF',url:'https://txxx.com/milf/',note:'Category'},
-      {name:'XNXX MILF',url:'https://www.xnxx.com/search/milf',note:'Search'},
-      {name:'SpankBang Stepmom',url:'https://spankbang.com/s/stepmom/',note:'Category'},
-      {name:'XVideos Stepmom',url:'https://www.xvideos.com/c/stepmom_pov-195',note:'Category'},
-      {name:'Beeg MILF',url:'https://beeg.com/sex/milf',note:'Category'},
-      {name:'GoodPorn MILF',url:'https://goodporn.to/categories/milf/',note:'HD category'},
-      {name:'Empflix MILF',url:'https://www.empflix.com/category/milf/',note:'Category'},
-      {name:'BravoTube MILF',url:'https://www.bravotube.net/milf/',note:'Category'},
-    ]
-  },
-  {
-    id:'movies',title:'Adult Movies',icon:'🎬',
-    links:[
-      {name:'NSFW Movie CSE',url:'https://cse.google.com/cse?cx=006516753008110874046:3-svpblbro8',star:true,note:'Search engine'},
-      {name:'Film1k',url:'https://www.film1k.com/',star:true},
-      {name:'EroticMV',url:'https://eroticmv.com/',star:true},
-      {name:'RareLust',url:'https://rarelust.com/movies-index/',star:true},
-      {name:'PandaMovies',url:'https://pandamovies.pw/',star:true,alts:['https://bananamovies.org/','https://speedporn.net/','https://pornkino.cc/'],altNames:['2','3','4']},
-      {name:'TubePornClassic',url:'https://tubepornclassic.com/',star:true},
-      {name:'Noodlemagazine',url:'https://noodlemagazine.com',star:true,note:'Search engine'},
-      {name:'MangoPorn',url:'https://mangoporn.net/'},
-      {name:'EroGarga',url:'https://www.erogarga.com/'},
-      {name:'EroticAge',url:'https://www.eroticage.net/'},
-      {name:'Film-Adult',url:'https://hd.film-adult.com/en/'},
-      {name:'Cat3Film',url:'https://cat3film.com/'},
-      {name:'paradisehill',url:'https://en.paradisehill.cc/'},
-      {name:'Sex Film',url:'https://en.sex-film.biz/'},
-      {name:'pornxtheatre',url:'https://pornxtheatre.com/'},
-      {name:'AdultLoad',url:'https://adultload.ws/'},
-      {name:'WIPFilms',url:'https://wipfilms.net/'},
-      {name:'VintageClassix',url:'http://www.vintageclassix.com/',note:'Google login required'},
-    ]
-  },
-  {
-    id:'download',title:'Download',icon:'⬇️',
-    links:[
-      {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'For AEBN.com'},
-      {name:'StashDB',url:'https://stashdb.org/',note:'Porn database / Invite required'},
-      {name:'0xxx',url:'https://0xxx.ws/'},
-      {name:'SiteRips',url:'https://www.siterips.org/'},
-      {name:'PornFactors',url:'https://pornfactors.com/'},
-      {name:'PornoRips',url:'https://pornorips.to/'},
-      {name:'XXXCollections',url:'https://xxxcollections.net/'},
-      {name:'SeaPorn',url:'https://www.seaporn.org/'},
-      {name:'BestPornstars',url:'https://www.bestpornstars.org/'},
-      {name:'LPSG',url:'https://www.lpsg.com/',note:'Daily limits / Verification required'},
-    ]
-  },
-  {
-    id:'torrents',title:'Torrents',icon:'🌊',
-    links:[
-      {name:'myporn.club',url:'https://myporn.club/',star:true},
-      {name:'XXXClub',url:'https://xxxclub.to/',star:true},
-      {name:'PornTorrent',url:'https://pornotorrent.top/'},
-      {name:'pussytorrents',url:'https://pussytorrents.org/'},
-      {name:'18Mag',url:'https://18mag.net/'},
-      {name:'PornoLab',url:'https://pornolab.net/forum/index.php'},
-      {name:'LoveTorrent',url:'https://lovetorrent.net/',alts:['https://5pornotorrent.net/'],altNames:['2']},
-      {name:'PornRips',url:'https://pornrips.to/',note:'HEVC rips'},
-      {name:'HappyFappy',url:'https://www.happyfappy.org/users/register',note:'Private tracker / open signup'},
-      {name:'srrXXX',url:'https://www.srrxxx.com/',note:'Scene release tracker'},
-    ]
-  },
-  {
-    id:'reels',title:'Reels & GIFs',icon:'🎞️',
-    links:[
-      {name:'FikFap',url:'https://fikfap.com/',star:true},
-      {name:'fyptt',url:'https://fyptt.to/',star:true},
-      {name:'NSFWSwipe',url:'https://nsfwswipe.com/',star:true},
-      {name:'redgifs',url:'https://www.redgifs.com/',star:true},
-      {name:'Scroller',url:'https://scrolller.com/'},
-      {name:'xxxtik',url:'https://xxxtik.com/'},
-      {name:'Tik.porn',url:'https://tik.porn/'},
-      {name:'TikPorn.tube',url:'https://tikporn.tube/'},
-      {name:'tiktits',url:'https://tiktits.com/'},
-      {name:'OnlyTik',url:'https://onlytik.com/'},
-      {name:'Xfollow',url:'https://www.xfollow.com/'},
-      {name:'ViralPorn',url:'https://viralporn.com/'},
-      {name:'GifHQ',url:'https://gifhq.com/'},
-      {name:'GifSauce',url:'https://gifsauce.com/'},
-      {name:'NSFWGify',url:'https://nsfwgify.com/'},
-    ]
-  },
-  {
-    id:'ai',title:'AI Generated',icon:'🤖',
-    links:[
-      {name:'Pornify',url:'https://pornify.cc/'},
-      {name:'PornAI.tv',url:'https://pornai.tv/'},
-      {name:'r/AIpornhub',url:'https://www.reddit.com/r/AIpornhub/',note:'NSFW AI subreddit'},
-    ]
-  },
-  {
-    id:'tools',title:'Tools',icon:'🔧',
-    links:[
-      {name:'Stash',url:'https://stashapp.cc/',star:true,note:'Porn file manager'},
-      {name:'PornStarByFace',url:'https://pornstarbyface.com/',star:true,note:'NSFW image reverse search'},
-      {name:'SauceNao',url:'https://saucenao.com/',star:true,note:'Reverse image search'},
-      {name:'IAFD',url:'https://www.iafd.com/',star:true,note:'Adult film database'},
-      {name:'NameThatPorn',url:'https://namethatporn.com/',star:true,note:'Porn identification'},
-      {name:'Reddit NSFW Unblocker',url:'https://github.com/sixP-NaraKa/reddit-nsfw-unblocker',star:true,note:'Bypass Reddit NSFW popups'},
-      {name:'AEBN Downloader',url:'https://github.com/estellaarrieta/aebn-vod-downloader',star:true,note:'AEBN downloader'},
-      {name:'yt-dlp',url:'https://github.com/yt-dlp/yt-dlp',star:true,note:'Universal video downloader'},
-      {name:'Gallery-DL',url:'https://github.com/mikf/gallery-dl',star:true,note:'Image & gallery downloader'},
-      {name:'Hydrus Network',url:'https://hydrusnetwork.github.io/hydrus/',star:true,note:'Media library manager'},
-      {name:'Data18',url:'https://www.data18.com/',note:'Film database'},
-      {name:'MyPornStarBook',url:'https://www.mypornstarbook.net/',note:'Performer database'},
-      {name:'NameThatPornstar',url:'https://namethatpornstar.com/',note:'Performer ID'},
-      {name:'CoomerDL',url:'https://emydevs.com/',note:'Video / image downloader'},
-      {name:'Hitomi Downloader',url:'https://github.com/KurtBestor/Hitomi-Downloader',note:'Multi-site downloader'},
-      {name:'DeepMosaics',url:'https://github.com/HypoX64/DeepMosaics',note:'Remove mosaics'},
-      {name:'ThePornDB',url:'https://theporndb.net',note:'Porn metadata'},
-      {name:'Sleazy Fork',url:'https://sleazyfork.org/en/scripts',note:'Adult user scripts'},
-      {name:'Whisparr',url:'https://github.com/Whisparr/Whisparr',note:'Porn media manager'},
-      {name:'Porn Vault',url:'https://gitlab.com/porn-vault/porn-vault',note:'Porn file manager'},
-      {name:'XBVR',url:'https://github.com/xbapps/xbvr',note:'VR porn media manager'},
-      {name:'JDownloader 2',url:'https://jdownloader.org/',note:'General download manager'},
-      {name:'N_m3u8DL-RE',url:'https://github.com/nilaoda/N_m3u8DL-RE',note:'HLS/DASH stream downloader'},
-      {name:'Real-ESRGAN',url:'https://github.com/xinntao/Real-ESRGAN',note:'AI image/video upscaler'},
-      {name:'MegaBasterd',url:'https://github.com/tonikelope/megabasterd',note:'MEGA.nz downloader'},
-      {name:'Lux',url:'https://github.com/iawia002/lux',note:'Multi-site video downloader'},
-      {name:'Booru Downloader',url:'https://github.com/Bionus/imgbrd-grabber',note:'Booru mass downloader'},
-      {name:'PixivUtil2',url:'https://github.com/Nandaka/PixivUtil2',note:'Pixiv downloader'},
-    ]
-  },
+{id:'stepmom',title:'Stepmom / Taboo',icon:'🔥',links:[
+  {n:'PornHub Stepmom',u:'https://www.pornhub.com/categories/step-mom',s:1,note:'Largest collection',su:'https://www.pornhub.com/video/search?search=stepmom+'},
+  {n:'xHamster MILF',u:'https://xhamster.com/categories/milf',s:1,su:'https://xhamster.com/search/milf+'},
+  {n:'SpankBang Stepmom',u:'https://spankbang.com/s/stepmom/',s:1,su:'https://spankbang.com/s/stepmom+'},
+  {n:'xVideos Stepmom',u:'https://www.xvideos.com/c/stepmom_pov-195',s:1,su:'https://www.xvideos.com/?k=stepmom+'},
+  {n:'XNXX MILF',u:'https://www.xnxx.com/search/milf',s:1,su:'https://www.xnxx.com/search/milf+'},
+  {n:'EPorner MILF',u:'https://www.eporner.com/category/MILF/',s:1,note:'4K HD category',su:'https://www.eporner.com/search/milf+'},
+  {n:'HQPorner MILF',u:'https://hqporner.com/hdporn/milf.html',s:1,note:'HD category'},
+  {n:'GoodPorn MILF',u:'https://goodporn.to/categories/milf/',s:1,note:'Full scenes'},
+  {n:'MomVids',u:'https://www.momvids.com/',s:1,note:'Free MILF aggregator'},
+  {n:'HotMilf',u:'https://hotmilf.com/',s:1},
+  {n:'MomPorno',u:'https://momporno.net/',s:1},
+  {n:'MrBonham',u:'https://www.mrbonham.net/',s:1,note:'Classic free content'},
+  {n:'MilfZr',u:'https://milfzr.com/',s:1,note:'MILF search engine'},
+  {n:'ILoveMature',u:'https://ilovemature.tv/',s:1},
+  {n:'WifeBucket',u:'https://wifebucket.com/',s:1,note:'Amateur wife & MILF'},
+  {n:'ThisVid MILF',u:'https://thisvid.com/categories/milf/',s:1,note:'Community uploads',su:'https://thisvid.com/search/videos/?q=milf+'},
+  {n:'Porn.com MILF',u:'https://www.porn.com/milf/',s:1},
+  {n:'Beeg MILF',u:'https://beeg.com/sex/milf'},
+  {n:'VPorn MILF',u:'https://www.vporn.com/milf/'},
+  {n:'PornTrex MILF',u:'https://www.porntrex.com/categories/milf'},
+  {n:'Txxx MILF',u:'https://txxx.com/milf/'},
+  {n:'BravoTube MILF',u:'https://www.bravotube.net/milf/'},
+  {n:'Nuvid MILF',u:'https://www.nuvid.com/category/milf'},
+  {n:'MilfFox',u:'https://www.milffox.com/'},
+  {n:'Milftube',u:'https://www.milftube.xxx/'},
+  {n:'YouMilf',u:'https://youmilf.com/'},
+  {n:'MilfPorn',u:'https://www.milfporn.com/'},
+  {n:'MomLust',u:'https://www.momlust.com/'},
+  {n:'MomXXX',u:'https://momxxx.com/',note:'Clips & trailers'},
+  {n:'Mature.nl',u:'https://mature.nl/',note:'Trailers free'},
+  {n:'MILF Dude',u:'https://milfdude.com/',note:'MILF site directory'},
+  {n:'FreeOnes MILF',u:'https://www.freeones.com/female/milf',note:'Performer database'},
+]},
+{id:'streaming',title:'Streaming',icon:'📺',links:[
+  {n:'HQPorner',u:'https://hqporner.com/',s:1,note:'High quality free',su:'https://hqporner.com/search/'},
+  {n:'EPorner',u:'https://www.eporner.com/',s:1,note:'4K content',su:'https://www.eporner.com/search/'},
+  {n:'GoodPorn.to',u:'https://goodporn.to/',s:1,note:'Full scenes, minimal ads'},
+  {n:'VPorn',u:'https://www.vporn.com/',s:1,su:'https://www.vporn.com/search/?q='},
+  {n:'Pornhat',u:'https://www.pornhat.com/',s:1,su:'https://www.pornhat.com/search/'},
+  {n:'HotMovs',u:'https://hotmovs.com/',s:1,su:'https://hotmovs.com/search/'},
+  {n:'SexyPorn',u:'https://www.sxyprn.com/',s:1},
+  {n:'Noodlemagazine',u:'https://noodlemagazine.com',s:1,note:'Video search engine'},
+  {n:'NSFWBase',u:'https://www.nsfwbase.com/',s:1,note:'Multi-site search'},
+  {n:'Full Length CSE',u:'https://cse.google.com/cse?cx=6c02fb377e50d493c',s:1,note:'Google CSE for full porn'},
+  {n:'PornHub',u:'https://www.pornhub.com/',su:'https://www.pornhub.com/video/search?search='},
+  {n:'xVideos',u:'https://www.xvideos.com/',su:'https://www.xvideos.com/?k='},
+  {n:'xHamster',u:'https://xhamster.com/',su:'https://xhamster.com/search/'},
+  {n:'SpankBang',u:'https://spankbang.com/',su:'https://spankbang.com/s/'},
+  {n:'XNXX',u:'https://www.xnxx.com/',su:'https://www.xnxx.com/search/'},
+  {n:'Beeg',u:'https://beeg.com/',su:'https://beeg.com/sex/'},
+  {n:'Redtube',u:'https://www.redtube.com/',su:'https://www.redtube.com/?search='},
+  {n:'YouPorn',u:'https://www.youporn.com/',su:'https://www.youporn.com/search/straight/?query='},
+  {n:'PornTrex',u:'https://www.porntrex.com/',su:'https://www.porntrex.com/search/?q='},
+  {n:'Txxx',u:'https://txxx.com/',su:'https://txxx.com/search/'},
+  {n:'TNAFlix',u:'https://www.tnaflix.com/'},
+  {n:'SlutLoad',u:'https://www.slutload.com/'},
+  {n:'BravoTube',u:'https://www.bravotube.net/',su:'https://www.bravotube.net/search/?q='},
+  {n:'Fuq',u:'https://www.fuq.com/',su:'https://www.fuq.com/search/?q='},
+  {n:'Analdin',u:'https://www.analdin.com/',su:'https://www.analdin.com/search/'},
+  {n:'SomePorn',u:'https://some.porn/',su:'https://some.porn/?search='},
+  {n:'Porndig',u:'https://www.porndig.com/'},
+  {n:'PornFlip',u:'https://www.pornflip.com/'},
+  {n:'Adult TV',u:'https://adult-tv-channels.com/',note:'Live adult streams'},
+]},
+{id:'reels',title:'Reels & GIFs',icon:'🎞️',links:[
+  {n:'FikFap',u:'https://fikfap.com/',s:1},
+  {n:'fyptt',u:'https://fyptt.to/',s:1},
+  {n:'NSFWSwipe',u:'https://nsfwswipe.com/',s:1},
+  {n:'RedGIFs',u:'https://www.redgifs.com/',s:1,su:'https://www.redgifs.com/search/'},
+  {n:'Scroller',u:'https://scrolller.com/'},
+  {n:'xxxtik',u:'https://xxxtik.com/'},
+  {n:'Tik.porn',u:'https://tik.porn/'},
+  {n:'TikPorn.tube',u:'https://tikporn.tube/'},
+  {n:'tiktits',u:'https://tiktits.com/'},
+  {n:'OnlyTik',u:'https://onlytik.com/'},
+  {n:'ViralPorn',u:'https://viralporn.com/'},
+  {n:'GifSauce',u:'https://gifsauce.com/'},
+]},
+{id:'ai',title:'AI Generated',icon:'🤖',links:[
+  {n:'Pornify',u:'https://pornify.cc/'},
+  {n:'PornAI.tv',u:'https://pornai.tv/'},
+  {n:'r/AIpornhub',u:'https://www.reddit.com/r/AIpornhub/',note:'NSFW AI community'},
+]},
+{id:'download',title:'Downloaders',icon:'⬇️',links:[
+  {n:'yt-dlp',u:'https://github.com/yt-dlp/yt-dlp',s:1,note:'Universal video downloader'},
+  {n:'Gallery-DL',u:'https://github.com/mikf/gallery-dl',s:1,note:'Image & gallery downloader'},
+  {n:'Hitomi Downloader',u:'https://github.com/KurtBestor/Hitomi-Downloader',s:1,note:'GUI multi-site downloader'},
+  {n:'JDownloader 2',u:'https://jdownloader.org/',s:1,note:'General download manager'},
+  {n:'N_m3u8DL-RE',u:'https://github.com/nilaoda/N_m3u8DL-RE',note:'HLS/DASH stream downloader'},
+  {n:'MegaBasterd',u:'https://github.com/tonikelope/megabasterd',note:'MEGA.nz downloader'},
+  {n:'Lux',u:'https://github.com/iawia002/lux',note:'Multi-site video downloader'},
+  {n:'CoomerDL',u:'https://emydevs.com/',note:'Video & image downloader'},
+]},
+{id:'tools',title:'Tools',icon:'🔧',links:[
+  {n:'Stash',u:'https://stashapp.cc/',s:1,note:'Self-hosted porn manager'},
+  {n:'Hydrus Network',u:'https://hydrusnetwork.github.io/hydrus/',s:1,note:'Media library manager'},
+  {n:'PornStarByFace',u:'https://pornstarbyface.com/',s:1,note:'NSFW reverse image search'},
+  {n:'SauceNao',u:'https://saucenao.com/',s:1,note:'Reverse image search'},
+  {n:'IAFD',u:'https://www.iafd.com/',s:1,note:'Adult film database'},
+  {n:'NameThatPorn',u:'https://namethatporn.com/',s:1,note:'Porn identification'},
+  {n:'StashDB',u:'https://stashdb.org/',note:'Porn metadata / Invite needed'},
+  {n:'ThePornDB',u:'https://theporndb.net',note:'Porn metadata'},
+  {n:'Data18',u:'https://www.data18.com/',note:'Film & performer database'},
+  {n:'Sleazy Fork',u:'https://sleazyfork.org/en/scripts',note:'Adult userscripts'},
+  {n:'Reddit NSFW Unblocker',u:'https://github.com/sixP-NaraKa/reddit-nsfw-unblocker',note:'Bypass NSFW popups'},
+  {n:'Whisparr',u:'https://github.com/Whisparr/Whisparr',note:'Porn media manager (Sonarr-like)'},
+  {n:'XBVR',u:'https://github.com/xbapps/xbvr',note:'VR porn manager'},
+  {n:'Real-ESRGAN',u:'https://github.com/xinntao/Real-ESRGAN',note:'AI upscaler'},
+  {n:'DeepMosaics',u:'https://github.com/HypoX64/DeepMosaics',note:'Mosaic remover'},
+  {n:'Booru Downloader',u:'https://github.com/Bionus/imgbrd-grabber',note:'Booru mass downloader'},
+]},
 ];
 
-// ── State ──────────────────────────────────
-const S={
-  filter:'all',sort:'default',view:'grid',query:'',
-  favs:new Set(JSON.parse(localStorage.getItem('nf')||'[]')),
-};
+// Cross-site search targets
+const CSS=[
+  {n:'PornHub',u:'https://www.pornhub.com/video/search?search='},
+  {n:'xVideos',u:'https://www.xvideos.com/?k='},
+  {n:'xHamster',u:'https://xhamster.com/search/'},
+  {n:'SpankBang',u:'https://spankbang.com/s/'},
+  {n:'XNXX',u:'https://www.xnxx.com/search/'},
+  {n:'EPorner',u:'https://www.eporner.com/search/'},
+  {n:'HQPorner',u:'https://hqporner.com/search/'},
+  {n:'Beeg',u:'https://beeg.com/sex/'},
+  {n:'VPorn',u:'https://www.vporn.com/search/?q='},
+  {n:'RedGIFs',u:'https://www.redgifs.com/search/'},
+  {n:'ThisVid',u:'https://thisvid.com/search/videos/?q='},
+  {n:'Txxx',u:'https://txxx.com/search/'},
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+const S={view:'grid',sort:'def',filter:'all',query:'',favs:new Set(JSON.parse(localStorage.getItem('nf')||'[]'))};
 const saveFavs=()=>localStorage.setItem('nf',JSON.stringify([...S.favs]));
 
-// ── Age Gate ──────────────────────────────
-function enter(){
+// ── Age gate ─────────────────────────────────────────────────────────────────
+function enterSite(){
   localStorage.setItem('na','1');
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='';
+  document.getElementById('mob').style.display='flex';
 }
 if(localStorage.getItem('na')){
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='';
 }
 
-// ── Toast ──────────────────────────────────
+// ── Toast ────────────────────────────────────────────────────────────────────
 function toast(msg,ok){
   const el=document.createElement('div');
-  el.className='toast'+(ok?' ok':'');
-  el.textContent=msg;
+  el.className='toast'+(ok?' ok':'');el.textContent=msg;
   document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>el.remove(),2400);
+  setTimeout(()=>el.remove(),2500);
 }
 
-// ── Open link ──────────────────────────────
+// ── Link open ────────────────────────────────────────────────────────────────
 function oLink(u){window.open(u,'_blank')}
 
-// ── Copy ───────────────────────────────────
-function copyUrl(url){
-  navigator.clipboard.writeText(url).then(()=>toast('📋 Copied!',true)).catch(()=>toast('Copy failed'));
+// ── Search ───────────────────────────────────────────────────────────────────
+function doSearch(v){
+  S.query=v.trim().toLowerCase();
+  document.getElementById('sw').classList.toggle('has-q',v.length>0);
+  updateCS();render();
+}
+function searchKey(e){if(e.key==='Escape'){clearSearch();e.target.blur()}}
+function clearSearch(){document.getElementById('search').value='';doSearch('')}
+
+// Cross-site search chips
+function updateCS(){
+  const bar=document.getElementById('csbar');
+  if(!S.query){bar.style.display='none';return}
+  bar.style.display='block';
+  document.getElementById('cschips').innerHTML=CSS.map(s=>
+    `<button class="cs-chip" data-base="${s.u}" onclick="oLink(this.dataset.base+encodeURIComponent(document.getElementById('search').value.trim()))">${s.n}</button>`
+  ).join('');
 }
 
-// ── Favorites ──────────────────────────────
-function toggleFav(url){
-  if(S.favs.has(url)){S.favs.delete(url);toast('Removed from favorites')}
-  else{S.favs.add(url);toast('❤️ Added to favorites',true)}
+// ── Favorites ────────────────────────────────────────────────────────────────
+function toggleFav(e,u){
+  e.stopPropagation();
+  if(S.favs.has(u)){S.favs.delete(u);toast('Removed from favorites')}
+  else{S.favs.add(u);toast('❤️ Saved to favorites',true)}
   saveFavs();render();
 }
 
-// ── Random ─────────────────────────────────
-function rnd(){
-  const pool=DATA.flatMap(s=>s.links.filter(l=>l.star));
-  if(!pool.length)return;
-  const p=pool[Math.floor(Math.random()*pool.length)];
-  toast('🎲 Opening '+p.name+'…',true);
-  const a=document.createElement('a');a.href=p.url;a.target='_blank';a.click();
+// ── Copy URL ─────────────────────────────────────────────────────────────────
+function copyUrl(e,u){
+  e.stopPropagation();
+  navigator.clipboard.writeText(u).then(()=>toast('📋 Copied!',true)).catch(()=>{
+    const t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();
+    document.execCommand('copy');document.body.removeChild(t);toast('📋 Copied!',true);
+  });
 }
 
-// ── Sort ───────────────────────────────────
-const SLABELS={default:'Default',az:'A → Z',za:'Z → A',star:'Starred'};
+// ── Search on site ────────────────────────────────────────────────────────────
+function searchSite(e,su,u){
+  e.stopPropagation();
+  oLink(S.query?su+encodeURIComponent(S.query):u);
+}
+
+// ── Random ───────────────────────────────────────────────────────────────────
+function rnd(){
+  const pool=DATA.flatMap(s=>s.links.filter(l=>l.s));
+  if(!pool.length)return;
+  const l=pool[Math.floor(Math.random()*pool.length)];
+  toast('🎲 Opening '+l.n+'…',true);oLink(l.u);
+}
+
+// ── Sort ─────────────────────────────────────────────────────────────────────
+const SLBL={def:'Default',az:'A→Z',za:'Z→A',star:'Starred'};
 function setSort(v){
   S.sort=v;
   document.querySelectorAll('.sopt').forEach(el=>el.classList.toggle('on',el.dataset.s===v));
-  document.getElementById('slbl').textContent=SLABELS[v]||'Default';
-  document.getElementById('sm').classList.remove('open');
-  const ms=document.getElementById('msm');if(ms)ms.classList.remove('open');
+  document.getElementById('slbl').textContent=SLBL[v]||'Default';
+  ['sm','msm'].forEach(id=>{const m=document.getElementById(id);if(m)m.classList.remove('open')});
   render();
 }
-function toggleSort(){
-  document.getElementById('sm').classList.toggle('open');
-  const ms=document.getElementById('msm');if(ms)ms.classList.toggle('open');
-}
+function toggleSort(id){document.getElementById(id).classList.toggle('open')}
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.sort-wrap')){
-    document.getElementById('sm').classList.remove('open');
-    const ms=document.getElementById('msm');if(ms)ms.classList.remove('open');
-  }
+  if(!e.target.closest('.sort-wrap'))
+    ['sm','msm'].forEach(id=>{const m=document.getElementById(id);if(m)m.classList.remove('open')});
 });
 
-// ── View ───────────────────────────────────
+// ── View ─────────────────────────────────────────────────────────────────────
 function setView(v){
   S.view=v;
-  document.getElementById('bg').classList.toggle('on',v==='grid');
-  document.getElementById('bl').classList.toggle('on',v==='list');
-  const mg=document.getElementById('mbg'),ml=document.getElementById('mbl');
-  if(mg)mg.classList.toggle('on',v==='grid');
-  if(ml)ml.classList.toggle('on',v==='list');
+  ['bg','mbg'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('on',v==='grid')});
+  ['bl','mbl'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('on',v==='list')});
   render();
 }
 
-// ── Filter ─────────────────────────────────
+// ── Filter ───────────────────────────────────────────────────────────────────
 function setFilter(f){
   S.filter=f;
   document.querySelectorAll('.fchip').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
@@ -803,165 +515,114 @@ function setFilter(f){
 }
 function cycleFilter(){
   const order=['all','starred','fav'];
-  const i=(order.indexOf(S.filter)+1)%order.length;
-  setFilter(order[i]);
-  toast({all:'Showing all',starred:'⭐ Starred only',fav:'❤️ Favorites only'}[order[i]],true);
+  const next=order[(order.indexOf(S.filter)+1)%order.length];
+  setFilter(next);
+  toast({all:'Showing all',starred:'⭐ Starred only',fav:'❤️ Favorites only'}[next],true);
 }
 
-// ── Search ─────────────────────────────────
-function onSearch(q){
-  S.query=q.trim().toLowerCase();
-  document.getElementById('sw').classList.toggle('show-sc',q.length>0);
-  render();
-}
-function onKey(e){if(e.key==='Escape'){clearSearch();e.target.blur()}}
-function clearSearch(){
-  const i=document.getElementById('search');
-  i.value='';S.query='';
-  document.getElementById('sw').classList.remove('show-sc');
-  render();
-}
-
-// ── Apply filters ──────────────────────────
+// ── Apply filters ─────────────────────────────────────────────────────────────
 function filtered(){
   return DATA.map(sec=>{
     let links=[...sec.links];
     if(S.query){
       const q=S.query,sm=sec.title.toLowerCase().includes(q);
-      if(!sm)links=links.filter(l=>l.name.toLowerCase().includes(q)||(l.note&&l.note.toLowerCase().includes(q)));
+      if(!sm)links=links.filter(l=>l.n.toLowerCase().includes(q)||(l.note&&l.note.toLowerCase().includes(q)));
     }
-    if(S.filter==='starred')links=links.filter(l=>l.star);
-    if(S.filter==='fav')links=links.filter(l=>S.favs.has(l.url));
-    if(S.sort==='az')links=[...links].sort((a,b)=>a.name.localeCompare(b.name));
-    if(S.sort==='za')links=[...links].sort((a,b)=>b.name.localeCompare(a.name));
-    if(S.sort==='star')links=[...links].sort((a,b)=>(b.star?1:0)-(a.star?1:0));
+    if(S.filter==='starred')links=links.filter(l=>l.s);
+    if(S.filter==='fav')links=links.filter(l=>S.favs.has(l.u));
+    if(S.sort==='az')links=[...links].sort((a,b)=>a.n.localeCompare(b.n));
+    if(S.sort==='za')links=[...links].sort((a,b)=>b.n.localeCompare(a.n));
+    if(S.sort==='star')links=[...links].sort((a,b)=>(b.s?1:0)-(a.s?1:0));
     return{...sec,links};
   }).filter(s=>s.links.length);
 }
 
-// ── Build Category Nav ─────────────────────
+// ── Card ──────────────────────────────────────────────────────────────────────
+function card(lnk){
+  const isFav=S.favs.has(lnk.u);
+  const eu=lnk.u.replace(/'/g,"\\'");
+  const esu=lnk.su?lnk.su.replace(/'/g,"\\'"):'';
+  const cls=['card',lnk.s?'starred':'',isFav?'faved':''].filter(Boolean).join(' ');
+  const sb=lnk.su?`<button class="cact" onclick="searchSite(event,'${esu}','${eu}')" title="${S.query?'Search this site':'Open'}">🔍</button>`:'';
+  return`<div class="${cls}" onclick="oLink('${eu}')">
+  <div class="cbody">
+    <div class="ctop">${lnk.s?'<span class="cstar">⭐</span>':''}<span class="cname">${lnk.n}</span></div>
+    ${lnk.note?`<div class="cnote">${lnk.note}</div>`:''}
+    ${lnk.alts?`<div class="calts">${lnk.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank" onclick="event.stopPropagation()">${lnk.altN?.[i]||'Alt'+(i+1)}</a>`).join('')}</div>`:''}
+  </div>
+  <div class="cacts">
+    <button class="cact fav${isFav?' is-fav':''}" onclick="toggleFav(event,'${eu}')" title="${isFav?'Unsave':'Save'}">❤</button>
+    ${sb}
+    <button class="cact" onclick="copyUrl(event,'${eu}')" title="Copy URL">📋</button>
+  </div>
+</div>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render(){
+  const data=filtered();
+  const total=data.reduce((a,s)=>a+s.links.length,0);
+  document.getElementById('st-s').textContent=total;
+  document.getElementById('st-c').textContent=data.length;
+  DATA.forEach(sec=>{
+    const ct=document.querySelector(`.pill[data-id="${sec.id}"] .pct`);
+    if(!ct)return;
+    const fd=data.find(s=>s.id===sec.id);
+    ct.textContent=fd?fd.links.length:0;
+  });
+  const secs=document.getElementById('secs'),nores=document.getElementById('nores');
+  if(!total){secs.innerHTML='';nores.style.display='block';document.getElementById('nq').textContent=S.query;return}
+  nores.style.display='none';
+  const gc=S.view==='list'?'lst':'grid';
+  secs.innerHTML=data.map(sec=>`
+<div class="sec" id="${sec.id}">
+  <div class="sec-hdr"><span class="sec-icon">${sec.icon}</span><h2 class="sec-title">${sec.title}</h2><span class="sec-ct">${sec.links.length}</span></div>
+  <div class="${gc}">${sec.links.map(card).join('')}</div>
+</div>`).join('');
+  setupObs();
+}
+
+// ── Nav builder ───────────────────────────────────────────────────────────────
 function buildNav(){
   const nav=document.getElementById('catnav');
-  DATA.forEach((sec,i)=>{
-    if(i===0){
-      // filter pills first
-      ['All','⭐','❤️'].forEach((lbl,fi)=>{
-        const f=['all','starred','fav'][fi];
-        const b=document.createElement('button');
-        b.className='cpill'+(fi===0?' on':'');
-        b.dataset.f=f;
-        b.textContent=lbl;
-        b.onclick=()=>setFilter(f);
-        nav.appendChild(b);
-      });
-      const d=document.createElement('span');d.className='cdiv';nav.appendChild(d);
-    }
+  [{lbl:'All',f:'all'},{lbl:'⭐',f:'starred'},{lbl:'❤️',f:'fav'}].forEach((x,i)=>{
     const b=document.createElement('button');
-    b.className='cpill';
-    b.dataset.id=sec.id;
-    b.innerHTML=`${sec.icon} ${sec.title} <span class="cpill-n" id="cn-${sec.id}">${sec.links.length}</span>`;
+    b.className='pill'+(i===0?' on':'');b.dataset.f=x.f;b.textContent=x.lbl;
+    b.onclick=()=>{setFilter(x.f);nav.querySelectorAll('.pill[data-f]').forEach(el=>el.classList.toggle('on',el.dataset.f===x.f))};
+    nav.appendChild(b);
+  });
+  const d=document.createElement('span');d.className='ndiv';nav.appendChild(d);
+  DATA.forEach(sec=>{
+    const b=document.createElement('button');
+    b.className='pill';b.dataset.id=sec.id;
+    b.innerHTML=`${sec.icon} ${sec.title} <span class="pct">${sec.links.length}</span>`;
     b.onclick=()=>document.getElementById(sec.id)?.scrollIntoView({behavior:'smooth',block:'start'});
     nav.appendChild(b);
   });
 }
 
-function syncNavFilter(f){
-  document.querySelectorAll('.cpill[data-f]').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
-}
-
-// ── Card ───────────────────────────────────
-function card(link){
-  const isFav=S.favs.has(link.url);
-  const eu=link.url.replace(/'/g,"\\'");
-  const cls=['card',link.star?'starred':'',isFav?'faved':''].filter(Boolean).join(' ');
-  return`<div class="${cls}" onclick="oLink('${eu}')">
-    <div class="cbody">
-      <div class="ctop">
-        ${link.star?'<span class="star">⭐</span>':''}
-        <a class="cname" href="${link.url}" target="_blank" onclick="event.stopPropagation()">${link.name}</a>
-      </div>
-      ${link.note?`<div class="cnote">${link.note}</div>`:''}
-      ${link.alts?`<div class="calts">${link.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank" onclick="event.stopPropagation()">${link.altNames?.[i]||'Alt '+(i+1)}</a>`).join('')}</div>`:''}
-    </div>
-    <div class="cacts">
-      <button class="cact fav${isFav?' is-fav':''}" onclick="event.stopPropagation();toggleFav('${eu}')" title="${isFav?'Remove':'Favorite'}">❤</button>
-      <button class="cact" onclick="event.stopPropagation();copyUrl('${eu}')" title="Copy URL">📋</button>
-    </div>
-  </div>`;
-}
-
-// ── Render ─────────────────────────────────
-function render(){
-  const data=filtered();
-  const total=data.reduce((a,s)=>a+s.links.length,0);
-  const allTotal=DATA.reduce((a,s)=>a+s.links.length,0);
-  const favCt=DATA.flatMap(s=>s.links).filter(l=>S.favs.has(l.url)).length;
-
-  document.getElementById('st-total').textContent=total;
-  document.getElementById('st-sec').textContent=data.length;
-
-  DATA.forEach(sec=>{
-    const el=document.getElementById('cn-'+sec.id);
-    if(!el)return;
-    const fd=data.find(s=>s.id===sec.id);
-    el.textContent=fd?fd.links.length:0;
-    el.closest('.cpill')?.classList.toggle('on',false);
-  });
-
-  syncNavFilter(S.filter);
-
-  const container=document.getElementById('secs');
-  const nores=document.getElementById('nores');
-
-  if(!total){
-    container.innerHTML='';
-    nores.style.display='block';
-    document.getElementById('nq').textContent=S.query;
-    return;
-  }
-  nores.style.display='none';
-
-  const gc=S.view==='list'?'lst':'grid';
-  container.innerHTML=data.map(sec=>`
-    <div class="sec" id="${sec.id}">
-      <div class="sec-hdr">
-        <span class="sec-icon">${sec.icon}</span>
-        <h2 class="sec-title">${sec.title}</h2>
-        <span class="sec-ct">${sec.links.length}</span>
-      </div>
-      <div class="${gc}">${sec.links.map(card).join('')}</div>
-    </div>
-  `).join('');
-
-  setupObs();
-}
-
-// ── Intersection observer ──────────────────
+// ── Intersection observer ─────────────────────────────────────────────────────
 let obs=null;
 function setupObs(){
   if(obs)obs.disconnect();
-  const off=-(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'))+parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nh'))+10);
+  const hh=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'));
+  const nh=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nh'));
   obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
-      const pill=document.querySelector(`.cpill[data-id="${e.target.id}"]`);
-      if(pill){
-        pill.classList.toggle('on',e.isIntersecting);
-        if(e.isIntersecting){
-          pill.scrollIntoView({block:'nearest',inline:'nearest'});
-        }
-      }
+      const pill=document.querySelector(`.pill[data-id="${e.target.id}"]`);
+      if(pill){pill.classList.toggle('on',e.isIntersecting);if(e.isIntersecting)pill.scrollIntoView({block:'nearest',inline:'nearest'})}
     });
-  },{rootMargin:`${off}px 0px -50% 0px`});
+  },{rootMargin:`-${hh+nh+10}px 0px -45% 0px`});
   document.querySelectorAll('.sec').forEach(el=>obs.observe(el));
 }
 
-// ── Scroll top ─────────────────────────────
+// ── Scroll top ────────────────────────────────────────────────────────────────
 const stb=document.getElementById('stb');
-window.addEventListener('scroll',()=>stb.classList.toggle('vis',scrollY>350),{passive:true});
+window.addEventListener('scroll',()=>stb.classList.toggle('vis',scrollY>400),{passive:true});
 
-// ── Keyboard shortcuts ─────────────────────
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
-  const inp=document.activeElement.tagName==='INPUT';
+  const inp=['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
   if(e.key==='/'&&!inp){e.preventDefault();document.getElementById('search').focus()}
   if(e.key==='Escape'&&inp){clearSearch();document.activeElement.blur()}
   if(!inp){
@@ -971,9 +632,11 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// ── Init ───────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 buildNav();
 render();
+// Fix initial search-clear button state
+document.getElementById('sw').classList.remove('has-q');
 </script>
 </body>
 </html>
