@@ -195,6 +195,12 @@ body{
 }
 .hcard:hover::before{opacity:.11}
 .hcard:active{transform:translateY(-1px)}
+.hc-hot{
+  position:absolute;top:10px;left:10px;
+  background:var(--grad);
+  font-size:.56rem;font-weight:800;letter-spacing:.1em;
+  padding:2px 7px;border-radius:4px;color:#fff;text-transform:uppercase;
+}
 .hc-fav{
   position:absolute;top:8px;right:8px;
   width:28px;height:28px;border-radius:50%;
@@ -640,6 +646,7 @@ function hcard(lnk){
   const eu=lnk.u.replace(/'/g,"\\'");
   const fav=S.favs.has(lnk.u);
   return`<a class="hcard" href="${lnk.u}" target="_blank">
+    <div class="hc-hot">HOT</div>
     <button class="hc-fav${fav?' on':''}" onclick="toggleFav(event,'${eu}')" title="${fav?'Unsave':'Save'}">♥</button>
     <div class="hc-name">${lnk.n}</div>
     ${lnk.note?`<div class="hc-note">${lnk.note}</div>`:''}
