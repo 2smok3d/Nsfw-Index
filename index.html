@@ -176,6 +176,7 @@ body{
   border:1px solid rgba(233,30,140,.22);
   transition:transform .2s,box-shadow .2s,border-color .2s;
   user-select:none;
+  text-decoration:none;color:inherit;
 }
 .hcard::before{
   content:'';position:absolute;inset:0;
@@ -229,6 +230,7 @@ body{
   min-height:72px;
   transition:transform .18s,box-shadow .18s,border-color .18s,background .18s;
   user-select:none;
+  text-decoration:none;color:inherit;
 }
 .card:hover{
   transform:translateY(-3px);
@@ -589,7 +591,7 @@ function toggleFavView(){
   render();
 }
 function toggleFav(e,u){
-  e.stopPropagation();
+  e.preventDefault();e.stopPropagation();
   const had=S.favs.has(u);
   if(had){S.favs.delete(u);toast('Removed from saved')}
   else{S.favs.add(u);toast('Saved ♥',true)}
@@ -626,7 +628,7 @@ function closeCS(){
 
 // ── SITE SEARCH (per-card) ──
 function siteSearch(e,su){
-  e.stopPropagation();
+  e.preventDefault();e.stopPropagation();
   const q=document.getElementById('search').value.trim();
   window.open(su+encodeURIComponent(q||'stepmom'),'_blank');
 }
@@ -644,28 +646,29 @@ function filtered(){
 }
 
 // ── TEMPLATES ──
+// Using real <a> tags — browsers never popup-block native link navigation
 function hcard(lnk){
   const eu=lnk.u.replace(/'/g,"\\'");
   const fav=S.favs.has(lnk.u);
-  return`<div class="hcard" onclick="oLink('${eu}')">
+  return`<a class="hcard" href="${lnk.u}" target="_blank">
     <div class="hc-hot">HOT</div>
     <button class="hc-fav${fav?' on':''}" onclick="toggleFav(event,'${eu}')" title="${fav?'Unsave':'Save'}">♥</button>
     <div class="hc-name">${lnk.n}</div>
     ${lnk.note?`<div class="hc-note">${lnk.note}</div>`:''}
-  </div>`;
+  </a>`;
 }
 
 function card(lnk){
   const eu=lnk.u.replace(/'/g,"\\'");
   const fav=S.favs.has(lnk.u);
   const esu=lnk.su?lnk.su.replace(/'/g,"\\'"):'';
-  return`<div class="card${lnk.s?' starred':''}${fav?' faved':''}" onclick="oLink('${eu}')">
+  return`<a class="card${lnk.s?' starred':''}${fav?' faved':''}" href="${lnk.u}" target="_blank">
     <button class="c-fav${fav?' on':''}" onclick="toggleFav(event,'${eu}')" title="${fav?'Unsave':'Save'}">♥</button>
     ${lnk.s?'<div class="c-hot">HOT</div>':''}
     <div class="c-name">${lnk.n}</div>
     ${lnk.note?`<div class="c-note">${lnk.note}</div>`:''}
     ${lnk.su?`<button class="c-srch" onclick="siteSearch(event,'${esu}')" title="Search this site">⌕</button>`:''}
-  </div>`;
+  </a>`;
 }
 
 // ── RENDER ──
