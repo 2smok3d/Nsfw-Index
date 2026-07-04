@@ -3,640 +3,747 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NSFW Index</title>
+<title>Index</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#06060f;--s1:#0d0d20;--s2:#111128;--s3:#181836;--s4:#1e1e42;
+  --bg:#06060f;--s1:#0d0d1c;--s2:#111126;--s3:#181836;--s4:#1e1e42;
   --accent:#e91e8c;--accent2:#9c27b0;
-  --grad:linear-gradient(135deg,#e91e8c 0%,#9c27b0 100%);
+  --grad:linear-gradient(135deg,#e91e8c,#9c27b0);
   --text:#f0f0fa;--t2:#8888b0;--t3:#44446a;
-  --gold:#ffd700;--border:#1a1a36;--b2:#252550;
-  --radius:10px;--hh:56px;--nh:44px;
+  --border:rgba(255,255,255,0.06);--b2:rgba(233,30,140,0.3);
+  --glow:rgba(233,30,140,0.22);
+  --radius:14px;--hh:58px;--nh:46px;
 }
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+}
 *{-webkit-tap-highlight-color:transparent}
 
-/* Age Gate */
-#gate{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
-.gate-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 30% 40%,rgba(233,30,140,.13) 0%,transparent 60%),radial-gradient(ellipse 60% 70% at 75% 65%,rgba(156,39,176,.10) 0%,transparent 60%)}
-.gate-box{position:relative;z-index:1;max-width:420px;width:100%;text-align:center;background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:40px 32px;box-shadow:0 24px 60px rgba(0,0,0,.7)}
-.gate-logo{font-size:2.8rem;font-weight:900;letter-spacing:-2px;color:var(--accent);line-height:1;margin-bottom:6px;text-shadow:0 0 30px rgba(233,30,140,.4)}
-.gate-logo em{color:var(--text);font-style:normal;font-weight:300}
-.gate-sub{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);opacity:.8;margin-bottom:20px}
-.gate-text{color:var(--t2);font-size:.86rem;line-height:1.7;margin-bottom:28px}
-.gate-enter{width:100%;padding:14px;border-radius:10px;background:var(--grad);border:none;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(233,30,140,.35);margin-bottom:12px;display:block}
-.gate-enter:hover{filter:brightness(1.1);box-shadow:0 6px 28px rgba(233,30,140,.55);transform:translateY(-1px)}
-.gate-leave{color:var(--t3);font-size:.82rem;text-decoration:none;cursor:pointer;transition:color .15s;display:block}
-.gate-leave:hover{color:var(--t2)}
-.gate-note{margin-top:20px;font-size:.67rem;color:var(--t3)}
-@media(max-width:440px){.gate-box{border-radius:0;border-left:none;border-right:none;padding:32px 20px}}
-
-/* Header */
-header{position:sticky;top:0;z-index:200;height:var(--hh);background:rgba(6,6,15,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px}
-.logo{font-size:1.15rem;font-weight:900;letter-spacing:-.5px;color:var(--accent);white-space:nowrap;flex-shrink:0;text-shadow:0 0 16px rgba(233,30,140,.3)}
-.logo em{color:var(--text);font-style:normal;font-weight:300}
-.sw{position:relative;flex:1;max-width:500px}
-.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.85rem;pointer-events:none}
-#search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:22px;padding:9px 36px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
-#search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.12)}
-#search::placeholder{color:var(--t3)}
-#search::-webkit-search-cancel-button{-webkit-appearance:none}
-.sc{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t3);cursor:pointer;font-size:.9rem;padding:2px;display:none;line-height:1}
-.has-q .sc{display:block}
-.sc:hover{color:var(--text)}
-.hbtns{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
-.hbtn{display:flex;align-items:center;justify-content:center;gap:5px;height:34px;padding:0 10px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--t2);cursor:pointer;font-size:.82rem;transition:all .15s;white-space:nowrap}
-.hbtn:hover{background:var(--s3);color:var(--text);border-color:var(--b2)}
-.hbtn.on{background:rgba(233,30,140,.12);border-color:rgba(233,30,140,.3);color:var(--accent)}
-.rnd{background:var(--grad);border:none;color:#fff;font-weight:700;box-shadow:0 2px 12px rgba(233,30,140,.3)}
-.rnd:hover{filter:brightness(1.1);box-shadow:0 4px 20px rgba(233,30,140,.5);color:#fff}
-@media(max-width:680px){.hbtns .hbtn:not(.rnd){display:none}.sw{max-width:none}}
-
-/* Category Nav */
-.cat-nav{position:sticky;top:var(--hh);z-index:190;background:rgba(6,6,15,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:var(--nh);display:flex;align-items:center;gap:6px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
-.cat-nav::-webkit-scrollbar{display:none}
-.pill{display:inline-flex;align-items:center;gap:4px;padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .15s}
-.pill:hover{border-color:var(--b2);color:var(--text)}
-.pill.on{background:var(--grad);border-color:transparent;color:#fff}
-.pct{font-size:.62rem;opacity:.75;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:8px}
-.ndiv{width:1px;height:18px;background:var(--border);flex-shrink:0}
-
-/* Cross-site search bar */
-#csbar{display:none;background:rgba(6,6,15,.98);border-bottom:1px solid var(--border);padding:8px 16px;overflow-x:auto;scrollbar-width:none}
-#csbar::-webkit-scrollbar{display:none}
-.cs-inner{display:flex;align-items:center;gap:8px;min-width:max-content}
-.cs-lbl{font-size:.71rem;color:var(--t2);white-space:nowrap;flex-shrink:0}
-.cs-chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:14px;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:var(--s2);color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .13s}
-.cs-chip:hover{background:rgba(233,30,140,.12);border-color:rgba(233,30,140,.35);color:var(--accent)}
-
-/* Sort menu */
-.sort-wrap{position:relative}
-.sort-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--s2);border:1px solid var(--b2);border-radius:var(--radius);padding:5px;min-width:160px;box-shadow:0 10px 40px rgba(0,0,0,.7);z-index:300;display:none}
-.sort-menu.open{display:block}
-.sopt{padding:9px 12px;border-radius:6px;font-size:.82rem;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .1s}
-.sopt:hover{background:var(--s3);color:var(--text)}
-.sopt.on{color:var(--accent)}
-.sopt.on::after{content:'✓';font-size:.75rem}
-
-/* Main */
-main{max-width:1400px;margin:0 auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
-
-/* Notice */
-.notice{display:flex;align-items:flex-start;gap:8px;background:rgba(50,35,0,.5);border:1px solid rgba(90,65,0,.5);border-radius:8px;padding:10px 14px;font-size:.78rem;color:#cc9900;margin-bottom:20px;line-height:1.5}
-.notice a{color:#ffaa00}
-
-/* Stats */
-.stats{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
-.stat{font-size:.74rem;color:var(--t3)}
-.stat strong{color:var(--t2)}
-.fchips{display:flex;gap:6px;margin-left:auto}
-.fchip{display:flex;align-items:center;gap:4px;padding:4px 12px;border-radius:14px;font-size:.74rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t3);transition:all .15s}
-.fchip:hover{border-color:var(--b2);color:var(--t2)}
-.fchip.on{border-color:rgba(233,30,140,.4);background:rgba(233,30,140,.1);color:var(--accent)}
-
-/* Section */
-.sec{margin-bottom:44px;scroll-margin-top:calc(var(--hh) + var(--nh) + 16px)}
-.sec-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--border)}
-.sec-icon{font-size:1.05rem}
-.sec-title{font-size:.98rem;font-weight:700}
-.sec-ct{font-size:.66rem;color:var(--t3);background:var(--s2);padding:2px 8px;border-radius:8px}
-
-/* Grid / List */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
-.lst{display:flex;flex-direction:column;gap:4px}
-
-/* Card */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:12px 12px 10px;transition:transform .18s,border-color .18s,box-shadow .18s;display:flex;flex-direction:column;gap:6px;cursor:pointer;position:relative;overflow:hidden;-webkit-user-select:none;user-select:none}
-.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(233,30,140,.05),rgba(156,39,176,.03));opacity:0;transition:opacity .18s;pointer-events:none}
-.card:hover{transform:translateY(-2px);border-color:rgba(233,30,140,.3);box-shadow:0 6px 24px rgba(233,30,140,.1),0 4px 12px rgba(0,0,0,.4)}
-.card:hover::before{opacity:1}
-.card:active{transform:translateY(0);transition-duration:.08s}
-.card.starred{border-color:rgba(233,30,140,.18);background:rgba(13,13,32,.8)}
-.card.starred:hover{border-color:rgba(233,30,140,.4)}
-.card.faved{border-color:rgba(233,30,140,.25);background:rgba(233,30,140,.04)}
-.lst .card{flex-direction:row;align-items:center;gap:12px;padding:9px 12px}
-.lst .cbody{flex:1;min-width:0}
-.cbody{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
-.ctop{display:flex;align-items:flex-start;gap:5px}
-.cstar{color:var(--gold);font-size:.7rem;flex-shrink:0;margin-top:2px;line-height:1.5}
-.cname{font-size:.84rem;font-weight:500;color:var(--text);line-height:1.35;word-break:break-word;transition:color .15s}
-.card:hover .cname{color:var(--accent)}
-.cnote{font-size:.7rem;color:var(--t3);line-height:1.3}
-.calts{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
-.calt{font-size:.66rem;color:var(--t3);background:var(--s3);padding:2px 7px;border-radius:4px;text-decoration:none;border:1px solid var(--border);transition:all .13s}
-.calt:hover{color:var(--accent);background:rgba(233,30,140,.1);border-color:rgba(233,30,140,.3)}
-
-/* Card actions */
-.cacts{display:flex;align-items:center;gap:3px;flex-shrink:0;opacity:0;transition:opacity .15s}
-.card:hover .cacts{opacity:1}
-@media(hover:none){.cacts{opacity:1}}
-.lst .cacts{opacity:1}
-.cact{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--s3);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.82rem;color:var(--t3);transition:all .13s;flex-shrink:0}
-.cact:hover{background:var(--s4);color:var(--text);border-color:var(--b2)}
-.fav.is-fav{color:var(--accent);border-color:rgba(233,30,140,.3);background:rgba(233,30,140,.1)}
-.fav:hover{color:var(--accent) !important}
-
-/* No results */
-#nores{display:none;text-align:center;padding:80px 20px}
-.nri{font-size:2.5rem;opacity:.2;margin-bottom:10px}
-.nrt{color:var(--t3);font-size:.9rem}
-
-/* Scroll top */
-#stb{position:fixed;bottom:24px;right:20px;z-index:400;width:42px;height:42px;border-radius:50%;background:var(--grad);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(233,30,140,.4);transition:all .2s;opacity:0;pointer-events:none}
-#stb.vis{opacity:1;pointer-events:auto}
-#stb:hover{transform:translateY(-2px) scale(1.05)}
-
-/* Toast */
-#toasts{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column-reverse;gap:8px;align-items:center;z-index:9990;pointer-events:none}
-.toast{background:rgba(6,6,15,.97);backdrop-filter:blur(12px);border:1px solid var(--b2);border-radius:8px;padding:9px 18px;font-size:.82rem;color:var(--text);box-shadow:0 4px 20px rgba(0,0,0,.5);animation:tin .15s ease;white-space:nowrap;max-width:280px;text-align:center}
-.toast.ok{border-color:rgba(233,30,140,.4);color:var(--accent)}
-@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* Mobile bottom bar */
-.mob{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:rgba(6,6,15,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));align-items:center;justify-content:space-around;gap:2px}
-.mb{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--t3);cursor:pointer;padding:6px 4px;border-radius:8px;font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;min-width:54px;flex:1;justify-content:center;transition:color .15s}
-.mb .mi{font-size:1.15rem;line-height:1;display:block;margin-bottom:1px}
-.mb:active{background:rgba(233,30,140,.08)}
-.mb.on{color:var(--accent)}
-.msw{position:relative;flex:1;display:flex;justify-content:center}
-.mob-sm{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b2);border-radius:var(--radius);padding:5px;min-width:160px;box-shadow:0 -10px 40px rgba(0,0,0,.7);z-index:500;display:none}
-.mob-sm.open{display:block}
-
-/* Mobile overrides */
-@media(max-width:700px){
-  :root{--hh:52px;--nh:42px}
-  header{padding:0 12px;gap:8px}
-  .logo{font-size:1.05rem}
-  main{padding:14px 12px calc(80px + env(safe-area-inset-bottom))}
-  .grid{grid-template-columns:1fr 1fr;gap:6px}
-  .card{padding:10px 10px 8px}
-  .cname{font-size:.8rem}
-  .mob{display:flex}
-  #stb{bottom:calc(72px + env(safe-area-inset-bottom));right:12px;width:38px;height:38px;font-size:.95rem}
-  .fchips{display:none}
-  .stats{margin-bottom:14px}
-  .cat-nav{padding:0 12px}
-  #csbar{padding:7px 12px}
+/* ── AGE GATE ── */
+#gate{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
 }
-@media(max-width:380px){.grid{grid-template-columns:1fr}}
-@media(min-width:1100px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--s4)}
+#gate.hidden{display:none}
+.gate-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 25% 40%,rgba(233,30,140,.14),transparent 65%),
+    radial-gradient(ellipse 55% 60% at 78% 65%,rgba(156,39,176,.10),transparent 65%);
+}
+.gate-box{
+  position:relative;z-index:1;
+  max-width:400px;width:100%;text-align:center;
+  background:rgba(13,13,28,.95);
+  border:1px solid rgba(233,30,140,.2);
+  border-radius:20px;padding:44px 32px 36px;
+  box-shadow:0 0 80px rgba(233,30,140,.08),0 32px 60px rgba(0,0,0,.8);
+}
+.gate-logo{
+  font-size:2.6rem;font-weight:900;letter-spacing:-1px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:4px;line-height:1;
+}
+.gate-eyebrow{
+  font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);opacity:.7;margin-bottom:22px;
+}
+.gate-msg{color:var(--t2);font-size:.87rem;line-height:1.65;margin-bottom:32px}
+.gate-enter{
+  display:block;width:100%;padding:15px;
+  background:var(--grad);border:none;border-radius:12px;
+  color:#fff;font-size:1rem;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 24px rgba(233,30,140,.38);
+  transition:all .2s;margin-bottom:12px;
+}
+.gate-enter:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 10px 32px rgba(233,30,140,.5)}
+.gate-exit{
+  display:block;width:100%;padding:12px;
+  background:none;border:1px solid var(--border);border-radius:12px;
+  color:var(--t2);font-size:.88rem;cursor:pointer;transition:all .2s;
+}
+.gate-exit:hover{color:var(--text);border-color:rgba(255,255,255,.14)}
+@media(max-width:440px){.gate-box{border-radius:16px;padding:36px 20px 28px}}
+
+/* ── HEADER ── */
+#hdr{
+  position:sticky;top:0;z-index:500;
+  height:var(--hh);
+  background:rgba(6,6,15,.92);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:0 14px;
+}
+.logo{
+  font-size:1.05rem;font-weight:900;letter-spacing:.02em;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  flex-shrink:0;white-space:nowrap;
+}
+.srch-wrap{flex:1;position:relative;min-width:0}
+#search{
+  width:100%;height:38px;
+  background:var(--s2);
+  border:1px solid var(--border);border-radius:20px;
+  color:var(--text);font-size:.88rem;
+  padding:0 38px 0 16px;
+  outline:none;-webkit-appearance:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+#search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.13)}
+#search::placeholder{color:var(--t3)}
+#search::-webkit-search-cancel-button{display:none}
+.srch-clr{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--t3);cursor:pointer;
+  font-size:.95rem;padding:3px;display:none;line-height:1;
+  transition:color .15s;
+}
+.srch-clr:hover{color:var(--text)}
+.hact{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--t2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  transition:all .18s;
+}
+.hact:hover{background:var(--s3);color:var(--text);border-color:rgba(233,30,140,.2)}
+.hact.on{background:rgba(233,30,140,.15);border-color:var(--accent);color:var(--accent)}
+@media(max-width:360px){.logo{font-size:.85rem}}
+
+/* ── CATEGORY NAV ── */
+#cnav{
+  position:sticky;top:var(--hh);z-index:499;
+  background:rgba(6,6,15,.88);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;gap:6px;padding:8px 14px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+#cnav::-webkit-scrollbar{display:none}
+.cpill{
+  padding:6px 16px;border-radius:20px;
+  background:transparent;border:1px solid transparent;
+  color:var(--t2);font-size:.8rem;font-weight:500;
+  white-space:nowrap;cursor:pointer;flex-shrink:0;
+  transition:all .18s;
+}
+.cpill:hover{color:var(--text);background:var(--s2);border-color:var(--border)}
+.cpill.on{
+  background:rgba(233,30,140,.14);
+  border-color:var(--accent);
+  color:var(--accent);font-weight:600;
+}
+
+/* ── MAIN ── */
+#main{
+  max-width:1440px;margin:0 auto;
+  padding:24px 14px 60px;
+}
+
+/* ── SECTION ── */
+.sec{margin-bottom:40px}
+.sec-hdr{
+  display:flex;align-items:baseline;gap:10px;
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.sec-title{font-size:1rem;font-weight:700;color:var(--text)}
+.sec-count{font-size:.75rem;color:var(--t3)}
+
+/* ── HERO GRID (starred items) ── */
+.hero-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:10px;margin-bottom:10px;
+}
+@media(max-width:500px){.hero-grid{grid-template-columns:repeat(2,1fr)}}
+
+.hcard{
+  position:relative;cursor:pointer;
+  border-radius:var(--radius);overflow:hidden;
+  min-height:110px;
+  padding:16px 14px 14px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(145deg,rgba(233,30,140,.09),rgba(156,39,176,.09));
+  border:1px solid rgba(233,30,140,.22);
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  user-select:none;
+}
+.hcard::before{
+  content:'';position:absolute;inset:0;
+  background:var(--grad);opacity:.05;
+  transition:opacity .2s;pointer-events:none;
+}
+.hcard:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(233,30,140,.3),0 0 0 1px rgba(233,30,140,.4);
+}
+.hcard:hover::before{opacity:.11}
+.hcard:active{transform:translateY(-1px)}
+.hc-hot{
+  position:absolute;top:10px;left:10px;
+  background:var(--grad);
+  font-size:.58rem;font-weight:800;letter-spacing:.1em;
+  padding:2px 7px;border-radius:5px;color:#fff;text-transform:uppercase;
+}
+.hc-fav{
+  position:absolute;top:8px;right:8px;
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--t3);
+  transition:all .18s;
+}
+.hc-fav:hover,.hc-fav.on{color:var(--accent)}
+.hc-fav.on{background:rgba(233,30,140,.18);border-color:rgba(233,30,140,.35)}
+.hc-name{
+  font-size:.95rem;font-weight:700;color:var(--text);
+  line-height:1.25;margin-bottom:3px;
+}
+.hc-note{font-size:.72rem;color:var(--t2)}
+
+/* ── REGULAR CARD GRID ── */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:8px;
+}
+@media(max-width:480px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:300px){.card-grid{grid-template-columns:1fr}}
+
+.card{
+  position:relative;cursor:pointer;
+  border-radius:var(--radius);
+  background:var(--s1);
+  border:1px solid var(--border);
+  padding:14px 12px 12px;
+  display:flex;flex-direction:column;gap:3px;
+  min-height:72px;
+  transition:transform .18s,box-shadow .18s,border-color .18s,background .18s;
+  user-select:none;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 28px var(--glow);
+  border-color:rgba(233,30,140,.32);
+  background:var(--s2);
+}
+.card:active{transform:translateY(0)}
+.card.starred{border-color:rgba(233,30,140,.16);background:rgba(233,30,140,.03)}
+.card.faved{border-color:rgba(233,30,140,.28)}
+
+.c-fav{
+  position:absolute;top:8px;right:8px;
+  width:26px;height:26px;
+  background:none;border:none;cursor:pointer;
+  font-size:.82rem;color:var(--t3);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:all .15s;
+}
+.c-fav:hover,.c-fav.on{color:var(--accent)}
+.c-fav.on{color:var(--accent)}
+.c-hot{
+  font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:1px;
+}
+.c-name{
+  font-size:.86rem;font-weight:600;color:var(--text);
+  line-height:1.3;padding-right:22px;
+}
+.c-note{font-size:.7rem;color:var(--t2);line-height:1.3}
+.c-srch{
+  position:absolute;bottom:8px;right:8px;
+  width:22px;height:22px;
+  background:none;border:none;cursor:pointer;
+  font-size:.82rem;color:var(--t3);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;transition:color .15s;
+}
+.c-srch:hover{color:var(--t2)}
+
+/* ── EMPTY STATE ── */
+.empty{
+  text-align:center;padding:72px 20px;color:var(--t2);
+}
+.empty-icon{font-size:2.4rem;margin-bottom:12px}
+.empty-txt{font-size:.9rem}
+
+/* ── SEARCH ALL MODAL ── */
+#cs-modal{
+  display:none;position:fixed;inset:0;z-index:800;
+  background:rgba(6,6,15,.75);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  align-items:flex-end;justify-content:center;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+#cs-modal.open{display:flex}
+.cs-sheet{
+  width:100%;max-width:620px;
+  background:var(--s1);
+  border:1px solid rgba(233,30,140,.18);
+  border-radius:22px 22px 0 0;
+  padding:12px 20px 28px;
+  animation:sheetUp .28s cubic-bezier(.34,1.4,.64,1) both;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cs-handle{
+  width:40px;height:4px;background:var(--t3);
+  border-radius:2px;margin:0 auto 18px;
+}
+.cs-title{font-size:.95rem;font-weight:700;text-align:center;margin-bottom:14px}
+#csinput{
+  display:block;width:100%;height:46px;
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  color:var(--text);font-size:.93rem;padding:0 16px;
+  outline:none;margin-bottom:16px;
+  transition:border-color .2s;
+}
+#csinput:focus{border-color:var(--accent)}
+.cs-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.cs-chip{
+  padding:8px 16px;border-radius:9px;
+  background:var(--s3);border:1px solid var(--border);
+  color:var(--t2);font-size:.82rem;cursor:pointer;
+  transition:all .15s;
+}
+.cs-chip:hover{
+  background:rgba(233,30,140,.15);
+  border-color:var(--accent);color:var(--text);
+}
+.cs-dismiss{
+  display:block;width:100%;padding:12px;
+  background:var(--s3);border:1px solid var(--border);border-radius:12px;
+  color:var(--t2);font-size:.88rem;cursor:pointer;transition:all .15s;
+}
+.cs-dismiss:hover{color:var(--text)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--s3);border:1px solid var(--b2);
+  color:var(--text);padding:9px 20px;border-radius:9px;
+  font-size:.83rem;z-index:700;pointer-events:none;
+  transition:transform .3s cubic-bezier(.34,1.5,.64,1),opacity .3s;
+  opacity:0;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── SCROLL TOP ── */
+#stb{
+  position:fixed;bottom:28px;right:16px;z-index:600;
+  width:42px;height:42px;border-radius:50%;
+  background:var(--grad);border:none;
+  color:#fff;font-size:1.1rem;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(233,30,140,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+#stb:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(233,30,140,.6)}
+#stb.vis{display:flex}
+
+/* ── SAFE AREA ── */
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  #main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+  #stb{bottom:calc(28px + env(safe-area-inset-bottom))}
+  #toast{bottom:calc(28px + env(safe-area-inset-bottom))}
+}
+
+/* ── ALWAYS SHOW FAV BTN ON TOUCH ── */
+@media(hover:none){
+  .c-fav{color:var(--t2)}
+  .hc-fav{color:var(--t2)}
+}
 </style>
 </head>
 <body>
 
 <!-- Age Gate -->
 <div id="gate">
-  <div class="gate-bg"></div>
+  <div class="gate-glow"></div>
   <div class="gate-box">
-    <div class="gate-logo">NSFW<em>Index</em></div>
-    <div class="gate-sub">Adults Only · 18+</div>
-    <p class="gate-text">This directory contains explicit adult content. By entering you confirm you are 18 or older and of legal age in your jurisdiction.</p>
+    <div class="gate-logo">★ INDEX</div>
+    <div class="gate-eyebrow">Adults Only · 18+</div>
+    <div class="gate-msg">This site contains explicit adult content intended for adults only. By entering you confirm you are 18 or older and that explicit content is legal in your jurisdiction.</div>
     <button class="gate-enter" onclick="enterSite()">I am 18+ — Enter</button>
-    <a class="gate-leave" href="https://www.google.com">Leave this site</a>
-    <div class="gate-note">By continuing you accept responsibility for compliance with local laws.</div>
+    <button class="gate-exit" onclick="location.href='https://www.google.com'">Exit</button>
   </div>
 </div>
 
-<!-- App -->
-<div id="app" style="display:none">
-  <header>
-    <div class="logo">NSFW<em>Index</em></div>
-    <div class="sw has-q" id="sw">
-      <span class="si">🔍</span>
-      <input id="search" type="search" placeholder="Search sites…" autocomplete="off"
-        oninput="doSearch(this.value)" onkeydown="searchKey(event)">
-      <button class="sc" onclick="clearSearch()" title="Clear">✕</button>
-    </div>
-    <div class="hbtns">
-      <button class="hbtn rnd" onclick="rnd()" title="Random starred site [R]">🎲 Random</button>
-      <button class="hbtn on" id="bg" onclick="setView('grid')" title="Grid [G]">▦</button>
-      <button class="hbtn" id="bl" onclick="setView('list')" title="List [L]">≡</button>
-      <div class="sort-wrap">
-        <button class="hbtn" onclick="toggleSort('sm')" title="Sort">⇅ <span id="slbl">Default</span></button>
-        <div class="sort-menu" id="sm">
-          <div class="sopt on" data-s="def" onclick="setSort('def')">Default order</div>
-          <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
-          <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
-          <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <nav class="cat-nav" id="catnav"></nav>
-
-  <div id="csbar">
-    <div class="cs-inner">
-      <span class="cs-lbl">🔍 Search on:</span>
-      <div id="cschips"></div>
-    </div>
+<!-- Header -->
+<header id="hdr">
+  <div class="logo">★ INDEX</div>
+  <div class="srch-wrap">
+    <input id="search" type="search" placeholder="Search sites…" autocomplete="off" oninput="onSearch(this.value)">
+    <button class="srch-clr" id="sclr" onclick="clrSearch()">✕</button>
   </div>
+  <button class="hact" id="cs-btn" onclick="openCS()" title="Search all sites (S)">⌕</button>
+  <button class="hact" id="fav-btn" onclick="toggleFavView()" title="Saved sites (F)">♥</button>
+  <button class="hact" onclick="randSite()" title="Random site (R)">⚡</button>
+</header>
 
-  <main>
-    <div class="notice">⚠️ Sites may be geo-blocked — use a <a href="https://fmhy.net/adblockvpnguide#vpn" target="_blank" onclick="event.stopPropagation()">VPN</a>. Always use an adblocker like uBlock Origin.</div>
-    <div class="stats">
-      <div class="stat"><strong id="st-s">0</strong> sites</div>
-      <div class="stat"><strong id="st-c">0</strong> sections</div>
-      <div class="fchips">
-        <button class="fchip on" data-f="all" onclick="setFilter('all')">All</button>
-        <button class="fchip" data-f="starred" onclick="setFilter('starred')">⭐ Starred</button>
-        <button class="fchip" data-f="fav" onclick="setFilter('fav')">❤️ Favs</button>
-      </div>
-    </div>
-    <div id="secs"></div>
-    <div id="nores"><div class="nri">🔍</div><p class="nrt">No results for "<span id="nq"></span>"</p></div>
-  </main>
+<!-- Category Nav -->
+<nav id="cnav">
+  <button class="cpill on" data-cat="all" onclick="setCat('all')">All</button>
+  <button class="cpill" data-cat="stepmom" onclick="setCat('stepmom')">Stepmom ★</button>
+  <button class="cpill" data-cat="stream" onclick="setCat('stream')">Streaming</button>
+  <button class="cpill" data-cat="clips" onclick="setCat('clips')">Clips</button>
+  <button class="cpill" data-cat="ai" onclick="setCat('ai')">AI</button>
+  <button class="cpill" data-cat="dl" onclick="setCat('dl')">Downloads</button>
+  <button class="cpill" data-cat="tools" onclick="setCat('tools')">Tools</button>
+</nav>
+
+<!-- Main -->
+<main id="main"><div id="content"></div></main>
+
+<!-- Search All Modal -->
+<div id="cs-modal" onclick="if(event.target===this)closeCS()">
+  <div class="cs-sheet">
+    <div class="cs-handle"></div>
+    <div class="cs-title">Search Across Sites</div>
+    <input id="csinput" type="search" placeholder="Enter search term…" autocomplete="off">
+    <div class="cs-grid" id="cs-grid"></div>
+    <button class="cs-dismiss" onclick="closeCS()">Dismiss</button>
+  </div>
 </div>
 
-<!-- Mobile Bar -->
-<div class="mob" id="mob">
-  <button class="mb" onclick="rnd()"><span class="mi">🎲</span>Random</button>
-  <button class="mb on" id="mbg" onclick="setView('grid')"><span class="mi">▦</span>Grid</button>
-  <button class="mb" id="mbl" onclick="setView('list')"><span class="mi">≡</span>List</button>
-  <div class="msw sort-wrap">
-    <button class="mb" onclick="toggleSort('msm')"><span class="mi">⇅</span>Sort</button>
-    <div class="sort-menu mob-sm" id="msm">
-      <div class="sopt on" data-s="def" onclick="setSort('def')">Default order</div>
-      <div class="sopt" data-s="az" onclick="setSort('az')">A → Z</div>
-      <div class="sopt" data-s="za" onclick="setSort('za')">Z → A</div>
-      <div class="sopt" data-s="star" onclick="setSort('star')">⭐ Starred first</div>
-    </div>
-  </div>
-  <button class="mb" onclick="cycleFilter()"><span class="mi">⭐</span>Filter</button>
-</div>
+<!-- Toast -->
+<div id="toast"></div>
 
+<!-- Scroll Top -->
 <button id="stb" onclick="scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
-<div id="toasts"></div>
 
 <script>
-// ── Data ────────────────────────────────────────────────────────────────────
-const DATA=[
-{id:'stepmom',title:'Stepmom / Taboo',icon:'🔥',links:[
-  {n:'PornHub Stepmom',u:'https://www.pornhub.com/categories/step-mom',s:1,note:'Largest collection',su:'https://www.pornhub.com/video/search?search=stepmom+'},
-  {n:'xHamster MILF',u:'https://xhamster.com/categories/milf',s:1,su:'https://xhamster.com/search/milf+'},
-  {n:'SpankBang Stepmom',u:'https://spankbang.com/s/stepmom/',s:1,su:'https://spankbang.com/s/stepmom+'},
-  {n:'xVideos Stepmom',u:'https://www.xvideos.com/c/stepmom_pov-195',s:1,su:'https://www.xvideos.com/?k=stepmom+'},
-  {n:'XNXX MILF',u:'https://www.xnxx.com/search/milf',s:1,su:'https://www.xnxx.com/search/milf+'},
-  {n:'EPorner MILF',u:'https://www.eporner.com/category/MILF/',s:1,note:'4K HD category',su:'https://www.eporner.com/search/milf+'},
-  {n:'HQPorner MILF',u:'https://hqporner.com/hdporn/milf.html',s:1,note:'HD category'},
-  {n:'GoodPorn MILF',u:'https://goodporn.to/categories/milf/',s:1,note:'Full scenes'},
-  {n:'MomVids',u:'https://www.momvids.com/',s:1,note:'Free MILF aggregator'},
-  {n:'HotMilf',u:'https://hotmilf.com/',s:1},
-  {n:'MomPorno',u:'https://momporno.net/',s:1},
-  {n:'MrBonham',u:'https://www.mrbonham.net/',s:1,note:'Classic free content'},
-  {n:'MilfZr',u:'https://milfzr.com/',s:1,note:'MILF search engine'},
-  {n:'ILoveMature',u:'https://ilovemature.tv/',s:1},
-  {n:'WifeBucket',u:'https://wifebucket.com/',s:1,note:'Amateur wife & MILF'},
-  {n:'ThisVid MILF',u:'https://thisvid.com/categories/milf/',s:1,note:'Community uploads',su:'https://thisvid.com/search/videos/?q=milf+'},
-  {n:'Porn.com MILF',u:'https://www.porn.com/milf/',s:1},
-  {n:'Beeg MILF',u:'https://beeg.com/sex/milf'},
-  {n:'VPorn MILF',u:'https://www.vporn.com/milf/'},
-  {n:'PornTrex MILF',u:'https://www.porntrex.com/categories/milf'},
-  {n:'Txxx MILF',u:'https://txxx.com/milf/'},
-  {n:'BravoTube MILF',u:'https://www.bravotube.net/milf/'},
-  {n:'Nuvid MILF',u:'https://www.nuvid.com/category/milf'},
-  {n:'MilfFox',u:'https://www.milffox.com/'},
-  {n:'Milftube',u:'https://www.milftube.xxx/'},
-  {n:'YouMilf',u:'https://youmilf.com/'},
-  {n:'MilfPorn',u:'https://www.milfporn.com/'},
-  {n:'MomLust',u:'https://www.momlust.com/'},
-  {n:'MomXXX',u:'https://momxxx.com/',note:'Clips & trailers'},
-  {n:'Mature.nl',u:'https://mature.nl/',note:'Trailers free'},
-  {n:'MILF Dude',u:'https://milfdude.com/',note:'MILF site directory'},
-  {n:'FreeOnes MILF',u:'https://www.freeones.com/female/milf',note:'Performer database'},
-]},
-{id:'streaming',title:'Streaming',icon:'📺',links:[
-  {n:'HQPorner',u:'https://hqporner.com/',s:1,note:'High quality free',su:'https://hqporner.com/search/'},
-  {n:'EPorner',u:'https://www.eporner.com/',s:1,note:'4K content',su:'https://www.eporner.com/search/'},
-  {n:'GoodPorn.to',u:'https://goodporn.to/',s:1,note:'Full scenes, minimal ads'},
-  {n:'VPorn',u:'https://www.vporn.com/',s:1,su:'https://www.vporn.com/search/?q='},
-  {n:'Pornhat',u:'https://www.pornhat.com/',s:1,su:'https://www.pornhat.com/search/'},
-  {n:'HotMovs',u:'https://hotmovs.com/',s:1,su:'https://hotmovs.com/search/'},
-  {n:'SexyPorn',u:'https://www.sxyprn.com/',s:1},
-  {n:'Noodlemagazine',u:'https://noodlemagazine.com',s:1,note:'Video search engine'},
-  {n:'NSFWBase',u:'https://www.nsfwbase.com/',s:1,note:'Multi-site search'},
-  {n:'Full Length CSE',u:'https://cse.google.com/cse?cx=6c02fb377e50d493c',s:1,note:'Google CSE for full porn'},
-  {n:'PornHub',u:'https://www.pornhub.com/',su:'https://www.pornhub.com/video/search?search='},
-  {n:'xVideos',u:'https://www.xvideos.com/',su:'https://www.xvideos.com/?k='},
-  {n:'xHamster',u:'https://xhamster.com/',su:'https://xhamster.com/search/'},
-  {n:'SpankBang',u:'https://spankbang.com/',su:'https://spankbang.com/s/'},
-  {n:'XNXX',u:'https://www.xnxx.com/',su:'https://www.xnxx.com/search/'},
-  {n:'Beeg',u:'https://beeg.com/',su:'https://beeg.com/sex/'},
-  {n:'Redtube',u:'https://www.redtube.com/',su:'https://www.redtube.com/?search='},
-  {n:'YouPorn',u:'https://www.youporn.com/',su:'https://www.youporn.com/search/straight/?query='},
-  {n:'PornTrex',u:'https://www.porntrex.com/',su:'https://www.porntrex.com/search/?q='},
-  {n:'Txxx',u:'https://txxx.com/',su:'https://txxx.com/search/'},
-  {n:'TNAFlix',u:'https://www.tnaflix.com/'},
-  {n:'SlutLoad',u:'https://www.slutload.com/'},
-  {n:'BravoTube',u:'https://www.bravotube.net/',su:'https://www.bravotube.net/search/?q='},
-  {n:'Fuq',u:'https://www.fuq.com/',su:'https://www.fuq.com/search/?q='},
-  {n:'Analdin',u:'https://www.analdin.com/',su:'https://www.analdin.com/search/'},
-  {n:'SomePorn',u:'https://some.porn/',su:'https://some.porn/?search='},
-  {n:'Porndig',u:'https://www.porndig.com/'},
-  {n:'PornFlip',u:'https://www.pornflip.com/'},
-  {n:'Adult TV',u:'https://adult-tv-channels.com/',note:'Live adult streams'},
-]},
-{id:'reels',title:'Reels & GIFs',icon:'🎞️',links:[
-  {n:'FikFap',u:'https://fikfap.com/',s:1},
-  {n:'fyptt',u:'https://fyptt.to/',s:1},
-  {n:'NSFWSwipe',u:'https://nsfwswipe.com/',s:1},
-  {n:'RedGIFs',u:'https://www.redgifs.com/',s:1,su:'https://www.redgifs.com/search/'},
-  {n:'Scroller',u:'https://scrolller.com/'},
-  {n:'xxxtik',u:'https://xxxtik.com/'},
-  {n:'Tik.porn',u:'https://tik.porn/'},
-  {n:'TikPorn.tube',u:'https://tikporn.tube/'},
-  {n:'tiktits',u:'https://tiktits.com/'},
-  {n:'OnlyTik',u:'https://onlytik.com/'},
-  {n:'ViralPorn',u:'https://viralporn.com/'},
-  {n:'GifSauce',u:'https://gifsauce.com/'},
-]},
-{id:'ai',title:'AI Generated',icon:'🤖',links:[
-  {n:'Pornify',u:'https://pornify.cc/'},
-  {n:'PornAI.tv',u:'https://pornai.tv/'},
-  {n:'r/AIpornhub',u:'https://www.reddit.com/r/AIpornhub/',note:'NSFW AI community'},
-]},
-{id:'download',title:'Downloaders',icon:'⬇️',links:[
-  {n:'yt-dlp',u:'https://github.com/yt-dlp/yt-dlp',s:1,note:'Universal video downloader'},
-  {n:'Gallery-DL',u:'https://github.com/mikf/gallery-dl',s:1,note:'Image & gallery downloader'},
-  {n:'Hitomi Downloader',u:'https://github.com/KurtBestor/Hitomi-Downloader',s:1,note:'GUI multi-site downloader'},
-  {n:'JDownloader 2',u:'https://jdownloader.org/',s:1,note:'General download manager'},
-  {n:'N_m3u8DL-RE',u:'https://github.com/nilaoda/N_m3u8DL-RE',note:'HLS/DASH stream downloader'},
-  {n:'MegaBasterd',u:'https://github.com/tonikelope/megabasterd',note:'MEGA.nz downloader'},
-  {n:'Lux',u:'https://github.com/iawia002/lux',note:'Multi-site video downloader'},
-  {n:'CoomerDL',u:'https://emydevs.com/',note:'Video & image downloader'},
-]},
-{id:'tools',title:'Tools',icon:'🔧',links:[
-  {n:'Stash',u:'https://stashapp.cc/',s:1,note:'Self-hosted porn manager'},
-  {n:'Hydrus Network',u:'https://hydrusnetwork.github.io/hydrus/',s:1,note:'Media library manager'},
-  {n:'PornStarByFace',u:'https://pornstarbyface.com/',s:1,note:'NSFW reverse image search'},
-  {n:'SauceNao',u:'https://saucenao.com/',s:1,note:'Reverse image search'},
-  {n:'IAFD',u:'https://www.iafd.com/',s:1,note:'Adult film database'},
-  {n:'NameThatPorn',u:'https://namethatporn.com/',s:1,note:'Porn identification'},
-  {n:'StashDB',u:'https://stashdb.org/',note:'Porn metadata / Invite needed'},
-  {n:'ThePornDB',u:'https://theporndb.net',note:'Porn metadata'},
-  {n:'Data18',u:'https://www.data18.com/',note:'Film & performer database'},
-  {n:'Sleazy Fork',u:'https://sleazyfork.org/en/scripts',note:'Adult userscripts'},
-  {n:'Reddit NSFW Unblocker',u:'https://github.com/sixP-NaraKa/reddit-nsfw-unblocker',note:'Bypass NSFW popups'},
-  {n:'Whisparr',u:'https://github.com/Whisparr/Whisparr',note:'Porn media manager (Sonarr-like)'},
-  {n:'XBVR',u:'https://github.com/xbapps/xbvr',note:'VR porn manager'},
-  {n:'Real-ESRGAN',u:'https://github.com/xinntao/Real-ESRGAN',note:'AI upscaler'},
-  {n:'DeepMosaics',u:'https://github.com/HypoX64/DeepMosaics',note:'Mosaic remover'},
-  {n:'Booru Downloader',u:'https://github.com/Bionus/imgbrd-grabber',note:'Booru mass downloader'},
-]},
-];
-
-// Cross-site search targets
-const CSS=[
+// ── DATA ──
+const CSSITES=[
   {n:'PornHub',u:'https://www.pornhub.com/video/search?search='},
   {n:'xVideos',u:'https://www.xvideos.com/?k='},
   {n:'xHamster',u:'https://xhamster.com/search/'},
   {n:'SpankBang',u:'https://spankbang.com/s/'},
   {n:'XNXX',u:'https://www.xnxx.com/search/'},
+  {n:'GoodPorn',u:'https://goodporn.to/?s='},
   {n:'EPorner',u:'https://www.eporner.com/search/'},
   {n:'HQPorner',u:'https://hqporner.com/search/'},
   {n:'Beeg',u:'https://beeg.com/sex/'},
   {n:'VPorn',u:'https://www.vporn.com/search/?q='},
+  {n:'Txxx',u:'https://txxx.com/search/'},
   {n:'RedGIFs',u:'https://www.redgifs.com/search/'},
   {n:'ThisVid',u:'https://thisvid.com/search/videos/?q='},
-  {n:'Txxx',u:'https://txxx.com/search/'},
 ];
 
-// ── State ────────────────────────────────────────────────────────────────────
-const S={view:'grid',sort:'def',filter:'all',query:'',favs:new Set(JSON.parse(localStorage.getItem('nf')||'[]'))};
-const saveFavs=()=>localStorage.setItem('nf',JSON.stringify([...S.favs]));
+const DATA=[
+  // STEPMOM & TABOO
+  {c:'stepmom',n:'MomVids',u:'https://www.momvids.com',s:1,note:'Dedicated stepmom tube'},
+  {c:'stepmom',n:'MrBonham',u:'https://www.mrbonham.com',s:1,note:'Classic taboo site'},
+  {c:'stepmom',n:'PornHub · Stepmom',u:'https://www.pornhub.com/category/step-mom',s:1,note:'Massive library'},
+  {c:'stepmom',n:'xHamster · Stepmom',u:'https://xhamster.com/categories/stepmom',s:1,note:'Top stepmom category'},
+  {c:'stepmom',n:'GoodPorn · Stepmom',u:'https://goodporn.to/?tag=stepmom',note:'Ad-light, clean'},
+  {c:'stepmom',n:'SpankBang · Stepmom',u:'https://spankbang.com/tag/stepmom/',note:'Great quality'},
+  {c:'stepmom',n:'XNXX · Stepmom',u:'https://www.xnxx.com/search/stepmom',note:'Huge catalog',su:'https://www.xnxx.com/search/'},
+  {c:'stepmom',n:'xVideos · Stepmom',u:'https://www.xvideos.com/?k=stepmom',note:'Massive',su:'https://www.xvideos.com/?k='},
+  {c:'stepmom',n:'EPorner · Stepmom',u:'https://www.eporner.com/category/step-mom/',note:'HD & 4K'},
+  {c:'stepmom',n:'HQPorner · Stepmom',u:'https://hqporner.com/category/step-mom/',note:'4K available'},
+  {c:'stepmom',n:'PornHub · Taboo',u:'https://www.pornhub.com/category/taboo',note:'Taboo category'},
+  {c:'stepmom',n:'xHamster · Taboo',u:'https://xhamster.com/categories/taboo',note:'Taboo collection'},
+  {c:'stepmom',n:'Naughty America',u:'https://www.naughtyamerica.com',note:'Premium step fantasy'},
+  {c:'stepmom',n:'Bang Bros',u:'https://www.bangbros.com',note:'Step series & MILF'},
+  {c:'stepmom',n:'Reality Kings',u:'https://www.realitykings.com',note:'MILF & step fantasy'},
 
-// ── Age gate ─────────────────────────────────────────────────────────────────
+  // STREAMING
+  {c:'stream',n:'PornHub',u:'https://www.pornhub.com',s:1,note:"World's largest",su:'https://www.pornhub.com/video/search?search='},
+  {c:'stream',n:'xVideos',u:'https://www.xvideos.com',s:1,note:'Massive free library',su:'https://www.xvideos.com/?k='},
+  {c:'stream',n:'xHamster',u:'https://xhamster.com',s:1,su:'https://xhamster.com/search/'},
+  {c:'stream',n:'GoodPorn',u:'https://goodporn.to',s:1,note:'Ad-light · HD',su:'https://goodporn.to/?s='},
+  {c:'stream',n:'SpankBang',u:'https://spankbang.com',su:'https://spankbang.com/s/'},
+  {c:'stream',n:'XNXX',u:'https://www.xnxx.com',su:'https://www.xnxx.com/search/'},
+  {c:'stream',n:'EPorner',u:'https://www.eporner.com',note:'Free 4K',su:'https://www.eporner.com/search/'},
+  {c:'stream',n:'HQPorner',u:'https://hqporner.com',note:'HD/4K focus',su:'https://hqporner.com/search/'},
+  {c:'stream',n:'Beeg',u:'https://beeg.com',note:'Clean UI',su:'https://beeg.com/sex/'},
+  {c:'stream',n:'Txxx',u:'https://txxx.com',su:'https://txxx.com/search/'},
+  {c:'stream',n:'VPorn',u:'https://www.vporn.com',su:'https://www.vporn.com/search/?q='},
+  {c:'stream',n:'RedTube',u:'https://www.redtube.com',note:'Classic tube'},
+  {c:'stream',n:'YouPorn',u:'https://www.youporn.com'},
+  {c:'stream',n:'HotMovs',u:'https://hotmovs.com',note:'HD free'},
+  {c:'stream',n:'Pornhat',u:'https://pornhat.com',note:'Good quality'},
+  {c:'stream',n:'Nuvid',u:'https://nuvid.com'},
+  {c:'stream',n:'Fuq',u:'https://www.fuq.com'},
+
+  // CLIPS & REELS
+  {c:'clips',n:'RedGIFs',u:'https://www.redgifs.com',s:1,note:'GIFs & short clips',su:'https://www.redgifs.com/search/'},
+  {c:'clips',n:'Scrolller',u:'https://scrolller.com/r/nsfw',note:'Infinite NSFW scroll'},
+  {c:'clips',n:'ThisVid',u:'https://thisvid.com',su:'https://thisvid.com/search/videos/?q='},
+  {c:'clips',n:'PMV Haven',u:'https://pmvhaven.com',note:'Music video edits'},
+  {c:'clips',n:'Tube8',u:'https://www.tube8.com',note:'Short clips'},
+  {c:'clips',n:'DaftsEx',u:'https://daftsex.com',note:'Clips & full videos'},
+  {c:'clips',n:'PornTrex',u:'https://www.porntrex.com'},
+  {c:'clips',n:'Faphouse',u:'https://faphouse.com',note:'Creator clips'},
+
+  // AI CONTENT
+  {c:'ai',n:'OnlyFakes',u:'https://onlyfakes.app',s:1,note:'Realistic AI images'},
+  {c:'ai',n:'Pornpen.ai',u:'https://pornpen.ai',note:'AI generator'},
+  {c:'ai',n:'SexyAI',u:'https://sexyai.com',note:'AI image art'},
+  {c:'ai',n:'AIPorn.net',u:'https://www.aiporn.net',note:'AI content hub'},
+  {c:'ai',n:'FantasyGF',u:'https://fantasygf.ai',note:'AI companion'},
+
+  // DOWNLOADS
+  {c:'dl',n:'yt-dlp',u:'https://github.com/yt-dlp/yt-dlp',s:1,note:'Universal CLI downloader'},
+  {c:'dl',n:'JDownloader 2',u:'https://jdownloader.org',note:'GUI · many sites'},
+  {c:'dl',n:'Gallery-DL',u:'https://github.com/mikf/gallery-dl',note:'Image gallery scraper'},
+  {c:'dl',n:'4K Downloader',u:'https://www.4kdownload.com',note:'Simple GUI'},
+  {c:'dl',n:'N_m3u8DL-RE',u:'https://github.com/nilaoda/N_m3u8DL-RE',note:'Stream/HLS capture'},
+  {c:'dl',n:'MegaBasterd',u:'https://github.com/tonikelope/megabasterd',note:'Mega.nz manager'},
+  {c:'dl',n:'DownloadHelper',u:'https://www.downloadhelper.net',note:'Browser extension'},
+  {c:'dl',n:'Lux',u:'https://github.com/iawia002/lux',note:'Go CLI downloader'},
+
+  // TOOLS
+  {c:'tools',n:'Stash',u:'https://stashapp.cc',s:1,note:'Self-hosted media server'},
+  {c:'tools',n:'Hydrus Network',u:'https://hydrusnetwork.github.io/hydrus/',s:1,note:'Local image manager'},
+  {c:'tools',n:'Jellyfin',u:'https://jellyfin.org',note:'Free media server'},
+  {c:'tools',n:'Plex',u:'https://www.plex.tv',note:'Stream your library'},
+  {c:'tools',n:'VLC',u:'https://www.videolan.org',note:'Free video player'},
+  {c:'tools',n:'MPC-HC',u:'https://github.com/clsid2/mpc-hc',note:'Lightweight player'},
+  {c:'tools',n:'Real-ESRGAN',u:'https://github.com/xinntao/Real-ESRGAN',note:'AI upscaling'},
+  {c:'tools',n:'XBVR',u:'https://xbvr.app',note:'VR content manager'},
+  {c:'tools',n:'ThePornDB',u:'https://theporndb.net',note:'Scene metadata DB'},
+  {c:'tools',n:'uBlock Origin',u:'https://ublockorigin.com',note:'Best ad blocker'},
+  {c:'tools',n:'SponsorBlock',u:'https://sponsor.ajay.app',note:'Skip sponsored segments'},
+  {c:'tools',n:'PopUpOFF',u:'https://romanisthere.github.io/PopUpOFF-Website/',note:'Popup blocker'},
+];
+
+const CATS=[
+  {id:'stepmom',label:'Stepmom & Taboo'},
+  {id:'stream',label:'Free Streaming'},
+  {id:'clips',label:'Clips & Reels'},
+  {id:'ai',label:'AI Content'},
+  {id:'dl',label:'Download Tools'},
+  {id:'tools',label:'Apps & Tools'},
+];
+
+// ── STATE ──
+const S={cat:'all',q:'',favs:new Set(),showFavs:false};
+
+function loadFavs(){
+  try{const f=localStorage.getItem('nf');if(f)S.favs=new Set(JSON.parse(f))}catch(e){}
+}
+function saveFavs(){
+  try{localStorage.setItem('nf',JSON.stringify([...S.favs]))}catch(e){}
+}
+
+// ── AGE GATE ──
+function checkGate(){
+  if(!localStorage.getItem('na'))document.getElementById('gate').classList.remove('hidden');
+  else document.getElementById('gate').classList.add('hidden');
+}
 function enterSite(){
   localStorage.setItem('na','1');
-  document.getElementById('gate').style.display='none';
-  document.getElementById('app').style.display='';
-  document.getElementById('mob').style.display='flex';
-}
-if(localStorage.getItem('na')){
-  document.getElementById('gate').style.display='none';
-  document.getElementById('app').style.display='';
+  document.getElementById('gate').classList.add('hidden');
 }
 
-// ── Toast ────────────────────────────────────────────────────────────────────
-function toast(msg,ok){
-  const el=document.createElement('div');
-  el.className='toast'+(ok?' ok':'');el.textContent=msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>el.remove(),2500);
+// ── TOAST ──
+let _tt;
+function toast(msg,accent){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderColor=accent?'rgba(233,30,140,.4)':'';
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// ── Link open ────────────────────────────────────────────────────────────────
+// ── OPEN LINK — whole card is the button ──
 function oLink(u){window.open(u,'_blank')}
 
-// ── Search ───────────────────────────────────────────────────────────────────
-function doSearch(v){
-  S.query=v.trim().toLowerCase();
-  document.getElementById('sw').classList.toggle('has-q',v.length>0);
-  updateCS();render();
-}
-function searchKey(e){if(e.key==='Escape'){clearSearch();e.target.blur()}}
-function clearSearch(){document.getElementById('search').value='';doSearch('')}
-
-// Cross-site search chips
-function updateCS(){
-  const bar=document.getElementById('csbar');
-  if(!S.query){bar.style.display='none';return}
-  bar.style.display='block';
-  document.getElementById('cschips').innerHTML=CSS.map(s=>
-    `<button class="cs-chip" data-base="${s.u}" onclick="oLink(this.dataset.base+encodeURIComponent(document.getElementById('search').value.trim()))">${s.n}</button>`
-  ).join('');
+// ── CATEGORY ──
+function setCat(cat){
+  S.cat=cat;S.showFavs=false;
+  document.querySelectorAll('.cpill').forEach(p=>p.classList.toggle('on',p.dataset.cat===cat));
+  document.getElementById('fav-btn').classList.remove('on');
+  render();
 }
 
-// ── Favorites ────────────────────────────────────────────────────────────────
+// ── SEARCH ──
+function onSearch(v){
+  S.q=v.trim();
+  document.getElementById('sclr').style.display=v?'block':'none';
+  render();
+}
+function clrSearch(){
+  const el=document.getElementById('search');
+  el.value='';onSearch('');el.focus();
+}
+
+// ── FAVORITES ──
+function toggleFavView(){
+  S.showFavs=!S.showFavs;
+  document.getElementById('fav-btn').classList.toggle('on',S.showFavs);
+  render();
+}
 function toggleFav(e,u){
   e.stopPropagation();
-  if(S.favs.has(u)){S.favs.delete(u);toast('Removed from favorites')}
-  else{S.favs.add(u);toast('❤️ Saved to favorites',true)}
+  const had=S.favs.has(u);
+  if(had){S.favs.delete(u);toast('Removed from saved')}
+  else{S.favs.add(u);toast('Saved ♥',true)}
   saveFavs();render();
 }
 
-// ── Copy URL ─────────────────────────────────────────────────────────────────
-function copyUrl(e,u){
-  e.stopPropagation();
-  navigator.clipboard.writeText(u).then(()=>toast('📋 Copied!',true)).catch(()=>{
-    const t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();
-    document.execCommand('copy');document.body.removeChild(t);toast('📋 Copied!',true);
-  });
-}
-
-// ── Search on site ────────────────────────────────────────────────────────────
-function searchSite(e,su,u){
-  e.stopPropagation();
-  oLink(S.query?su+encodeURIComponent(S.query):u);
-}
-
-// ── Random ───────────────────────────────────────────────────────────────────
-function rnd(){
-  const pool=DATA.flatMap(s=>s.links.filter(l=>l.s));
+// ── RANDOM ──
+function randSite(){
+  const pool=(S.cat==='all'?DATA:DATA.filter(d=>d.c===S.cat));
   if(!pool.length)return;
-  const l=pool[Math.floor(Math.random()*pool.length)];
-  toast('🎲 Opening '+l.n+'…',true);oLink(l.u);
+  const item=pool[Math.floor(Math.random()*pool.length)];
+  oLink(item.u);toast('Opening: '+item.n);
 }
 
-// ── Sort ─────────────────────────────────────────────────────────────────────
-const SLBL={def:'Default',az:'A→Z',za:'Z→A',star:'Starred'};
-function setSort(v){
-  S.sort=v;
-  document.querySelectorAll('.sopt').forEach(el=>el.classList.toggle('on',el.dataset.s===v));
-  document.getElementById('slbl').textContent=SLBL[v]||'Default';
-  ['sm','msm'].forEach(id=>{const m=document.getElementById(id);if(m)m.classList.remove('open')});
-  render();
+// ── CROSS-SITE SEARCH MODAL ──
+function openCS(){
+  const q=document.getElementById('search').value.trim();
+  const inp=document.getElementById('csinput');
+  inp.value=q;
+  document.getElementById('cs-grid').innerHTML=CSSITES.map(s=>
+    `<button class="cs-chip" data-base="${s.u}" onclick="csGo(this)">${s.n}</button>`
+  ).join('');
+  document.getElementById('cs-modal').classList.add('open');
+  setTimeout(()=>inp.select(),80);
 }
-function toggleSort(id){document.getElementById(id).classList.toggle('open')}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.sort-wrap'))
-    ['sm','msm'].forEach(id=>{const m=document.getElementById(id);if(m)m.classList.remove('open')});
-});
-
-// ── View ─────────────────────────────────────────────────────────────────────
-function setView(v){
-  S.view=v;
-  ['bg','mbg'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('on',v==='grid')});
-  ['bl','mbl'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('on',v==='list')});
-  render();
+function csGo(btn){
+  const q=(document.getElementById('csinput').value.trim()||document.getElementById('search').value.trim());
+  if(!q){toast('Enter a search term first');return}
+  window.open(btn.dataset.base+encodeURIComponent(q),'_blank');
+}
+function closeCS(){
+  document.getElementById('cs-modal').classList.remove('open');
 }
 
-// ── Filter ───────────────────────────────────────────────────────────────────
-function setFilter(f){
-  S.filter=f;
-  document.querySelectorAll('.fchip').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
-  render();
-}
-function cycleFilter(){
-  const order=['all','starred','fav'];
-  const next=order[(order.indexOf(S.filter)+1)%order.length];
-  setFilter(next);
-  toast({all:'Showing all',starred:'⭐ Starred only',fav:'❤️ Favorites only'}[next],true);
+// ── SITE SEARCH (per-card) ──
+function siteSearch(e,su){
+  e.stopPropagation();
+  const q=document.getElementById('search').value.trim();
+  window.open(su+encodeURIComponent(q||'stepmom'),'_blank');
 }
 
-// ── Apply filters ─────────────────────────────────────────────────────────────
+// ── FILTER ──
 function filtered(){
-  return DATA.map(sec=>{
-    let links=[...sec.links];
-    if(S.query){
-      const q=S.query,sm=sec.title.toLowerCase().includes(q);
-      if(!sm)links=links.filter(l=>l.n.toLowerCase().includes(q)||(l.note&&l.note.toLowerCase().includes(q)));
-    }
-    if(S.filter==='starred')links=links.filter(l=>l.s);
-    if(S.filter==='fav')links=links.filter(l=>S.favs.has(l.u));
-    if(S.sort==='az')links=[...links].sort((a,b)=>a.n.localeCompare(b.n));
-    if(S.sort==='za')links=[...links].sort((a,b)=>b.n.localeCompare(a.n));
-    if(S.sort==='star')links=[...links].sort((a,b)=>(b.s?1:0)-(a.s?1:0));
-    return{...sec,links};
-  }).filter(s=>s.links.length);
-}
-
-// ── Card ──────────────────────────────────────────────────────────────────────
-function card(lnk){
-  const isFav=S.favs.has(lnk.u);
-  const eu=lnk.u.replace(/'/g,"\\'");
-  const esu=lnk.su?lnk.su.replace(/'/g,"\\'"):'';
-  const cls=['card',lnk.s?'starred':'',isFav?'faved':''].filter(Boolean).join(' ');
-  const sb=lnk.su?`<button class="cact" onclick="searchSite(event,'${esu}','${eu}')" title="${S.query?'Search this site':'Open'}">🔍</button>`:'';
-  return`<div class="${cls}" onclick="oLink('${eu}')">
-  <div class="cbody">
-    <div class="ctop">${lnk.s?'<span class="cstar">⭐</span>':''}<span class="cname">${lnk.n}</span></div>
-    ${lnk.note?`<div class="cnote">${lnk.note}</div>`:''}
-    ${lnk.alts?`<div class="calts">${lnk.alts.map((u,i)=>`<a class="calt" href="${u}" target="_blank" onclick="event.stopPropagation()">${lnk.altN?.[i]||'Alt'+(i+1)}</a>`).join('')}</div>`:''}
-  </div>
-  <div class="cacts">
-    <button class="cact fav${isFav?' is-fav':''}" onclick="toggleFav(event,'${eu}')" title="${isFav?'Unsave':'Save'}">❤</button>
-    ${sb}
-    <button class="cact" onclick="copyUrl(event,'${eu}')" title="Copy URL">📋</button>
-  </div>
-</div>`;
-}
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function render(){
-  const data=filtered();
-  const total=data.reduce((a,s)=>a+s.links.length,0);
-  document.getElementById('st-s').textContent=total;
-  document.getElementById('st-c').textContent=data.length;
-  DATA.forEach(sec=>{
-    const ct=document.querySelector(`.pill[data-id="${sec.id}"] .pct`);
-    if(!ct)return;
-    const fd=data.find(s=>s.id===sec.id);
-    ct.textContent=fd?fd.links.length:0;
-  });
-  const secs=document.getElementById('secs'),nores=document.getElementById('nores');
-  if(!total){secs.innerHTML='';nores.style.display='block';document.getElementById('nq').textContent=S.query;return}
-  nores.style.display='none';
-  const gc=S.view==='list'?'lst':'grid';
-  secs.innerHTML=data.map(sec=>`
-<div class="sec" id="${sec.id}">
-  <div class="sec-hdr"><span class="sec-icon">${sec.icon}</span><h2 class="sec-title">${sec.title}</h2><span class="sec-ct">${sec.links.length}</span></div>
-  <div class="${gc}">${sec.links.map(card).join('')}</div>
-</div>`).join('');
-  setupObs();
-}
-
-// ── Nav builder ───────────────────────────────────────────────────────────────
-function buildNav(){
-  const nav=document.getElementById('catnav');
-  [{lbl:'All',f:'all'},{lbl:'⭐',f:'starred'},{lbl:'❤️',f:'fav'}].forEach((x,i)=>{
-    const b=document.createElement('button');
-    b.className='pill'+(i===0?' on':'');b.dataset.f=x.f;b.textContent=x.lbl;
-    b.onclick=()=>{setFilter(x.f);nav.querySelectorAll('.pill[data-f]').forEach(el=>el.classList.toggle('on',el.dataset.f===x.f))};
-    nav.appendChild(b);
-  });
-  const d=document.createElement('span');d.className='ndiv';nav.appendChild(d);
-  DATA.forEach(sec=>{
-    const b=document.createElement('button');
-    b.className='pill';b.dataset.id=sec.id;
-    b.innerHTML=`${sec.icon} ${sec.title} <span class="pct">${sec.links.length}</span>`;
-    b.onclick=()=>document.getElementById(sec.id)?.scrollIntoView({behavior:'smooth',block:'start'});
-    nav.appendChild(b);
-  });
-}
-
-// ── Intersection observer ─────────────────────────────────────────────────────
-let obs=null;
-function setupObs(){
-  if(obs)obs.disconnect();
-  const hh=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'));
-  const nh=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nh'));
-  obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      const pill=document.querySelector(`.pill[data-id="${e.target.id}"]`);
-      if(pill){pill.classList.toggle('on',e.isIntersecting);if(e.isIntersecting)pill.scrollIntoView({block:'nearest',inline:'nearest'})}
-    });
-  },{rootMargin:`-${hh+nh+10}px 0px -45% 0px`});
-  document.querySelectorAll('.sec').forEach(el=>obs.observe(el));
-}
-
-// ── Scroll top ────────────────────────────────────────────────────────────────
-const stb=document.getElementById('stb');
-window.addEventListener('scroll',()=>stb.classList.toggle('vis',scrollY>400),{passive:true});
-
-// ── Keyboard shortcuts ────────────────────────────────────────────────────────
-document.addEventListener('keydown',e=>{
-  const inp=['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
-  if(e.key==='/'&&!inp){e.preventDefault();document.getElementById('search').focus()}
-  if(e.key==='Escape'&&inp){clearSearch();document.activeElement.blur()}
-  if(!inp){
-    if(e.key.toLowerCase()==='r')rnd();
-    if(e.key.toLowerCase()==='g')setView('grid');
-    if(e.key.toLowerCase()==='l')setView('list');
+  let d=DATA;
+  if(S.showFavs)return d.filter(x=>S.favs.has(x.u));
+  if(S.cat!=='all')d=d.filter(x=>x.c===S.cat);
+  if(S.q){
+    const q=S.q.toLowerCase();
+    d=d.filter(x=>x.n.toLowerCase().includes(q)||(x.note||'').toLowerCase().includes(q));
   }
+  return d;
+}
+
+// ── TEMPLATES ──
+function hcard(lnk){
+  const eu=lnk.u.replace(/'/g,"\\'");
+  const fav=S.favs.has(lnk.u);
+  return`<div class="hcard" onclick="oLink('${eu}')">
+    <div class="hc-hot">HOT</div>
+    <button class="hc-fav${fav?' on':''}" onclick="toggleFav(event,'${eu}')" title="${fav?'Unsave':'Save'}">♥</button>
+    <div class="hc-name">${lnk.n}</div>
+    ${lnk.note?`<div class="hc-note">${lnk.note}</div>`:''}
+  </div>`;
+}
+
+function card(lnk){
+  const eu=lnk.u.replace(/'/g,"\\'");
+  const fav=S.favs.has(lnk.u);
+  const esu=lnk.su?lnk.su.replace(/'/g,"\\'"):'';
+  return`<div class="card${lnk.s?' starred':''}${fav?' faved':''}" onclick="oLink('${eu}')">
+    <button class="c-fav${fav?' on':''}" onclick="toggleFav(event,'${eu}')" title="${fav?'Unsave':'Save'}">♥</button>
+    ${lnk.s?'<div class="c-hot">HOT</div>':''}
+    <div class="c-name">${lnk.n}</div>
+    ${lnk.note?`<div class="c-note">${lnk.note}</div>`:''}
+    ${lnk.su?`<button class="c-srch" onclick="siteSearch(event,'${esu}')" title="Search this site">⌕</button>`:''}
+  </div>`;
+}
+
+// ── RENDER ──
+function render(){
+  const el=document.getElementById('content');
+  const data=filtered();
+
+  if(!data.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-txt">No results found</div></div>`;
+    return;
+  }
+
+  if(S.showFavs){
+    el.innerHTML=`<div class="sec">
+      <div class="sec-hdr"><div class="sec-title">Saved Sites</div><div class="sec-count">${data.length}</div></div>
+      <div class="card-grid">${data.map(card).join('')}</div>
+    </div>`;
+    return;
+  }
+
+  if(S.q){
+    el.innerHTML=`<div class="sec">
+      <div class="sec-hdr"><div class="sec-title">Results for &ldquo;${S.q}&rdquo;</div><div class="sec-count">${data.length} sites</div></div>
+      <div class="card-grid">${data.map(card).join('')}</div>
+    </div>`;
+    return;
+  }
+
+  // Single category view
+  if(S.cat!=='all'){
+    const cat=CATS.find(c=>c.id===S.cat);
+    const heroes=data.filter(x=>x.s);
+    const rest=data.filter(x=>!x.s);
+    el.innerHTML=`<div class="sec">
+      <div class="sec-hdr"><div class="sec-title">${cat?.label||S.cat}</div><div class="sec-count">${data.length}</div></div>
+      ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
+      ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+    </div>`;
+    return;
+  }
+
+  // All categories
+  let html='';
+  for(const cat of CATS){
+    const items=DATA.filter(d=>d.c===cat.id);
+    if(!items.length)continue;
+    const heroes=items.filter(x=>x.s);
+    const rest=items.filter(x=>!x.s);
+    html+=`<div class="sec">
+      <div class="sec-hdr"><div class="sec-title">${cat.label}</div><div class="sec-count">${items.length}</div></div>
+      ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
+      ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement.tagName;
+  const inInput=tag==='INPUT'||tag==='TEXTAREA';
+  if(e.key==='/'&&!inInput){e.preventDefault();document.getElementById('search').focus()}
+  if(e.key==='Escape'){closeCS();if(S.q)clrSearch()}
+  if(!inInput&&e.key.toLowerCase()==='r')randSite();
+  if(!inInput&&e.key.toLowerCase()==='f')toggleFavView();
+  if(!inInput&&e.key.toLowerCase()==='s')openCS();
 });
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-buildNav();
+// ── SCROLL TOP ──
+window.addEventListener('scroll',()=>{
+  document.getElementById('stb').classList.toggle('vis',scrollY>500);
+},{passive:true});
+
+// ── INIT ──
+document.getElementById('gate').classList.add('hidden');
+loadFavs();
+checkGate();
 render();
-// Fix initial search-clear button state
-document.getElementById('sw').classList.remove('has-q');
 </script>
 </body>
 </html>
