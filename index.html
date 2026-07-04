@@ -149,14 +149,30 @@ body{
 }
 
 /* ── SECTION ── */
-.sec{margin-bottom:40px}
+.sec{margin-bottom:8px}
 .sec-hdr{
-  display:flex;align-items:baseline;gap:10px;
-  margin-bottom:16px;padding-bottom:10px;
-  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border-radius:var(--radius);
+  cursor:pointer;user-select:none;
+  background:var(--s1);border:1px solid var(--border);
+  transition:background .15s,border-color .15s;
 }
-.sec-title{font-size:1rem;font-weight:700;color:var(--text)}
-.sec-count{font-size:.75rem;color:var(--t3)}
+.sec-hdr:hover{background:var(--s2);border-color:rgba(233,30,140,.18)}
+.sec-title{font-size:.95rem;font-weight:700;color:var(--text);transition:color .15s}
+.sec-hdr:hover .sec-title{color:var(--accent)}
+.sec-count{font-size:.72rem;color:var(--t3)}
+.sec-chev{
+  margin-left:auto;color:var(--t3);font-size:.85rem;
+  transition:transform .26s cubic-bezier(.4,0,.2,1);flex-shrink:0;
+}
+.sec-hdr.open .sec-chev{transform:rotate(90deg)}
+.sec-body{
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows .28s cubic-bezier(.4,0,.2,1);
+}
+.sec-body.open{grid-template-rows:1fr}
+.sec-inner{overflow:hidden;min-height:0;padding-top:0;transition:padding .28s}
+.sec-body.open .sec-inner{padding-top:10px}
 
 /* ── HERO GRID (starred items) ── */
 .hero-grid{
@@ -400,7 +416,6 @@ body{
   <button class="cpill" data-cat="stepmom" onclick="setCat('stepmom')">Stepmom ★</button>
   <button class="cpill" data-cat="stream" onclick="setCat('stream')">Streaming</button>
   <button class="cpill" data-cat="clips" onclick="setCat('clips')">Clips</button>
-  <button class="cpill" data-cat="ai" onclick="setCat('ai')">AI</button>
   <button class="cpill" data-cat="dl" onclick="setCat('dl')">Downloads</button>
   <button class="cpill" data-cat="tools" onclick="setCat('tools')">Tools</button>
 </nav>
@@ -457,9 +472,6 @@ const DATA=[
   {c:'stepmom',n:'HQPorner · Stepmom',u:'https://hqporner.com/category/step-mom/',note:'4K available'},
   {c:'stepmom',n:'PornHub · Taboo',u:'https://www.pornhub.com/category/taboo',note:'Taboo category'},
   {c:'stepmom',n:'xHamster · Taboo',u:'https://xhamster.com/categories/taboo',note:'Taboo collection'},
-  {c:'stepmom',n:'Naughty America',u:'https://www.naughtyamerica.com',note:'Premium step fantasy'},
-  {c:'stepmom',n:'Bang Bros',u:'https://www.bangbros.com',note:'Step series & MILF'},
-  {c:'stepmom',n:'Reality Kings',u:'https://www.realitykings.com',note:'MILF & step fantasy'},
 
   // STREAMING
   {c:'stream',n:'PornHub',u:'https://www.pornhub.com',s:1,note:"World's largest",su:'https://www.pornhub.com/video/search?search='},
@@ -488,14 +500,6 @@ const DATA=[
   {c:'clips',n:'Tube8',u:'https://www.tube8.com',note:'Short clips'},
   {c:'clips',n:'DaftsEx',u:'https://daftsex.com',note:'Clips & full videos'},
   {c:'clips',n:'PornTrex',u:'https://www.porntrex.com'},
-  {c:'clips',n:'Faphouse',u:'https://faphouse.com',note:'Creator clips'},
-
-  // AI CONTENT
-  {c:'ai',n:'OnlyFakes',u:'https://onlyfakes.app',s:1,note:'Realistic AI images'},
-  {c:'ai',n:'Pornpen.ai',u:'https://pornpen.ai',note:'AI generator'},
-  {c:'ai',n:'SexyAI',u:'https://sexyai.com',note:'AI image art'},
-  {c:'ai',n:'AIPorn.net',u:'https://www.aiporn.net',note:'AI content hub'},
-  {c:'ai',n:'FantasyGF',u:'https://fantasygf.ai',note:'AI companion'},
 
   // DOWNLOADS
   {c:'dl',n:'yt-dlp',u:'https://github.com/yt-dlp/yt-dlp',s:1,note:'Universal CLI downloader'},
@@ -526,13 +530,13 @@ const CATS=[
   {id:'stepmom',label:'Stepmom & Taboo'},
   {id:'stream',label:'Free Streaming'},
   {id:'clips',label:'Clips & Reels'},
-  {id:'ai',label:'AI Content'},
   {id:'dl',label:'Download Tools'},
   {id:'tools',label:'Apps & Tools'},
 ];
 
 // ── STATE ──
 const S={cat:'all',q:'',favs:new Set(),showFavs:false};
+const CLS=new Set(); // collapsed section ids
 
 function loadFavs(){
   try{const f=localStorage.getItem('nf');if(f)S.favs=new Set(JSON.parse(f))}catch(e){}
@@ -560,6 +564,17 @@ function toast(msg,accent){
   t.classList.add('show');
   clearTimeout(_tt);
   _tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── COLLAPSIBLE SECTIONS ──
+function toggleSec(id){
+  const hdr=document.getElementById('sh-'+id);
+  const body=document.getElementById('sb-'+id);
+  if(!hdr||!body)return;
+  const opening=!body.classList.contains('open');
+  body.classList.toggle('open',opening);
+  hdr.classList.toggle('open',opening);
+  if(opening)CLS.delete(id);else CLS.add(id);
 }
 
 // ── OPEN LINK — whole card is the button ──
@@ -683,16 +698,26 @@ function render(){
 
   if(S.showFavs){
     el.innerHTML=`<div class="sec">
-      <div class="sec-hdr"><div class="sec-title">Saved Sites</div><div class="sec-count">${data.length}</div></div>
-      <div class="card-grid">${data.map(card).join('')}</div>
+      <div class="sec-hdr open" id="sh-favs" onclick="toggleSec('favs')">
+        <div class="sec-title">Saved Sites</div><div class="sec-count">${data.length}</div>
+        <span class="sec-chev">›</span>
+      </div>
+      <div class="sec-body open" id="sb-favs"><div class="sec-inner">
+        <div class="card-grid">${data.map(card).join('')}</div>
+      </div></div>
     </div>`;
     return;
   }
 
   if(S.q){
     el.innerHTML=`<div class="sec">
-      <div class="sec-hdr"><div class="sec-title">Results for &ldquo;${S.q}&rdquo;</div><div class="sec-count">${data.length} sites</div></div>
-      <div class="card-grid">${data.map(card).join('')}</div>
+      <div class="sec-hdr open" id="sh-results" onclick="toggleSec('results')">
+        <div class="sec-title">Results for &ldquo;${S.q}&rdquo;</div><div class="sec-count">${data.length} sites</div>
+        <span class="sec-chev">›</span>
+      </div>
+      <div class="sec-body open" id="sb-results"><div class="sec-inner">
+        <div class="card-grid">${data.map(card).join('')}</div>
+      </div></div>
     </div>`;
     return;
   }
@@ -703,24 +728,35 @@ function render(){
     const heroes=data.filter(x=>x.s);
     const rest=data.filter(x=>!x.s);
     el.innerHTML=`<div class="sec">
-      <div class="sec-hdr"><div class="sec-title">${cat?.label||S.cat}</div><div class="sec-count">${data.length}</div></div>
-      ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
-      ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+      <div class="sec-hdr open" id="sh-${S.cat}" onclick="toggleSec('${S.cat}')">
+        <div class="sec-title">${cat?.label||S.cat}</div><div class="sec-count">${data.length}</div>
+        <span class="sec-chev">›</span>
+      </div>
+      <div class="sec-body open" id="sb-${S.cat}"><div class="sec-inner">
+        ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
+        ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+      </div></div>
     </div>`;
     return;
   }
 
-  // All categories
+  // All categories — default all open
   let html='';
   for(const cat of CATS){
     const items=DATA.filter(d=>d.c===cat.id);
     if(!items.length)continue;
     const heroes=items.filter(x=>x.s);
     const rest=items.filter(x=>!x.s);
+    const isOpen=!CLS.has(cat.id);
     html+=`<div class="sec">
-      <div class="sec-hdr"><div class="sec-title">${cat.label}</div><div class="sec-count">${items.length}</div></div>
-      ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
-      ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+      <div class="sec-hdr${isOpen?' open':''}" id="sh-${cat.id}" onclick="toggleSec('${cat.id}')">
+        <div class="sec-title">${cat.label}</div><div class="sec-count">${items.length}</div>
+        <span class="sec-chev">›</span>
+      </div>
+      <div class="sec-body${isOpen?' open':''}" id="sb-${cat.id}"><div class="sec-inner">
+        ${heroes.length?`<div class="hero-grid">${heroes.map(hcard).join('')}</div>`:''}
+        ${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}
+      </div></div>
     </div>`;
   }
   el.innerHTML=html;
