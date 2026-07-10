@@ -34,15 +34,28 @@
 
 <!-- Preview modal -->
 <div class="modal-bg" id="preview-modal">
-  <div class="sheet" style="max-width:900px">
-    <div class="sheet-handle"></div>
-    <div style="position:relative;padding-top:56.25%;background:#000;border-radius:10px;overflow:hidden">
-      <iframe id="previewFrame" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay" allowfullscreen></iframe>
+  <div class="sheet player-sheet">
+    <div class="player-top">
+      <div class="player-title" id="previewTitle"></div>
+      <span class="small" id="previewCount"></span>
+      <button class="hact" id="previewClose" title="Close (Esc)">✕</button>
     </div>
-    <div class="row mt" style="gap:8px">
-      <a class="btn btn-ghost" id="previewOpen" style="width:auto;padding:9px 16px" target="_blank" rel="noopener">Open in Drive</a>
-      <a class="btn btn-ghost" id="previewDownload" style="width:auto;padding:9px 16px" target="_blank" rel="noopener">⬇ Download</a>
-      <button class="btn btn-ghost" id="previewClose" style="width:auto;padding:9px 16px">Close</button>
+    <div class="player-stage">
+      <button class="player-nav" id="previewPrev" title="Previous (←)">‹</button>
+      <div class="player-frame">
+        <video id="previewVideo" controls playsinline preload="metadata"></video>
+        <iframe id="previewFrame" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <button class="player-nav" id="previewNext" title="Next (→)">›</button>
+    </div>
+    <div class="player-bottom">
+      <label class="small" style="display:flex;align-items:center;gap:8px">
+        <input id="autoAdvance" type="checkbox" style="width:auto;height:auto"> Auto-play next
+      </label>
+      <div class="card-actions" style="margin-top:0">
+        <a class="btn btn-ghost" id="previewOpen" style="padding:8px 14px" target="_blank" rel="noopener">Open in Drive</a>
+        <a class="btn btn-ghost" id="previewDownload" style="padding:8px 14px" target="_blank" rel="noopener">⬇ Download</a>
+      </div>
     </div>
   </div>
 </div>
