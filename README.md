@@ -1,1 +1,39 @@
-# Nsfw-Index
+# Noir Index
+
+A private, self-contained, multi-page adult link index — no backend, no accounts, no tracking. Everything is static HTML/CSS/vanilla JS and every setting lives in your own browser's `localStorage`.
+
+Built around one focus: **step fetish, femdom, and mommy domme**, with a personal Google Drive-backed library and full Handy device control alongside it.
+
+## Pages
+
+| Page | Purpose |
+|---|---|
+| `index.html` | Hub — hero, feature cards, quick search |
+| `directory.html` | The curated multi-site directory: text search, tag filters, category accordion, favorites, cross-site search, ~120 entries across Step Fetish, Femdom, Mommy Domme, Free Streaming, and Clips |
+| `library.html` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
+| `handy.html` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
+| `tools.html` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |
+| `settings.html` | Drive API key & folders, Handy connection key, density/landing-page prefs, tag manager, JSON backup/restore, full reset |
+
+## Design
+
+"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open).
+
+## Setting up your Drive library
+
+1. Create a Google Cloud API key restricted to the **Drive API** ([console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)).
+2. Share your Drive folder(s) as **"Anyone with the link — Viewer."**
+3. In `settings.html`, paste the API key and add each folder's ID (the string after `/folders/` in its URL).
+4. Open `library.html` — your videos load directly from Drive, client-side. Nothing passes through any third-party server.
+
+## Setting up The Handy
+
+1. Open the Handy app, copy your Connection Key from Settings.
+2. Paste it into `handy.html` or `settings.html`.
+3. Control manual mode, stroke range, and best-effort script sync directly from the browser, using Handy's own public API (`handyfeeling.com/api/handy/v2`).
+
+## Notes
+
+- Nothing here is sent to any server other than the ones you explicitly configure (Google Drive, Handy) or the destination sites you click through to.
+- Age-gated on first visit per browser (`localStorage`-based, not a real verification mechanism).
+- All data — favorites, tags, keys — can be exported/imported as a single JSON file from Settings.

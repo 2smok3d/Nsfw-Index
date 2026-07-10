@@ -1,0 +1,85 @@
+/* ============================================================
+   store.js — tiny namespaced localStorage wrapper shared by
+   every page. Nothing here ever leaves the browser.
+   ============================================================ */
+const Store = (() => {
+  const PREFIX = 'nbx.';
+
+  function get(key, fallback) {
+    try {
+      const raw = localStorage.getItem(PREFIX + key);
+      return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) { return fallback; }
+  }
+  function set(key, value) {
+    try { localStorage.setItem(PREFIX + key, JSON.stringify(value)); }
+    catch (e) { /* storage unavailable / full — fail silently */ }
+  }
+  function remove(key) {
+    try { localStorage.removeItem(PREFIX + key); } catch (e) {}
+  }
+
+  // ── favorites (directory + library) ──
+  function getFavs() { return new Set(get('favs', [])); }
+  function toggleFav(id) {
+    const favs = getFavs();
+    const had = favs.has(id);
+    had ? favs.delete(id) : favs.add(id);
+    set('favs', [...favs]);
+    return !had;
+  }
+
+  // ── per-item tags (used by library.html mainly) ──
+  function getTags() { return get('tags', {}); } // { itemId: ['tag1','tag2'] }
+  function setTagsFor(id, tags) {
+    const all = getTags();
+    if (tags.length) all[id] = tags; else delete all[id];
+    set('tags', all);
+  }
+
+  // ── settings (API keys, prefs — all local only) ──
+  const DEFAULT_SETTINGS = {
+    driveApiKey: '',
+    driveFolders: [], // [{ id, label }]
+    handyKey: '',
+    handyBaseUrl: 'https://www.handyfeeling.com/api/handy/v2',
+    density: 'comfortable', // comfortable | compact
+    landingPage: 'index.html',
+  };
+  function getSettings() { return Object.assign({}, DEFAULT_SETTINGS, get('settings', {})); }
+  function setSettings(patch) {
+    const cur = getSettings();
+    const next = Object.assign({}, cur, patch);
+    set('settings', next);
+    return next;
+  }
+
+  function ageVerified() { return get('age_ok', false) === true; }
+  function setAgeVerified() { set('age_ok', true); }
+
+  function exportAll() {
+    const out = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(PREFIX)) out[k.slice(PREFIX.length)] = get(k.slice(PREFIX.length));
+    }
+    return out;
+  }
+  function importAll(obj) {
+    Object.keys(obj || {}).forEach(k => set(k, obj[k]));
+  }
+  function resetAll() {
+    Object.keys(localStorage)
+      .filter(k => k.startsWith(PREFIX))
+      .forEach(k => localStorage.removeItem(k));
+  }
+
+  return {
+    get, set, remove,
+    getFavs, toggleFav,
+    getTags, setTagsFor,
+    getSettings, setSettings,
+    ageVerified, setAgeVerified,
+    exportAll, importAll, resetAll,
+  };
+})();

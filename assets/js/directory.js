@@ -1,0 +1,249 @@
+/* ============================================================
+   directory.js — search, filter, tag, and render engine for
+   directory.html. Reads SITES / CATEGORIES from sites.js.
+   ============================================================ */
+(function () {
+  const CROSS_SEARCH_SITES = [
+    { n: 'PornHub',   u: 'https://www.pornhub.com/video/search?search=' },
+    { n: 'xVideos',   u: 'https://www.xvideos.com/?k=' },
+    { n: 'xHamster',  u: 'https://xhamster.com/search/' },
+    { n: 'SpankBang', u: 'https://spankbang.com/s/' },
+    { n: 'XNXX',      u: 'https://www.xnxx.com/search/' },
+    { n: 'Clips4Sale',u: 'https://www.clips4sale.com/studios/search?keywords=' },
+    { n: 'iWantClips',u: 'https://iwantclips.com/search?q=' },
+    { n: 'EPorner',   u: 'https://www.eporner.com/search/' },
+    { n: 'HQPorner',  u: 'https://hqporner.com/search/' },
+    { n: 'ThisVid',   u: 'https://thisvid.com/search/videos/?q=' },
+  ];
+
+  const S = {
+    q: '',
+    openCats: new Set(['stepfetish', 'femdom', 'mommydom']), // open by default
+    activeTags: new Set(),
+    showFavs: false,
+  };
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('q')) S.q = params.get('q');
+
+  function popularTags(limit) {
+    const freq = {};
+    SITES.forEach(s => (s.tags || []).forEach(t => freq[t] = (freq[t] || 0) + 1));
+    return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, limit);
+  }
+
+  function matches(entry, q) {
+    if (!q) return true;
+    const hay = (entry.name + ' ' + (entry.note || '') + ' ' + (entry.tags || []).join(' ')).toLowerCase();
+    return hay.includes(q.toLowerCase());
+  }
+
+  function filteredEntries() {
+    const favs = Store.getFavs();
+    let list = SITES;
+    if (S.showFavs) list = list.filter(e => favs.has(e.id));
+    if (S.activeTags.size) list = list.filter(e => (e.tags || []).some(t => S.activeTags.has(t)));
+    if (S.q) list = list.filter(e => matches(e, S.q));
+    return list;
+  }
+
+  function esc(str) { return String(str).replace(/'/g, "\\'"); }
+
+  function hcard(entry) {
+    const fav = Store.getFavs().has(entry.id);
+    return `<a class="hcard" href="${entry.url}" target="_blank" rel="noopener">
+      <div class="hc-badge">Featured</div>
+      <button class="hc-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
+      <div class="hc-name">${entry.name}</div>
+      ${entry.note ? `<div class="hc-note">${entry.note}</div>` : ''}
+    </a>`;
+  }
+
+  function card(entry) {
+    const fav = Store.getFavs().has(entry.id);
+    const term = entry.sq || S.q || '';
+    return `<a class="card${fav ? ' faved' : ''}" href="${entry.url}" target="_blank" rel="noopener">
+      <button class="c-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
+      <div class="c-tag">${entry.tags && entry.tags[0] ? entry.tags[0] : entry.category}</div>
+      <div class="c-name">${entry.name}</div>
+      ${entry.note ? `<div class="c-note">${entry.note}</div>` : ''}
+      ${entry.su ? `<button class="c-srch" data-search="${esc(entry.su)}" data-term="${esc(term)}" title="Search this site">⌕</button>` : ''}
+    </a>`;
+  }
+
+  function sectionBlock(cat, items) {
+    const isOpen = S.openCats.has(cat.id);
+    const heroes = items.filter(x => x.hot);
+    const rest = items.filter(x => !x.hot);
+    return `<div class="sec" id="${cat.id}">
+      <div class="sec-hdr${isOpen ? ' open' : ''}" data-toggle="${cat.id}">
+        <div>
+          <div class="sec-title">${cat.label}</div>
+          <div class="small" style="margin-top:2px">${cat.blurb}</div>
+        </div>
+        <div class="sec-count">${items.length}</div>
+        <span class="sec-chev">›</span>
+      </div>
+      <div class="sec-body${isOpen ? ' open' : ''}" data-body="${cat.id}">
+        <div class="sec-inner"><div class="sec-pad">
+          ${heroes.length ? `<div class="hero-grid">${heroes.map(hcard).join('')}</div>` : ''}
+          ${rest.length ? `<div class="card-grid">${rest.map(card).join('')}</div>` : ''}
+        </div></div>
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    const el = document.getElementById('content');
+    const data = filteredEntries();
+
+    if (!data.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No results — try a different term or clear the tag filters</div></div>`;
+      wire();
+      return;
+    }
+
+    if (S.showFavs) {
+      el.innerHTML = `<div class="res-hdr">Showing <strong>${data.length} saved</strong> sites</div>
+        <div class="card-grid">${data.map(card).join('')}</div>`;
+      wire();
+      return;
+    }
+
+    if (S.q || S.activeTags.size) {
+      const bits = [];
+      if (S.q) bits.push(`matching <span>"${S.q}"</span>`);
+      if (S.activeTags.size) bits.push(`tagged <span>${[...S.activeTags].join(', ')}</span>`);
+      el.innerHTML = `<div class="res-hdr">Showing <strong>${data.length} sites</strong> ${bits.join(' &amp; ')}</div>
+        <div class="card-grid">${data.map(card).join('')}</div>`;
+      wire();
+      return;
+    }
+
+    el.innerHTML = CATEGORIES.map(cat => {
+      const items = SITES.filter(s => s.category === cat.id);
+      return items.length ? sectionBlock(cat, items) : '';
+    }).join('');
+    wire();
+  }
+
+  function renderTagChips() {
+    const el = document.getElementById('tagChips');
+    const tags = popularTags(18);
+    el.innerHTML = tags.map(t =>
+      `<button class="chip crimson${S.activeTags.has(t) ? ' on crimson' : ''}" data-tag="${t}">${t}</button>`
+    ).join('');
+    el.querySelectorAll('[data-tag]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tag;
+        S.activeTags.has(t) ? S.activeTags.delete(t) : S.activeTags.add(t);
+        renderTagChips();
+        render();
+      });
+    });
+  }
+
+  function wire() {
+    document.querySelectorAll('[data-toggle]').forEach(hdr => {
+      hdr.addEventListener('click', () => {
+        const id = hdr.dataset.toggle;
+        const body = document.querySelector(`[data-body="${id}"]`);
+        const open = S.openCats.has(id);
+        open ? S.openCats.delete(id) : S.openCats.add(id);
+        hdr.classList.toggle('open', !open);
+        body.classList.toggle('open', !open);
+      });
+    });
+    document.querySelectorAll('[data-fav]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
+        const on = Store.toggleFav(btn.dataset.fav);
+        toast(on ? 'Saved ♥' : 'Removed from saved', on ? 'crimson' : null);
+        render();
+      });
+    });
+    document.querySelectorAll('[data-search]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
+        const q = S.q || btn.dataset.term || '';
+        if (!q) { toast('Type a search term first'); return; }
+        window.open(btn.dataset.search + encodeURIComponent(q), '_blank', 'noopener');
+      });
+    });
+  }
+
+  function randomOpen() {
+    const pool = filteredEntries();
+    if (!pool.length) return;
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    window.open(item.url, '_blank', 'noopener');
+    toast('Opening ' + item.name);
+  }
+
+  function openCrossSearch() {
+    const modal = document.getElementById('cs-modal');
+    const input = document.getElementById('csinput');
+    input.value = S.q;
+    document.getElementById('cs-grid').innerHTML = CROSS_SEARCH_SITES.map(s =>
+      `<button class="chip" data-base="${s.u}">${s.n}</button>`
+    ).join('');
+    document.querySelectorAll('#cs-grid [data-base]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = input.value.trim();
+        if (!q) { toast('Enter a search term first'); return; }
+        window.open(btn.dataset.base + encodeURIComponent(q), '_blank', 'noopener');
+      });
+    });
+    modal.classList.add('open');
+    setTimeout(() => { input.select(); input.focus(); }, 80);
+  }
+
+  function init() {
+    NB.initChrome('directory', {
+      search: {
+        placeholder: 'Search the directory…',
+        initial: S.q,
+        onInput: v => { S.q = v; render(); },
+      },
+      actions: [
+        { id: 'csBtn', icon: '⌕', title: 'Search all sites (S)' },
+        { id: 'favBtn', icon: '♥', title: 'Saved (F)' },
+        { id: 'randBtn', icon: '⚡', title: 'Random (R)' },
+      ],
+    });
+
+    renderTagChips();
+    render();
+
+    document.getElementById('favBtn').addEventListener('click', () => {
+      S.showFavs = !S.showFavs;
+      document.getElementById('favBtn').classList.toggle('on', S.showFavs);
+      render();
+    });
+    document.getElementById('randBtn').addEventListener('click', randomOpen);
+    document.getElementById('csBtn').addEventListener('click', openCrossSearch);
+    document.getElementById('cs-modal').addEventListener('click', e => {
+      if (e.target.id === 'cs-modal') e.target.classList.remove('open');
+    });
+    document.getElementById('csClose').addEventListener('click', () => document.getElementById('cs-modal').classList.remove('open'));
+
+    document.addEventListener('keydown', e => {
+      const inInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+      if (inInput) return;
+      if (e.key.toLowerCase() === 'f') document.getElementById('favBtn').click();
+      if (e.key.toLowerCase() === 'r') randomOpen();
+      if (e.key.toLowerCase() === 's') openCrossSearch();
+    });
+
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      if (CATEGORIES.some(c => c.id === id)) {
+        S.openCats.add(id);
+        render();
+        setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
