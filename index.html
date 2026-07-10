@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Noir Index</title>
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%230a0808%27/%3E%3Ctext x=%2750%27 y=%2568%27 font-size=%2755%27 text-anchor=%27middle%27 fill=%27%23c9a24b%27%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
+</head>
+<body data-page="index">
+<div id="nb-gate"></div>
+<div id="nb-header"></div>
+<div id="nb-mobilenav"></div>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="eyebrow">Private Collection · 18+</div>
+    <h1 class="hero-title">Curated for one obsession:<br><em>step fetish, femdom &amp; mommy domme.</em></h1>
+    <p class="hero-sub">A single, self-contained home for everything — the sites worth keeping, your own saved library on Drive, your Handy, and the tools to pull it all down. No accounts, no tracking, nothing leaves this browser.</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="directory.html#stepfetish" style="width:auto;padding:12px 22px">Enter the Directory</a>
+      <a class="btn btn-ghost" href="library.html" style="width:auto;padding:12px 22px">Open My Library</a>
+    </div>
+  </section>
+
+  <section class="feat-grid">
+    <a class="feat-card accent-crimson" href="directory.html#stepfetish">
+      <span class="feat-icon">♛</span>
+      <h3>Step Fetish &amp; Taboo</h3>
+      <p>The core obsession — stepmom, MILF and taboo-family roleplay, curated across every major tube and dedicated studio.</p>
+    </a>
+    <a class="feat-card accent-crimson" href="directory.html#femdom">
+      <span class="feat-icon">⛓</span>
+      <h3>Femdom &amp; Domination</h3>
+      <p>Clip stores, findom, JOI and power-exchange — from Clips4Sale to the free tubes, all in one filterable list.</p>
+    </a>
+    <a class="feat-card accent-crimson" href="directory.html#mommydom">
+      <span class="feat-icon">♦</span>
+      <h3>Mommy Domme</h3>
+      <p>Where MILF energy meets domination — the exact niche, hand-picked across studios and tubes.</p>
+    </a>
+    <a class="feat-card accent-gold" href="library.html">
+      <span class="feat-icon">▣</span>
+      <h3>My Library</h3>
+      <p>Your own saved collection, pulled live from Google Drive — searchable, taggable, downloadable.</p>
+    </a>
+    <a class="feat-card accent-gold" href="handy.html">
+      <span class="feat-icon">⚡</span>
+      <h3>The Handy</h3>
+      <p>Full control panel for your device — manual mode, stroke range, script sync, and a curated feed of scripts.</p>
+    </a>
+    <a class="feat-card" href="tools.html">
+      <span class="feat-icon">⬇</span>
+      <h3>Download &amp; Self-Host</h3>
+      <p>yt-dlp and friends, media servers, and everything you need to build a permanent local archive.</p>
+    </a>
+  </section>
+
+  <section class="panel">
+    <h2>Quick search</h2>
+    <div class="sub">Search across the full directory — sites, tags, notes.</div>
+    <div class="srch-wrap" style="max-width:none">
+      <span class="srch-icon">⌕</span>
+      <input id="quickSearch" type="search" placeholder="Try “femdom”, “stepmom”, “findom”, “4k”…" autocomplete="off">
+    </div>
+  </section>
+
+  <footer class="site" id="nb-footer"></footer>
+</main>
+
+<div id="nb-toast"></div>
+<button id="nb-stb" title="Back to top">↑</button>
+
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script>
+  (function () {
+    const landing = Store.getSettings().landingPage;
+    if (landing && landing !== 'index.html' && !sessionStorage.getItem('nb_landed')) {
+      sessionStorage.setItem('nb_landed', '1');
+      location.replace(landing);
+      return;
+    }
+  })();
+  NB.initChrome('index');
+  const qs = document.getElementById('quickSearch');
+  qs.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && qs.value.trim()) {
+      location.href = 'directory.html?q=' + encodeURIComponent(qs.value.trim());
+    }
+  });
+</script>
+</body>
+</html>

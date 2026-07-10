@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Settings — Noir Index</title>
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%230a0808%27/%3E%3Ctext x=%2750%27 y=%2568%27 font-size=%2755%27 text-anchor=%27middle%27 fill=%27%23c9a24b%27%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
+</head>
+<body data-page="settings">
+<div id="nb-gate"></div>
+<div id="nb-header"></div>
+<div id="nb-mobilenav"></div>
+
+<main id="main">
+  <div class="eyebrow" style="margin-bottom:8px">Settings</div>
+  <h1 style="font-size:1.6rem;margin-bottom:14px">Everything lives here, and only here</h1>
+  <p class="small" style="max-width:640px;margin-bottom:20px">No accounts, no server, no analytics. Every key and preference below is saved to this browser's local storage only. Clear your browser data and it's gone — back it up below if that matters to you.</p>
+
+  <div class="panel">
+    <h2>Google Drive Library</h2>
+    <div class="sub">A free API key with Drive API enabled. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--gold)">Create one in Google Cloud Console</a> — restrict it to the Drive API for safety. Folders must be shared as "Anyone with the link — Viewer".</div>
+    <div class="field">
+      <label>Drive API Key</label>
+      <input id="driveApiKey" type="password" placeholder="AIza…">
+    </div>
+    <button class="btn btn-gold" id="saveDrive" style="width:auto;padding:10px 18px">Save Key</button>
+
+    <div class="mt-lg" style="border-top:1px solid var(--border);padding-top:18px">
+      <div class="field" style="margin-bottom:10px">
+        <label>Add a library folder</label>
+        <div class="row">
+          <input id="newFolderLabel" type="text" placeholder="Label, e.g. Femdom">
+          <input id="newFolderId" type="text" placeholder="Drive folder ID (from the folder's URL)">
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="addFolder" style="width:auto;padding:10px 18px">Add Folder</button>
+      <div class="mt" id="folderList"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>The Handy</h2>
+    <div class="sub">Your Connection Key, from the Handy app under Settings.</div>
+    <div class="row">
+      <div class="field">
+        <label>Connection Key</label>
+        <input id="handyKey" type="password" placeholder="e.g. AbCdEf12">
+      </div>
+      <div class="field">
+        <label>API Base URL</label>
+        <input id="handyBaseUrl" type="text" placeholder="https://www.handyfeeling.com/api/handy/v2">
+      </div>
+    </div>
+    <button class="btn btn-gold" id="saveHandy" style="width:auto;padding:10px 18px">Save Handy Settings</button>
+  </div>
+
+  <div class="panel">
+    <h2>Preferences</h2>
+    <div class="row">
+      <div class="field">
+        <label>Landing page</label>
+        <select id="landingPage">
+          <option value="index.html">Home</option>
+          <option value="directory.html">Directory</option>
+          <option value="library.html">My Library</option>
+          <option value="handy.html">The Handy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Density</label>
+        <select id="density">
+          <option value="comfortable">Comfortable</option>
+          <option value="compact">Compact</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="savePrefs" style="width:auto;padding:10px 18px">Save Preferences</button>
+  </div>
+
+  <div class="panel">
+    <h2>Tag Manager</h2>
+    <div class="sub">Every tag currently used in My Library.</div>
+    <div class="chip-row" id="tagManager"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Backup &amp; Reset</h2>
+    <div class="sub">Export everything (keys, favorites, tags) as a JSON file, or restore from one.</div>
+    <div class="row">
+      <button class="btn btn-ghost" id="exportBtn">⬇ Export Backup</button>
+      <label class="btn btn-ghost" style="cursor:pointer">
+        ⬆ Import Backup
+        <input id="importFile" type="file" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-crimson" id="resetBtn">Reset Everything</button>
+    </div>
+  </div>
+
+  <footer class="site" id="nb-footer"></footer>
+</main>
+
+<div id="nb-toast"></div>
+<button id="nb-stb" title="Back to top">↑</button>
+
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/settings.js"></script>
+</body>
+</html>

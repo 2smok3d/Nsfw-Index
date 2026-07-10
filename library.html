@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Library — Noir Index</title>
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%230a0808%27/%3E%3Ctext x=%2750%27 y=%2568%27 font-size=%2755%27 text-anchor=%27middle%27 fill=%27%23c9a24b%27%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
+</head>
+<body data-page="library">
+<div id="nb-gate"></div>
+<div id="nb-header"></div>
+<div id="nb-mobilenav"></div>
+
+<main id="main">
+  <div class="eyebrow" style="margin-bottom:8px">My Library</div>
+  <h1 style="font-size:1.6rem;margin-bottom:14px">Your own collection, live from Drive</h1>
+
+  <div id="folderState" class="panel">
+    <h2>Connect your Drive library</h2>
+    <div class="sub">Nothing configured yet. Add your Google Drive API key and one or more shared folder IDs in Settings — this page reads them directly from your browser's local storage, nothing is ever sent anywhere else.</div>
+    <a class="btn btn-gold" style="width:auto;padding:12px 22px" href="settings.html">Go to Settings</a>
+  </div>
+
+  <div class="panel" style="padding:16px 18px" id="rootPanel">
+    <div class="chip-row" id="rootChips"></div>
+    <div class="mt small" id="crumb"></div>
+  </div>
+
+  <div id="content"></div>
+
+  <footer class="site" id="nb-footer"></footer>
+</main>
+
+<!-- Preview modal -->
+<div class="modal-bg" id="preview-modal">
+  <div class="sheet" style="max-width:900px">
+    <div class="sheet-handle"></div>
+    <div style="position:relative;padding-top:56.25%;background:#000;border-radius:10px;overflow:hidden">
+      <iframe id="previewFrame" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay" allowfullscreen></iframe>
+    </div>
+    <div class="row mt" style="gap:8px">
+      <a class="btn btn-ghost" id="previewOpen" style="width:auto;padding:9px 16px" target="_blank" rel="noopener">Open in Drive</a>
+      <a class="btn btn-ghost" id="previewDownload" style="width:auto;padding:9px 16px" target="_blank" rel="noopener">⬇ Download</a>
+      <button class="btn btn-ghost" id="previewClose" style="width:auto;padding:9px 16px">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tag editor modal -->
+<div class="modal-bg" id="tag-modal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Edit Tags</div>
+    <div class="field">
+      <label>Comma-separated tags</label>
+      <input id="tagInput" type="text" placeholder="femdom, favorite, handy-synced…">
+    </div>
+    <div class="row">
+      <button class="btn btn-gold" id="tagSave">Save</button>
+      <button class="btn btn-ghost" id="tagClose">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="nb-toast"></div>
+<button id="nb-stb" title="Back to top">↑</button>
+
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/library.js"></script>
+</body>
+</html>
