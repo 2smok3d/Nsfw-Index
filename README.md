@@ -9,7 +9,7 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 | Page | Purpose |
 |---|---|
 | `index.html` | Hub — hero, feature cards, quick search |
-| `directory.html` | The curated multi-site directory: text search, tag filters, category accordion, favorites, cross-site search, ~120 entries across Step Fetish, Femdom, Mommy Domme, Free Streaming, and Clips |
+| `directory.html` | The curated Taboo directory: text search, tag filters, favorites, cross-site search — ~22 free sites covering step fetish, femdom, and mommy domme, one card per site, no paywalled entries |
 | `library.html` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
 | `handy.html` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
 | `tools.html` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |

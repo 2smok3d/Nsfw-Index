@@ -45,6 +45,14 @@
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
 }
 
+/* smooth native cross-page navigation on browsers that support it
+   (Chrome/Android Chrome); silently ignored elsewhere — this is
+   what makes moving between the separate html files feel fluid
+   instead of a hard white-flash reload. */
+@view-transition {
+  navigation: auto;
+}
+
 html{scroll-behavior:smooth;overflow-x:hidden;background:var(--bg)}
 body{
   font-family:var(--sans);
@@ -115,6 +123,11 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:700;letter-spacing:.01em}
 .gate-enter{margin-bottom:12px}
 
 /* ── HEADER / NAV ── */
+/* reserved before nav.js injects the real header, so the page
+   doesn't jump down once JS finishes — the #1 cause of "wonky"
+   feeling loads on a slower mobile connection */
+#nb-header{min-height:var(--hh)}
+
 #hdr{
   position:sticky;top:0;z-index:500;
   height:var(--hh);
@@ -390,6 +403,14 @@ footer.site a:hover{color:var(--gold)}
   opacity:0;transform:scale(.85);transition:all .18s;pointer-events:none;
 }
 .card:hover .play-badge{opacity:1;transform:scale(1)}
+@media(hover:none){
+  /* touch devices never trigger :hover — show the play hint and
+     favorite/search icons at a usable size without it */
+  .play-badge{opacity:.85;transform:scale(1)}
+  .c-fav{width:32px;height:32px;font-size:.85rem}
+  .c-srch{width:28px;height:28px;font-size:.82rem}
+  .hc-fav{width:32px;height:32px}
+}
 .resume-badge{
   position:absolute;bottom:6px;left:6px;background:var(--crimson-dim);color:#ffb3c9;
   font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:5px;border:1px solid rgba(201,47,91,.35);
