@@ -104,6 +104,10 @@
     return [...set].sort();
   }
 
+  function visibleFiles() {
+    return S.files.filter(f => f.mimeType !== FOLDER_MIME && matchesFilter(f));
+  }
+
   function fileCard(f) {
     const isFolder = f.mimeType === FOLDER_MIME;
     const favId = 'drive:' + f.id;
@@ -163,7 +167,9 @@
     if (!visible.length) {
       el.innerHTML = tagChipsHtml + `<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">Nothing here matches</div></div>`;
     } else {
-      el.innerHTML = tagChipsHtml + `<div class="res-hdr mt">${visible.length} item${visible.length === 1 ? '' : 's'}</div><div class="card-grid">${visible.map(fileCard).join('')}</div>`;
+      const fileCount = visibleFiles().length;
+      const tagAllHtml = fileCount ? `<button class="btn btn-ghost" id="tagAllBtn" style="width:auto;padding:6px 12px;font-size:.78rem;margin-left:auto">🏷 Tag All (${fileCount})</button>` : '';
+      el.innerHTML = tagChipsHtml + `<div class="res-hdr mt">${visible.length} item${visible.length === 1 ? '' : 's'}${tagAllHtml}</div><div class="card-grid">${visible.map(fileCard).join('')}</div>`;
     }
     wire();
   }
@@ -184,6 +190,8 @@
     document.querySelectorAll('[data-tag-edit]').forEach(btn => {
       btn.addEventListener('click', () => openTagEditor(btn.dataset.tagEdit));
     });
+    const tagAllBtn = document.getElementById('tagAllBtn');
+    if (tagAllBtn) tagAllBtn.addEventListener('click', openBulkTagEditor);
   }
 
   let previewList = [];
@@ -199,12 +207,8 @@
     frame.src = previewUrl(file.id);
   }
 
-  function playableFiles() {
-    return S.files.filter(f => f.mimeType !== FOLDER_MIME && matchesFilter(f));
-  }
-
   function openPreview(id) {
-    previewList = playableFiles();
+    previewList = visibleFiles();
     previewIndex = previewList.findIndex(f => f.id === id);
     if (previewIndex === -1) {
       const single = S.files.find(f => f.id === id);
@@ -282,12 +286,35 @@
 
   function openTagEditor(id) {
     const modal = document.getElementById('tag-modal');
+    document.getElementById('tagModalTitle').textContent = 'Edit Tags';
     document.getElementById('tagInput').value = tagsFor(id).join(', ');
     document.getElementById('tagSave').onclick = () => {
       const tags = document.getElementById('tagInput').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
       Store.setTagsFor(id, tags);
       modal.classList.remove('open');
       toast('Tags saved', 'gold');
+      render();
+    };
+    modal.classList.add('open');
+  }
+
+  function openBulkTagEditor() {
+    const targets = visibleFiles();
+    if (!targets.length) return;
+    const modal = document.getElementById('tag-modal');
+    document.getElementById('tagModalTitle').textContent = `Tag All ${targets.length} Video${targets.length === 1 ? '' : 's'}`;
+    document.getElementById('tagInput').value = '';
+    document.getElementById('tagInput').placeholder = 'femdom, favorite… (added on top of each video\'s existing tags)';
+    document.getElementById('tagSave').onclick = () => {
+      const add = document.getElementById('tagInput').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+      if (!add.length) { toast('Enter at least one tag first'); return; }
+      targets.forEach(f => {
+        const merged = new Set([...tagsFor(f.id), ...add]);
+        Store.setTagsFor(f.id, [...merged]);
+      });
+      modal.classList.remove('open');
+      document.getElementById('tagInput').placeholder = '';
+      toast(`Tagged ${targets.length} video${targets.length === 1 ? '' : 's'}`, 'gold');
       render();
     };
     modal.classList.add('open');
