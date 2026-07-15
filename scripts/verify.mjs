@@ -22,10 +22,14 @@ const htmlFiles = readdirSync(root).filter(f => f.endsWith('.html'));
 const refRe = /(?:href|src)="([^"]+)"/g;
 
 for (const file of htmlFiles) {
-  const content = readFileSync(path.join(root, file), 'utf8');
+  const raw = readFileSync(path.join(root, file), 'utf8');
+  // strip inline (non-src) <script> bodies before scanning — template
+  // literal JS often contains href="${...}"/src="${...}" that aren't
+  // real file refs. <script src="..."> tags themselves are kept.
+  const markup = raw.replace(/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/gi, '');
   let m;
   let checkedInFile = 0;
-  while ((m = refRe.exec(content))) {
+  while ((m = refRe.exec(markup))) {
     const ref = m[1];
     if (/^(https?:)?\/\//.test(ref) || ref.startsWith('data:') || ref.startsWith('mailto:') || ref.startsWith('#') || ref.startsWith('javascript:')) continue;
     const clean = ref.split('#')[0].split('?')[0];

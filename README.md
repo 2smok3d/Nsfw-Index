@@ -17,7 +17,13 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 
 ## Design
 
-"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open).
+"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open). Layered shadows, gradient hairlines, and a fine film-grain texture give it depth instead of flat digital gradients; native View Transitions cross-fade between pages on supporting browsers.
+
+## Premium features
+
+- **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any page instantly or fuzzy-search the whole Taboo directory without leaving where you are.
+- **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar, pulled from the same local resume data the player already tracks.
+- **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
 
 ## Setting up your Drive library
 

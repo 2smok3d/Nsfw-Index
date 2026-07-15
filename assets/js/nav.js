@@ -65,11 +65,15 @@ const NB = (() => {
             <button class="srch-clr" id="sclr">✕</button>
           </div>` : ''}
           <div class="hdr-actions">
+            <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)">⌘K</button>
             ${(opts && opts.actions || []).map(a => `<button class="hact" id="${a.id}" title="${a.title}">${a.icon}</button>`).join('')}
             <button class="hact" id="navToggle" title="Menu">☰</button>
           </div>
         </div>
       </header>`;
+
+    const cmdkBtn = document.getElementById('cmdkBtn');
+    if (cmdkBtn) cmdkBtn.addEventListener('click', () => { if (typeof Palette !== 'undefined') Palette.toggle(); });
 
     const mob = document.getElementById('nb-mobilenav');
     if (mob) {

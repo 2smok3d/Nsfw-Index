@@ -149,7 +149,10 @@
       el.innerHTML = `<div class="empty"><div class="empty-icon">▣</div><div class="empty-txt">Choose a library folder above to begin</div></div>`;
       return;
     }
-    if (S.loading) { el.innerHTML = `<div class="empty"><div class="empty-icon">◌</div><div class="empty-txt">Loading from Drive…</div></div>`; return; }
+    if (S.loading) {
+      el.innerHTML = `<div class="skeleton-grid mt">${Array(8).fill('<div class="skeleton skeleton-card"></div>').join('')}</div>`;
+      return;
+    }
     if (S.error) {
       el.innerHTML = `<div class="panel" style="border-color:var(--crimson-bright)">
         <h2>Couldn't load this folder</h2>
@@ -246,7 +249,7 @@
     video.onloadedmetadata = () => {
       clearTimeout(stallTimer);
       const saved = Store.get('playpos', {})[file.id];
-      if (saved && saved < video.duration - 5) video.currentTime = saved;
+      if (saved && saved.time < video.duration - 5) video.currentTime = saved.time;
       video.play().catch(() => {});
     };
     video.ontimeupdate = () => {
@@ -254,7 +257,15 @@
       if (now - lastSaveTs < 3000) return;
       lastSaveTs = now;
       const pos = Store.get('playpos', {});
-      pos[file.id] = video.currentTime;
+      pos[file.id] = {
+        time: video.currentTime,
+        durationSec: video.duration || 0,
+        name: file.name,
+        thumbnailLink: file.thumbnailLink || '',
+        rootId: S.root ? S.root.id : null,
+        rootLabel: S.root ? S.root.name : '',
+        updatedAt: now,
+      };
       Store.set('playpos', pos);
     };
     video.onended = () => {

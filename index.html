@@ -24,6 +24,8 @@
     </div>
   </section>
 
+  <section id="continueWatching" style="display:none;margin-bottom:28px"></section>
+
   <section class="feat-grid">
     <a class="feat-card accent-crimson" href="directory.html#taboo">
       <span class="feat-icon">♛</span>
@@ -64,6 +66,7 @@
 
 <script src="assets/js/store.js"></script>
 <script src="assets/js/nav.js"></script>
+<script src="assets/js/palette.js"></script>
 <script>
   (function () {
     const landing = Store.getSettings().landingPage;
@@ -80,6 +83,37 @@
       location.href = 'directory.html?q=' + encodeURIComponent(qs.value.trim());
     }
   });
+
+  (function renderContinueWatching() {
+    const pos = Store.get('playpos', {});
+    const entries = Object.values(pos)
+      .filter(v => v && typeof v === 'object' && v.time > 15 && v.name)
+      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+      .slice(0, 6);
+    const section = document.getElementById('continueWatching');
+    if (!entries.length) return;
+    section.style.display = 'block';
+    section.innerHTML = `
+      <div class="eyebrow" style="margin-bottom:8px">Pick up where you left off</div>
+      <h2 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:14px">Continue Watching</h2>
+      <div class="card-grid">
+        ${entries.map(v => {
+          const pct = v.durationSec ? Math.min(100, Math.round((v.time / v.durationSec) * 100)) : 0;
+          return `<a class="card" href="library.html" style="padding:10px 10px 12px">
+            <div class="thumb-wrap" style="margin-bottom:8px">
+              <div style="width:100%;aspect-ratio:16/9;background:var(--s3)"></div>
+              ${v.thumbnailLink ? `<img src="${v.thumbnailLink}" alt="" loading="lazy" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ''}
+              <div class="play-badge" style="opacity:.85">▶</div>
+              <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,.45)">
+                <div style="width:${pct}%;height:100%;background:var(--grad-gold)"></div>
+              </div>
+            </div>
+            <div class="c-name" style="padding-right:0">${v.name}</div>
+            <div class="c-note">${v.rootLabel || 'My Library'} · ${pct}% watched</div>
+          </a>`;
+        }).join('')}
+      </div>`;
+  })();
 </script>
 </body>
 </html>
