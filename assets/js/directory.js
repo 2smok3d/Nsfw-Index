@@ -9,8 +9,6 @@
     { n: 'xHamster',  u: 'https://xhamster.com/search/' },
     { n: 'SpankBang', u: 'https://spankbang.com/s/' },
     { n: 'XNXX',      u: 'https://www.xnxx.com/search/' },
-    { n: 'Clips4Sale',u: 'https://www.clips4sale.com/studios/search?keywords=' },
-    { n: 'iWantClips',u: 'https://iwantclips.com/search?q=' },
     { n: 'EPorner',   u: 'https://www.eporner.com/search/' },
     { n: 'HQPorner',  u: 'https://hqporner.com/search/' },
     { n: 'ThisVid',   u: 'https://thisvid.com/search/videos/?q=' },
@@ -18,7 +16,7 @@
 
   const S = {
     q: '',
-    openCats: new Set(['stepfetish', 'femdom', 'mommydom']), // open by default
+    openCats: new Set(CATEGORIES.map(c => c.id)), // all open by default
     activeTags: new Set(),
     showFavs: false,
   };

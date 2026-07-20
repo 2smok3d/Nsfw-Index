@@ -104,6 +104,10 @@
     return [...set].sort();
   }
 
+  function visibleFiles() {
+    return S.files.filter(f => f.mimeType !== FOLDER_MIME && matchesFilter(f));
+  }
+
   function fileCard(f) {
     const isFolder = f.mimeType === FOLDER_MIME;
     const favId = 'drive:' + f.id;
@@ -115,17 +119,21 @@
         <div class="c-name">▣ ${f.name}</div>
       </div>`;
     }
-    const thumb = f.thumbnailLink ? `<img src="${f.thumbnailLink}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block;background:var(--s3)">` : `<div style="width:100%;aspect-ratio:16/9;border-radius:8px;margin-bottom:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:1.4rem">▶</div>`;
+    const thumb = f.thumbnailLink ? `<img src="${f.thumbnailLink}" alt="" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--s3)">` : `<div style="width:100%;aspect-ratio:16/9;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:1.4rem">▶</div>`;
+    const hasResume = !!(Store.get('playpos', {})[f.id]);
     return `<div class="card${fav ? ' faved' : ''}" style="padding:10px 10px 12px;cursor:default">
-      <div data-preview="${f.id}" style="cursor:pointer">${thumb}</div>
-      <div class="c-name" style="padding-right:0">${f.name}</div>
+      <div class="thumb-wrap" data-preview="${f.id}">
+        ${thumb}
+        <div class="play-badge">▶</div>
+        ${hasResume ? `<div class="resume-badge">Resume</div>` : ''}
+      </div>
+      <div class="c-name" style="padding-right:0;cursor:pointer" data-preview="${f.id}">${f.name}</div>
       <div class="c-note">${fmtSize(f.size)}${f.videoMediaMetadata && f.videoMediaMetadata.durationMillis ? ' · ' + Math.round(f.videoMediaMetadata.durationMillis / 60000) + ' min' : ''}</div>
       ${tags.length ? `<div class="chip-row mt" style="gap:4px">${tags.map(t => `<span class="chip" style="padding:3px 9px;font-size:.68rem;cursor:default">${t}</span>`).join('')}</div>` : ''}
-      <div class="row" style="margin:10px 0 0;gap:6px">
-        <button class="btn btn-ghost" style="width:auto;padding:7px 12px;font-size:.75rem" data-preview="${f.id}">▶ Preview</button>
-        <a class="btn btn-ghost" style="width:auto;padding:7px 12px;font-size:.75rem;text-decoration:none" href="${downloadUrl(f.id)}" target="_blank" rel="noopener">⬇ Download</a>
-        <button class="btn btn-ghost" style="width:auto;padding:7px 10px;font-size:.75rem" data-fav="${favId}">${fav ? '♥' : '♡'}</button>
-        <button class="btn btn-ghost" style="width:auto;padding:7px 10px;font-size:.75rem" data-tag-edit="${f.id}">🏷</button>
+      <div class="card-actions">
+        <a class="btn btn-ghost" style="padding:7px 12px;font-size:.75rem;text-decoration:none" href="${downloadUrl(f.id)}" target="_blank" rel="noopener">⬇ Download</a>
+        <button class="btn btn-ghost" style="padding:7px 10px;font-size:.75rem" data-fav="${favId}">${fav ? '♥' : '♡'}</button>
+        <button class="btn btn-ghost" style="padding:7px 10px;font-size:.75rem" data-tag-edit="${f.id}">🏷</button>
       </div>
     </div>`;
   }
@@ -141,7 +149,10 @@
       el.innerHTML = `<div class="empty"><div class="empty-icon">▣</div><div class="empty-txt">Choose a library folder above to begin</div></div>`;
       return;
     }
-    if (S.loading) { el.innerHTML = `<div class="empty"><div class="empty-icon">◌</div><div class="empty-txt">Loading from Drive…</div></div>`; return; }
+    if (S.loading) {
+      el.innerHTML = `<div class="skeleton-grid mt">${Array(8).fill('<div class="skeleton skeleton-card"></div>').join('')}</div>`;
+      return;
+    }
     if (S.error) {
       el.innerHTML = `<div class="panel" style="border-color:var(--crimson-bright)">
         <h2>Couldn't load this folder</h2>
@@ -159,7 +170,9 @@
     if (!visible.length) {
       el.innerHTML = tagChipsHtml + `<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">Nothing here matches</div></div>`;
     } else {
-      el.innerHTML = tagChipsHtml + `<div class="res-hdr mt">${visible.length} item${visible.length === 1 ? '' : 's'}</div><div class="card-grid">${visible.map(fileCard).join('')}</div>`;
+      const fileCount = visibleFiles().length;
+      const tagAllHtml = fileCount ? `<button class="btn btn-ghost" id="tagAllBtn" style="width:auto;padding:6px 12px;font-size:.78rem;margin-left:auto">🏷 Tag All (${fileCount})</button>` : '';
+      el.innerHTML = tagChipsHtml + `<div class="res-hdr mt">${visible.length} item${visible.length === 1 ? '' : 's'}${tagAllHtml}</div><div class="card-grid">${visible.map(fileCard).join('')}</div>`;
     }
     wire();
   }
@@ -180,28 +193,139 @@
     document.querySelectorAll('[data-tag-edit]').forEach(btn => {
       btn.addEventListener('click', () => openTagEditor(btn.dataset.tagEdit));
     });
+    const tagAllBtn = document.getElementById('tagAllBtn');
+    if (tagAllBtn) tagAllBtn.addEventListener('click', openBulkTagEditor);
+  }
+
+  let previewList = [];
+  let previewIndex = -1;
+  let lastSaveTs = 0;
+  let stallTimer = null;
+
+  function fallbackToFrame(file) {
+    const video = document.getElementById('previewVideo');
+    const frame = document.getElementById('previewFrame');
+    video.style.display = 'none';
+    frame.style.display = 'block';
+    frame.src = previewUrl(file.id);
   }
 
   function openPreview(id) {
-    const modal = document.getElementById('preview-modal');
-    document.getElementById('previewFrame').src = previewUrl(id);
-    document.getElementById('previewOpen').href = viewUrl(id);
-    document.getElementById('previewDownload').href = downloadUrl(id);
-    modal.classList.add('open');
+    previewList = visibleFiles();
+    previewIndex = previewList.findIndex(f => f.id === id);
+    if (previewIndex === -1) {
+      const single = S.files.find(f => f.id === id);
+      previewList = single ? [single] : [];
+      previewIndex = 0;
+    }
+    if (!previewList.length) return;
+    document.getElementById('preview-modal').classList.add('open');
+    renderPreview();
   }
+
+  function renderPreview() {
+    const file = previewList[previewIndex];
+    if (!file) return;
+    const video = document.getElementById('previewVideo');
+    const frame = document.getElementById('previewFrame');
+
+    document.getElementById('previewTitle').textContent = file.name;
+    document.getElementById('previewOpen').href = viewUrl(file.id);
+    document.getElementById('previewDownload').href = downloadUrl(file.id);
+    const hasMulti = previewList.length > 1;
+    document.getElementById('previewPrev').style.visibility = hasMulti ? 'visible' : 'hidden';
+    document.getElementById('previewNext').style.visibility = hasMulti ? 'visible' : 'hidden';
+    document.getElementById('previewCount').textContent = hasMulti ? `${previewIndex + 1} / ${previewList.length}` : '';
+
+    frame.style.display = 'none';
+    frame.src = '';
+    video.style.display = 'block';
+    video.src = downloadUrl(file.id);
+    video.load();
+
+    clearTimeout(stallTimer);
+    stallTimer = setTimeout(() => { if (video.readyState < 2) fallbackToFrame(file); }, 8000);
+
+    video.onloadedmetadata = () => {
+      clearTimeout(stallTimer);
+      const saved = Store.get('playpos', {})[file.id];
+      if (saved && saved.time < video.duration - 5) video.currentTime = saved.time;
+      video.play().catch(() => {});
+    };
+    video.ontimeupdate = () => {
+      const now = Date.now();
+      if (now - lastSaveTs < 3000) return;
+      lastSaveTs = now;
+      const pos = Store.get('playpos', {});
+      pos[file.id] = {
+        time: video.currentTime,
+        durationSec: video.duration || 0,
+        name: file.name,
+        thumbnailLink: file.thumbnailLink || '',
+        rootId: S.root ? S.root.id : null,
+        rootLabel: S.root ? S.root.name : '',
+        updatedAt: now,
+      };
+      Store.set('playpos', pos);
+    };
+    video.onended = () => {
+      const pos = Store.get('playpos', {});
+      delete pos[file.id];
+      Store.set('playpos', pos);
+      if (document.getElementById('autoAdvance').checked) navPreview(1);
+    };
+    video.onerror = () => { clearTimeout(stallTimer); fallbackToFrame(file); };
+  }
+
+  function navPreview(delta) {
+    if (previewList.length < 2) return;
+    previewIndex = (previewIndex + delta + previewList.length) % previewList.length;
+    renderPreview();
+  }
+
   function closePreview() {
-    document.getElementById('preview-modal').classList.remove('open');
+    clearTimeout(stallTimer);
+    const video = document.getElementById('previewVideo');
+    video.onloadedmetadata = video.ontimeupdate = video.onended = video.onerror = null;
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
     document.getElementById('previewFrame').src = '';
+    document.getElementById('preview-modal').classList.remove('open');
+    render();
   }
 
   function openTagEditor(id) {
     const modal = document.getElementById('tag-modal');
+    document.getElementById('tagModalTitle').textContent = 'Edit Tags';
     document.getElementById('tagInput').value = tagsFor(id).join(', ');
     document.getElementById('tagSave').onclick = () => {
       const tags = document.getElementById('tagInput').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
       Store.setTagsFor(id, tags);
       modal.classList.remove('open');
       toast('Tags saved', 'gold');
+      render();
+    };
+    modal.classList.add('open');
+  }
+
+  function openBulkTagEditor() {
+    const targets = visibleFiles();
+    if (!targets.length) return;
+    const modal = document.getElementById('tag-modal');
+    document.getElementById('tagModalTitle').textContent = `Tag All ${targets.length} Video${targets.length === 1 ? '' : 's'}`;
+    document.getElementById('tagInput').value = '';
+    document.getElementById('tagInput').placeholder = 'femdom, favorite… (added on top of each video\'s existing tags)';
+    document.getElementById('tagSave').onclick = () => {
+      const add = document.getElementById('tagInput').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+      if (!add.length) { toast('Enter at least one tag first'); return; }
+      targets.forEach(f => {
+        const merged = new Set([...tagsFor(f.id), ...add]);
+        Store.setTagsFor(f.id, [...merged]);
+      });
+      modal.classList.remove('open');
+      document.getElementById('tagInput').placeholder = '';
+      toast(`Tagged ${targets.length} video${targets.length === 1 ? '' : 's'}`, 'gold');
       render();
     };
     modal.classList.add('open');
@@ -219,9 +343,19 @@
     render();
 
     document.getElementById('previewClose').addEventListener('click', closePreview);
+    document.getElementById('previewPrev').addEventListener('click', () => navPreview(-1));
+    document.getElementById('previewNext').addEventListener('click', () => navPreview(1));
     document.getElementById('preview-modal').addEventListener('click', e => { if (e.target.id === 'preview-modal') closePreview(); });
     document.getElementById('tagClose').addEventListener('click', () => document.getElementById('tag-modal').classList.remove('open'));
     document.getElementById('tag-modal').addEventListener('click', e => { if (e.target.id === 'tag-modal') e.target.classList.remove('open'); });
+
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('preview-modal').classList.contains('open')) return;
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'Escape') closePreview();
+      if (e.key === 'ArrowLeft') navPreview(-1);
+      if (e.key === 'ArrowRight') navPreview(1);
+    });
 
     if (!apiKey() || !folders().length) {
       // handled by render()'s folderState panel

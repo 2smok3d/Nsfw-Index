@@ -1,0 +1,14 @@
+{
+  "name": "noir-index",
+  "private": true,
+  "type": "module",
+  "description": "Self-contained multi-page NSFW index — no build step required to run, this file only exists for CI tooling.",
+  "scripts": {
+    "verify": "node scripts/verify.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test": "npm run verify && npm run smoke"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

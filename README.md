@@ -9,7 +9,7 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 | Page | Purpose |
 |---|---|
 | `index.html` | Hub — hero, feature cards, quick search |
-| `directory.html` | The curated multi-site directory: text search, tag filters, category accordion, favorites, cross-site search, ~120 entries across Step Fetish, Femdom, Mommy Domme, Free Streaming, and Clips |
+| `directory.html` | The curated Taboo directory: text search, tag filters, favorites, cross-site search — ~22 free sites covering step fetish, femdom, and mommy domme, one card per site, no paywalled entries |
 | `library.html` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
 | `handy.html` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
 | `tools.html` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |
@@ -17,7 +17,13 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 
 ## Design
 
-"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open).
+"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open). Layered shadows, gradient hairlines, and a fine film-grain texture give it depth instead of flat digital gradients; native View Transitions cross-fade between pages on supporting browsers.
+
+## Premium features
+
+- **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any page instantly or fuzzy-search the whole Taboo directory without leaving where you are.
+- **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar, pulled from the same local resume data the player already tracks.
+- **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
 
 ## Setting up your Drive library
 
