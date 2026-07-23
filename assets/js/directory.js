@@ -30,6 +30,13 @@
     return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, limit);
   }
 
+  // ── most-visited: real usage overrides curated ordering ──
+  function withVisits(list) {
+    const v = Store.getVisits();
+    return list.map(x => Object.assign({ _visits: v[x.id] || 0 }, x));
+  }
+  function byVisitsDesc(a, b) { return b._visits - a._visits; }
+
   function matches(entry, q) {
     if (!q) return true;
     const hay = (entry.name + ' ' + (entry.note || '') + ' ' + (entry.tags || []).join(' ')).toLowerCase();
@@ -49,8 +56,9 @@
 
   function hcard(entry) {
     const fav = Store.getFavs().has(entry.id);
-    return `<a class="hcard" href="${entry.url}" target="_blank" rel="noopener">
-      <div class="hc-badge">Featured</div>
+    const visited = entry._visits > 0;
+    return `<a class="hcard" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
+      <div class="hc-badge${visited ? ' hc-badge-hot' : ''}">${visited ? '🔥 Most Visited' : 'Featured'}</div>
       <button class="hc-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
       <div class="hc-name">${entry.name}</div>
       ${entry.note ? `<div class="hc-note">${entry.note}</div>` : ''}
@@ -60,19 +68,38 @@
   function card(entry) {
     const fav = Store.getFavs().has(entry.id);
     const term = entry.sq || S.q || '';
-    return `<a class="card${fav ? ' faved' : ''}" href="${entry.url}" target="_blank" rel="noopener">
+    const visited = entry._visits > 0;
+    return `<a class="card${fav ? ' faved' : ''}" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
       <button class="c-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
-      <div class="c-tag">${entry.tags && entry.tags[0] ? entry.tags[0] : entry.category}</div>
+      <div class="c-tag">${visited ? '🔥 visited' : (entry.tags && entry.tags[0] ? entry.tags[0] : entry.category)}</div>
       <div class="c-name">${entry.name}</div>
       ${entry.note ? `<div class="c-note">${entry.note}</div>` : ''}
-      ${entry.su ? `<button class="c-srch" data-search="${esc(entry.su)}" data-term="${esc(term)}" title="Search this site">⌕</button>` : ''}
+      ${entry.su ? `<button class="c-srch" data-search="${esc(entry.su)}" data-term="${esc(term)}" data-name="${esc(entry.name)}" title="Search this site">⌕</button>` : ''}
     </a>`;
   }
 
-  function sectionBlock(cat, items) {
+  function sectionBlock(cat, rawItems) {
     const isOpen = S.openCats.has(cat.id);
-    const heroes = items.filter(x => x.hot);
-    const rest = items.filter(x => !x.hot);
+    const items = withVisits(rawItems);
+    const HERO_N = 6;
+    const visitedSorted = items.filter(x => x._visits > 0).sort(byVisitsDesc);
+
+    let heroes, rest;
+    if (visitedSorted.length) {
+      heroes = visitedSorted.slice(0, HERO_N);
+      const heroIds = new Set(heroes.map(x => x.id));
+      if (heroes.length < HERO_N) {
+        const pad = items.filter(x => x.hot && !heroIds.has(x.id)).slice(0, HERO_N - heroes.length);
+        pad.forEach(x => heroIds.add(x.id));
+        heroes = heroes.concat(pad);
+      }
+      rest = items.filter(x => !heroIds.has(x.id)).sort(byVisitsDesc);
+    } else {
+      heroes = items.filter(x => x.hot);
+      const heroIds = new Set(heroes.map(x => x.id));
+      rest = items.filter(x => !heroIds.has(x.id));
+    }
+
     return `<div class="sec" id="${cat.id}">
       <div class="sec-hdr${isOpen ? ' open' : ''}" data-toggle="${cat.id}">
         <div>
@@ -102,8 +129,9 @@
     }
 
     if (S.showFavs) {
+      const sorted = withVisits(data).sort(byVisitsDesc);
       el.innerHTML = `<div class="res-hdr">Showing <strong>${data.length} saved</strong> sites</div>
-        <div class="card-grid">${data.map(card).join('')}</div>`;
+        <div class="card-grid">${sorted.map(card).join('')}</div>`;
       wire();
       return;
     }
@@ -112,8 +140,9 @@
       const bits = [];
       if (S.q) bits.push(`matching <span>"${S.q}"</span>`);
       if (S.activeTags.size) bits.push(`tagged <span>${[...S.activeTags].join(', ')}</span>`);
+      const sorted = withVisits(data).sort(byVisitsDesc);
       el.innerHTML = `<div class="res-hdr">Showing <strong>${data.length} sites</strong> ${bits.join(' &amp; ')}</div>
-        <div class="card-grid">${data.map(card).join('')}</div>`;
+        <div class="card-grid">${sorted.map(card).join('')}</div>`;
       wire();
       return;
     }
@@ -142,6 +171,9 @@
   }
 
   function wire() {
+    document.querySelectorAll('[data-visit]').forEach(a => {
+      a.addEventListener('click', () => Store.recordVisit(a.dataset.visit));
+    });
     document.querySelectorAll('[data-toggle]').forEach(hdr => {
       hdr.addEventListener('click', () => {
         const id = hdr.dataset.toggle;
@@ -165,9 +197,37 @@
         e.preventDefault(); e.stopPropagation();
         const q = S.q || btn.dataset.term || '';
         if (!q) { toast('Type a search term first'); return; }
-        window.open(btn.dataset.search + encodeURIComponent(q), '_blank', 'noopener');
+        openSearchResults(q, [{ n: btn.dataset.name || 'Results', u: btn.dataset.search }], 0);
       });
     });
+  }
+
+  // ── in-app multi-site search results (iframe viewer, stays in the app) ──
+  function openSearchResults(term, sites, startIndex) {
+    const view = document.getElementById('sr-view');
+    const tabs = document.getElementById('sr-tabs');
+    const frame = document.getElementById('sr-frame');
+    const extLink = document.getElementById('srExternal');
+    const titleEl = document.getElementById('srTerm');
+
+    function load(i) {
+      const site = sites[i];
+      const url = site.u + encodeURIComponent(term);
+      frame.src = url;
+      extLink.href = url;
+      tabs.querySelectorAll('.sr-tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+    }
+
+    titleEl.textContent = `"${term}"`;
+    tabs.innerHTML = sites.map((s, i) => `<button class="sr-tab" data-i="${i}">${s.n}</button>`).join('');
+    tabs.querySelectorAll('.sr-tab').forEach(btn => btn.addEventListener('click', () => load(Number(btn.dataset.i))));
+    load(startIndex || 0);
+    view.classList.add('open');
+  }
+
+  function closeSearchResults() {
+    document.getElementById('sr-view').classList.remove('open');
+    document.getElementById('sr-frame').src = 'about:blank';
   }
 
   function randomOpen() {
@@ -182,14 +242,15 @@
     const modal = document.getElementById('cs-modal');
     const input = document.getElementById('csinput');
     input.value = S.q;
-    document.getElementById('cs-grid').innerHTML = CROSS_SEARCH_SITES.map(s =>
-      `<button class="chip" data-base="${s.u}">${s.n}</button>`
+    document.getElementById('cs-grid').innerHTML = CROSS_SEARCH_SITES.map((s, i) =>
+      `<button class="chip" data-i="${i}">${s.n}</button>`
     ).join('');
-    document.querySelectorAll('#cs-grid [data-base]').forEach(btn => {
+    document.querySelectorAll('#cs-grid [data-i]').forEach(btn => {
       btn.addEventListener('click', () => {
         const q = input.value.trim();
         if (!q) { toast('Enter a search term first'); return; }
-        window.open(btn.dataset.base + encodeURIComponent(q), '_blank', 'noopener');
+        modal.classList.remove('open');
+        openSearchResults(q, CROSS_SEARCH_SITES, Number(btn.dataset.i));
       });
     });
     modal.classList.add('open');
@@ -224,6 +285,15 @@
       if (e.target.id === 'cs-modal') e.target.classList.remove('open');
     });
     document.getElementById('csClose').addEventListener('click', () => document.getElementById('cs-modal').classList.remove('open'));
+    document.getElementById('csinput').addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const q = e.target.value.trim();
+      if (!q) { toast('Enter a search term first'); return; }
+      document.getElementById('cs-modal').classList.remove('open');
+      openSearchResults(q, CROSS_SEARCH_SITES, 0);
+    });
+    document.getElementById('srClose').addEventListener('click', closeSearchResults);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearchResults(); });
 
     document.addEventListener('keydown', e => {
       const inInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);

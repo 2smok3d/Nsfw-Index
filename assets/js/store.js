@@ -29,6 +29,15 @@ const Store = (() => {
     return !had;
   }
 
+  // ── visit counts (directory — drives "most visited" ordering) ──
+  function getVisits() { return get('visits', {}); } // { siteId: count }
+  function recordVisit(id) {
+    const v = getVisits();
+    v[id] = (v[id] || 0) + 1;
+    set('visits', v);
+    return v[id];
+  }
+
   // ── per-item tags (used by library.html mainly) ──
   function getTags() { return get('tags', {}); } // { itemId: ['tag1','tag2'] }
   function setTagsFor(id, tags) {
@@ -77,6 +86,7 @@ const Store = (() => {
   return {
     get, set, remove,
     getFavs, toggleFav,
+    getVisits, recordVisit,
     getTags, setTagsFor,
     getSettings, setSettings,
     ageVerified, setAgeVerified,
