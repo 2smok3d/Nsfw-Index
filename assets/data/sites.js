@@ -65,4 +65,5 @@ const SITES = [
   { id: 'youjizz', name: 'Youjizz', url: 'https://www.youjizz.com', category: 'taboo', tags: ['tube', 'free', 'classic', 'amateur'], note: 'Long-running amateur-leaning tube' },
   { id: 'xozilla', name: 'Xozilla', url: 'https://www.xozilla.com', category: 'taboo', tags: ['tube', 'free', 'hd'], note: 'Clean modern tube, HD focus' },
   { id: 'zbporn', name: 'ZBPorn', url: 'https://zbporn.com', category: 'taboo', tags: ['tube', 'free', 'hd'], note: 'Well-organized categories, HD' },
+  { id: 'ifuqyou', name: 'iFuqYou', url: 'https://enwww.ifuqyou.com', category: 'taboo', tags: ['tube', 'free'], note: 'English-language version' },
 ];
