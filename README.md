@@ -24,6 +24,7 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 - **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any page instantly or fuzzy-search the whole Taboo directory without leaving where you are.
 - **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar, pulled from the same local resume data the player already tracks.
 - **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
+- **Mobile bottom tab bar** — on phones, a persistent native-app-style tab bar (Home / Directory / Library / Handy / More) replaces the old hamburger-only nav. "More" opens a full sheet with Tools, Settings, and a one-tap Quick Search that opens the command palette (no keyboard needed).
 
 ## Setting up your Drive library
 

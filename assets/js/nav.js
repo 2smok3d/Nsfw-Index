@@ -15,7 +15,7 @@ const NB = (() => {
 
   let toastTimer;
   function toast(msg, tone) {
-    const t = document.getElementById('nb-toast-inner');
+    const t = document.getElementById('toast');
     if (!t) return;
     t.textContent = msg;
     t.style.borderColor = tone === 'crimson' ? 'rgba(201,47,91,.5)' : tone === 'gold' ? 'var(--gold)' : '';
@@ -77,10 +77,16 @@ const NB = (() => {
 
     const mob = document.getElementById('nb-mobilenav');
     if (mob) {
-      mob.innerHTML = `<div id="mobileNav">${PAGES.map(p =>
+      mob.innerHTML = `<div id="mobileNav">
+        <button type="button" class="mobilenav-search" id="mobNavSearch"><span>⌕ Quick Search</span><span class="cmdk-kbd">⌘K</span></button>
+        ${PAGES.map(p =>
         `<a href="${p.href}" class="${p.id === activeId ? 'active' : ''}"><span>${p.icon}</span> ${p.label}</a>`
       ).join('')}</div>`;
       document.getElementById('navToggle').onclick = () => mob.querySelector('#mobileNav').classList.toggle('open');
+      document.getElementById('mobNavSearch').onclick = () => {
+        mob.querySelector('#mobileNav').classList.remove('open');
+        if (typeof Palette !== 'undefined') Palette.toggle();
+      };
     }
 
     if (showSearch) {
@@ -107,8 +113,7 @@ const NB = (() => {
   function buildToast() {
     const el = document.getElementById('nb-toast');
     if (!el) return;
-    el.innerHTML = `<div id="toast" id="nb-toast-inner"></div>`;
-    el.firstElementChild.id = 'nb-toast-inner';
+    el.innerHTML = `<div id="toast"></div>`;
   }
 
   function buildScrollTop() {
@@ -117,6 +122,26 @@ const NB = (() => {
     btn.textContent = '↑';
     btn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
+  }
+
+  function buildTabBar(activeId) {
+    let bar = document.getElementById('tabbar');
+    const mainItems = PAGES.slice(0, 4);
+    const isMore = !mainItems.some(p => p.id === activeId);
+    const html = mainItems.map(p =>
+      `<a href="${p.href}" class="tabbar-item${p.id === activeId ? ' active' : ''}"><span class="ti-icon">${p.icon}</span><span>${p.label.replace('The ', '')}</span></a>`
+    ).join('') + `<button type="button" class="tabbar-item${isMore ? ' active' : ''}" id="tabbarMore"><span class="ti-icon">☰</span><span>More</span></button>`;
+    if (!bar) {
+      bar = document.createElement('nav');
+      bar.id = 'tabbar';
+      bar.setAttribute('aria-label', 'Primary');
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = html;
+    document.getElementById('tabbarMore').addEventListener('click', () => {
+      const mob = document.getElementById('nb-mobilenav');
+      if (mob) mob.querySelector('#mobileNav').classList.toggle('open');
+    });
   }
 
   function buildAmbience() {
@@ -135,6 +160,7 @@ const NB = (() => {
     applyDensity();
     buildGate();
     buildHeader(pageId, opts);
+    buildTabBar(pageId);
     buildFooter();
     buildToast();
     buildScrollTop();
