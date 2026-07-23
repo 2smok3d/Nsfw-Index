@@ -8,8 +8,8 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 
 | Page | Purpose |
 |---|---|
-| `index.html` | Hub — hero, feature cards, quick search |
-| `directory.html` | The curated Taboo directory: text search, tag filters, favorites, cross-site search — ~22 free sites covering step fetish, femdom, and mommy domme, one card per site, no paywalled entries |
+| `index.html` | Hub — a big directory-wide search bar front and center in the hero, the Taboo directory as the primary banner, everything else (Library/Handy/Tools) secondary |
+| `directory.html` | The curated Taboo directory: text search, tag filters, favorites, in-app multi-site search — 32 free sites covering step fetish, femdom, and mommy domme, one card per site, links go to each site's homepage (not a taboo-tagged search dump), no paywalled entries |
 | `library.html` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
 | `handy.html` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
 | `tools.html` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |
@@ -24,6 +24,9 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 - **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any page instantly or fuzzy-search the whole Taboo directory without leaving where you are.
 - **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar, pulled from the same local resume data the player already tracks.
 - **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
+- **Mobile bottom tab bar** — on phones, a persistent native-app-style tab bar (Home / Directory / Library / Handy / More) replaces the old hamburger-only nav. "More" opens a full sheet with Tools, Settings, and a one-tap Quick Search that opens the command palette (no keyboard needed).
+- **In-app multi-site search** — search once, then flip between every site's results (PornHub, xVideos, xHamster, SpankBang, XNXX, EPorner, HQPorner, ThisVid) as tabs inside a full-screen viewer, without ever leaving the app. Every card's own "search this site" icon uses the same viewer. A persistent ↗ link opens the current results externally if a site refuses to be framed.
+- **Most Visited** — the directory quietly tracks which sites you actually click (locally, nothing leaves the browser) and promotes them to the top hero row with a "🔥 Most Visited" badge, pushing the rest of the grid into the same order. Curated picks are just the starting point until your own usage takes over.
 
 ## Setting up your Drive library
 
