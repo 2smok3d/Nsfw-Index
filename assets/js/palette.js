@@ -1,32 +1,11 @@
 /* ============================================================
    palette.js — global command palette (Cmd/Ctrl+K). Jump to any
-   page instantly, or fuzzy-search the Taboo directory from
-   anywhere on the site. Site data is fetched lazily on first
-   open (this script loads on every page, but sites.js is only
-   otherwise loaded by directory.html) and cached in memory.
+   view instantly, or fuzzy-search the Taboo directory from
+   anywhere in the app. SITES is loaded synchronously as part of
+   the single-page shell, so no lazy-fetch trick is needed here.
    ============================================================ */
 const Palette = (() => {
-  const PAGES = [
-    { label: 'Home', href: 'index.html', icon: '⌂' },
-    { label: 'Directory — Taboo', href: 'directory.html', icon: '⌕' },
-    { label: 'My Library', href: 'library.html', icon: '▣' },
-    { label: 'The Handy', href: 'handy.html', icon: '⚡' },
-    { label: 'Tools', href: 'tools.html', icon: '⬇' },
-    { label: 'Settings', href: 'settings.html', icon: '⚙' },
-  ];
-
-  let sitesCache = null;
-  let sitesPromise = null;
-  function loadSites() {
-    if (sitesCache) return Promise.resolve(sitesCache);
-    if (sitesPromise) return sitesPromise;
-    sitesPromise = fetch('assets/data/sites.js').then(r => r.text()).then(text => {
-      const fn = new Function(text + '\nreturn (typeof SITES !== "undefined") ? SITES : [];');
-      sitesCache = fn();
-      return sitesCache;
-    }).catch(() => { sitesCache = []; return sitesCache; });
-    return sitesPromise;
-  }
+  const PAGES = NB.PAGES.map(p => ({ label: p.label, icon: p.icon, route: p.route }));
 
   let modal, input, results, hint;
   let activeIndex = 0;
@@ -76,28 +55,25 @@ const Palette = (() => {
   function select() {
     const item = currentItems[activeIndex];
     if (!item) return;
-    if (/^https?:\/\//.test(item.href)) window.open(item.href, '_blank', 'noopener');
-    else location.href = item.href;
+    if (item.route) Router.go(item.route);
+    else if (item.href) window.open(item.href, '_blank', 'noopener');
     close();
   }
 
   function render(q) {
     q = (q || '').trim().toLowerCase();
     const pageMatches = PAGES.filter(p => !q || p.label.toLowerCase().includes(q));
-    let siteMatches = [];
-    if (sitesCache) {
-      siteMatches = sitesCache
-        .filter(s => !q || s.name.toLowerCase().includes(q) || (s.tags || []).some(t => t.includes(q)))
-        .slice(0, 8);
-    }
+    const siteMatches = (typeof SITES !== 'undefined' ? SITES : [])
+      .filter(s => !q || s.name.toLowerCase().includes(q) || (s.tags || []).some(t => t.includes(q)))
+      .slice(0, 8);
     currentItems = [
-      ...pageMatches.map(p => ({ label: p.label, icon: p.icon, href: p.href, tag: '' })),
+      ...pageMatches.map(p => ({ label: p.label, icon: p.icon, route: p.route, tag: '' })),
       ...siteMatches.map(s => ({ label: s.name, icon: '↗', href: s.url, tag: 'site' })),
     ];
     activeIndex = 0;
 
     if (!currentItems.length) {
-      results.innerHTML = `<div class="cmdk-empty small">No matches${!sitesCache ? ' yet — still loading the directory…' : ''}</div>`;
+      results.innerHTML = `<div class="cmdk-empty small">No matches</div>`;
       return;
     }
     results.innerHTML = currentItems.map((item, i) => `
@@ -117,7 +93,6 @@ const Palette = (() => {
     modal.classList.add('open');
     input.value = '';
     render('');
-    loadSites().then(() => render(input.value));
     setTimeout(() => input.focus(), 50);
   }
   function close() {
@@ -133,8 +108,6 @@ const Palette = (() => {
       const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(); }
     });
-    // warm the cache quietly so the first open feels instant
-    setTimeout(loadSites, 1200);
   }
 
   document.addEventListener('DOMContentLoaded', init);

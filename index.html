@@ -7,58 +7,13 @@
 <link rel="stylesheet" href="assets/css/theme.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%230a0808%27/%3E%3Ctext x=%2750%27 y=%2568%27 font-size=%2755%27 text-anchor=%27middle%27 fill=%27%23c9a24b%27%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
 </head>
-<body data-page="index">
+<body>
 <div id="nb-gate"></div>
 <div id="nb-header"></div>
 <div id="nb-mobilenav"></div>
 
 <main id="main">
-
-  <section class="hero">
-    <div class="eyebrow">Private Collection · 18+</div>
-    <h1 class="hero-title">Curated for one obsession:<br><em>step fetish, femdom &amp; mommy domme.</em></h1>
-    <p class="hero-sub">Free sites, one search box. No paid sites, no accounts, no tracking — nothing leaves this browser.</p>
-    <div class="hero-search">
-      <span class="srch-icon">⌕</span>
-      <input id="quickSearch" type="search" placeholder="Search the directory — “femdom”, “stepmom”, “findom”, “4k”…" autocomplete="off">
-      <button class="btn btn-gold hero-search-go" id="heroGo">Search</button>
-    </div>
-    <div class="hero-actions">
-      <a class="btn btn-ghost" href="directory.html#taboo" style="width:auto;padding:10px 20px">Browse all sites →</a>
-    </div>
-  </section>
-
-  <section id="continueWatching" style="display:none;margin-bottom:28px"></section>
-
-  <a class="feat-primary" href="directory.html#taboo">
-    <span class="feat-primary-icon">♛</span>
-    <div>
-      <div class="feat-primary-eyebrow">The Directory</div>
-      <h2>Browse the full Taboo list</h2>
-      <p>Step fetish, femdom &amp; mommy domme — free sites only, tagged and searchable, with in-app multi-site search and a live "most visited" row that learns what you actually use.</p>
-    </div>
-    <span class="feat-primary-arrow">→</span>
-  </a>
-
-  <div class="feat-secondary-label">Also here</div>
-  <section class="feat-grid">
-    <a class="feat-card accent-gold" href="library.html">
-      <span class="feat-icon">▣</span>
-      <h3>My Library</h3>
-      <p>Your own saved collection, pulled live from Google Drive — searchable, taggable, downloadable.</p>
-    </a>
-    <a class="feat-card accent-gold" href="handy.html">
-      <span class="feat-icon">⚡</span>
-      <h3>The Handy</h3>
-      <p>Full control panel for your device — manual mode, stroke range, script sync, and a curated feed of scripts.</p>
-    </a>
-    <a class="feat-card" href="tools.html">
-      <span class="feat-icon">⬇</span>
-      <h3>Download &amp; Self-Host</h3>
-      <p>yt-dlp and friends, media servers, and everything you need to build a permanent local archive.</p>
-    </a>
-  </section>
-
+  <div id="view"></div>
   <footer class="site" id="nb-footer"></footer>
 </main>
 
@@ -66,54 +21,28 @@
 <button id="nb-stb" title="Back to top">↑</button>
 
 <script src="assets/js/store.js"></script>
+<script src="assets/data/sites.js"></script>
+<script src="assets/js/router.js"></script>
 <script src="assets/js/nav.js"></script>
 <script src="assets/js/palette.js"></script>
+<script src="assets/js/views/home.js"></script>
+<script src="assets/js/views/directory.js"></script>
+<script src="assets/js/views/search.js"></script>
+<script src="assets/js/views/library.js"></script>
+<script src="assets/js/views/handy.js"></script>
+<script src="assets/js/views/tools.js"></script>
+<script src="assets/js/views/settings.js"></script>
 <script>
-  (function () {
+  (function boot() {
+    NB.initChrome();
+    Router.setDefault('/');
     const landing = Store.getSettings().landingPage;
-    if (landing && landing !== 'index.html' && !sessionStorage.getItem('nb_landed')) {
+    if (landing && landing !== '/' && location.hash.length <= 1 && !sessionStorage.getItem('nb_landed')) {
       sessionStorage.setItem('nb_landed', '1');
-      location.replace(landing);
-      return;
+      location.hash = landing;
+    } else {
+      Router.render();
     }
-  })();
-  NB.initChrome('index');
-  const qs = document.getElementById('quickSearch');
-  const goToSearch = () => {
-    if (qs.value.trim()) location.href = 'directory.html?q=' + encodeURIComponent(qs.value.trim());
-  };
-  qs.addEventListener('keydown', e => { if (e.key === 'Enter') goToSearch(); });
-  document.getElementById('heroGo').addEventListener('click', goToSearch);
-
-  (function renderContinueWatching() {
-    const pos = Store.get('playpos', {});
-    const entries = Object.values(pos)
-      .filter(v => v && typeof v === 'object' && v.time > 15 && v.name)
-      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
-      .slice(0, 6);
-    const section = document.getElementById('continueWatching');
-    if (!entries.length) return;
-    section.style.display = 'block';
-    section.innerHTML = `
-      <div class="eyebrow" style="margin-bottom:8px">Pick up where you left off</div>
-      <h2 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:14px">Continue Watching</h2>
-      <div class="card-grid">
-        ${entries.map(v => {
-          const pct = v.durationSec ? Math.min(100, Math.round((v.time / v.durationSec) * 100)) : 0;
-          return `<a class="card" href="library.html" style="padding:10px 10px 12px">
-            <div class="thumb-wrap" style="margin-bottom:8px">
-              <div style="width:100%;aspect-ratio:16/9;background:var(--s3)"></div>
-              ${v.thumbnailLink ? `<img src="${v.thumbnailLink}" alt="" loading="lazy" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ''}
-              <div class="play-badge" style="opacity:.85">▶</div>
-              <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,.45)">
-                <div style="width:${pct}%;height:100%;background:var(--grad-gold)"></div>
-              </div>
-            </div>
-            <div class="c-name" style="padding-right:0">${v.name}</div>
-            <div class="c-note">${v.rootLabel || 'My Library'} · ${pct}% watched</div>
-          </a>`;
-        }).join('')}
-      </div>`;
   })();
 </script>
 </body>

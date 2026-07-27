@@ -1,8 +1,8 @@
 /* ============================================================
-   library.js — Google Drive-backed personal video library.
+   views/library.js — Google Drive-backed personal video library.
    Read-only, API-key auth against the public Drive v3 REST API.
    Your Drive folder(s) must be shared "Anyone with the link —
-   Viewer" for this to work (configured in settings.html).
+   Viewer" for this to work (configured in #/settings).
    ============================================================ */
 (function () {
   const FOLDER_MIME = 'application/vnd.google-apps.folder';
@@ -42,6 +42,7 @@
 
   function renderRootChips() {
     const el = document.getElementById('rootChips');
+    if (!el) return;
     const roots = folders();
     if (!roots.length) { el.innerHTML = ''; return; }
     el.innerHTML = roots.map(f =>
@@ -54,6 +55,7 @@
 
   function renderBreadcrumb() {
     const el = document.getElementById('crumb');
+    if (!el) return;
     el.innerHTML = S.stack.map((f, i) =>
       `<a href="#" data-crumb="${i}">${f.name}</a>`
     ).join('<span class="small"> / </span>');
@@ -140,6 +142,7 @@
 
   function render() {
     const el = document.getElementById('content');
+    if (!el) return;
     const hasFolders = folders().length > 0;
     document.getElementById('folderState').style.display = hasFolders ? 'none' : 'block';
     document.getElementById('rootPanel').style.display = hasFolders ? 'block' : 'none';
@@ -157,7 +160,7 @@
       el.innerHTML = `<div class="panel" style="border-color:var(--crimson-bright)">
         <h2>Couldn't load this folder</h2>
         <div class="sub">${S.error}</div>
-        <div class="small">Make sure the folder is shared as <strong>"Anyone with the link — Viewer"</strong> and that your Drive API key is correct in <a href="settings.html">Settings</a>.</div>
+        <div class="small">Make sure the folder is shared as <strong>"Anyone with the link — Viewer"</strong> and that your Drive API key is correct in <a href="#/settings">Settings</a>.</div>
       </div>`;
       return;
     }
@@ -286,6 +289,7 @@
   function closePreview() {
     clearTimeout(stallTimer);
     const video = document.getElementById('previewVideo');
+    if (!video) return;
     video.onloadedmetadata = video.ontimeupdate = video.onended = video.onerror = null;
     video.pause();
     video.removeAttribute('src');
@@ -331,8 +335,69 @@
     modal.classList.add('open');
   }
 
-  function init() {
-    NB.initChrome('library', {
+  function render_(container) {
+    S.root = null; S.stack = []; S.files = []; S.q = ''; S.tag = ''; S.loading = false; S.error = '';
+
+    container.innerHTML = `
+      <div class="eyebrow" style="margin-bottom:8px">My Library</div>
+      <h1 style="font-size:1.6rem;margin-bottom:14px">Your own collection, live from Drive</h1>
+
+      <div id="folderState" class="panel">
+        <h2>Connect your Drive library</h2>
+        <div class="sub">Nothing configured yet. Add your Google Drive API key and one or more shared folder IDs in Settings — this page reads them directly from your browser's local storage, nothing is ever sent anywhere else.</div>
+        <a class="btn btn-gold" style="width:auto;padding:12px 22px" href="#/settings">Go to Settings</a>
+      </div>
+
+      <div class="panel" style="padding:16px 18px" id="rootPanel">
+        <div class="chip-row" id="rootChips"></div>
+        <div class="mt small" id="crumb"></div>
+      </div>
+
+      <div id="content"></div>
+
+      <div class="modal-bg" id="preview-modal">
+        <div class="sheet player-sheet">
+          <div class="player-top">
+            <div class="player-title" id="previewTitle"></div>
+            <span class="small" id="previewCount"></span>
+            <button class="hact" id="previewClose" title="Close (Esc)">✕</button>
+          </div>
+          <div class="player-stage">
+            <button class="player-nav" id="previewPrev" title="Previous (←)">‹</button>
+            <div class="player-frame">
+              <video id="previewVideo" controls playsinline preload="metadata"></video>
+              <iframe id="previewFrame" allow="autoplay" allowfullscreen></iframe>
+            </div>
+            <button class="player-nav" id="previewNext" title="Next (→)">›</button>
+          </div>
+          <div class="player-bottom">
+            <label class="small" style="display:flex;align-items:center;gap:8px">
+              <input id="autoAdvance" type="checkbox" style="width:auto;height:auto"> Auto-play next
+            </label>
+            <div class="card-actions" style="margin-top:0">
+              <a class="btn btn-ghost" id="previewOpen" style="padding:8px 14px" target="_blank" rel="noopener">Open in Drive</a>
+              <a class="btn btn-ghost" id="previewDownload" style="padding:8px 14px" target="_blank" rel="noopener">⬇ Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-bg" id="tag-modal">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-title" id="tagModalTitle">Edit Tags</div>
+          <div class="field">
+            <label>Comma-separated tags</label>
+            <input id="tagInput" type="text" placeholder="femdom, favorite, handy-synced…">
+          </div>
+          <div class="row">
+            <button class="btn btn-gold" id="tagSave">Save</button>
+            <button class="btn btn-ghost" id="tagClose">Cancel</button>
+          </div>
+        </div>
+      </div>`;
+
+    NB.configureHeader({
       search: {
         placeholder: 'Filter this folder…',
         onInput: v => { S.q = v; render(); },
@@ -349,20 +414,28 @@
     document.getElementById('tagClose').addEventListener('click', () => document.getElementById('tag-modal').classList.remove('open'));
     document.getElementById('tag-modal').addEventListener('click', e => { if (e.target.id === 'tag-modal') e.target.classList.remove('open'); });
 
-    document.addEventListener('keydown', e => {
-      if (!document.getElementById('preview-modal').classList.contains('open')) return;
+    function onKeydown(e) {
+      const modal = document.getElementById('preview-modal');
+      if (!modal || !modal.classList.contains('open')) return;
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       if (e.key === 'Escape') closePreview();
       if (e.key === 'ArrowLeft') navPreview(-1);
       if (e.key === 'ArrowRight') navPreview(1);
-    });
+    }
+    document.addEventListener('keydown', onKeydown);
 
     if (!apiKey() || !folders().length) {
       // handled by render()'s folderState panel
     } else if (folders().length === 1) {
       openFolder({ id: folders()[0].id, name: folders()[0].label }, true);
     }
+
+    return () => {
+      document.removeEventListener('keydown', onKeydown);
+      const video = document.getElementById('previewVideo');
+      if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+    };
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  Router.register('/library', { id: 'library', title: 'My Library — Noir Index', render: render_ });
 })();

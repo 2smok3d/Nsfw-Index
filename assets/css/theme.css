@@ -196,7 +196,6 @@ nav.primary a.active{
 .hact.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)}
 #cmdkBtn{width:auto;padding:0 11px;font-size:.72rem;font-weight:700;letter-spacing:.02em}
 @media(max-width:520px){#cmdkBtn{display:none}}
-#navToggle{display:none}
 @media(max-width:860px){
   nav.primary{display:none}
   .brand-word{display:none}

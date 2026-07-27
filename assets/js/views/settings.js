@@ -1,11 +1,12 @@
 /* ============================================================
-   settings.js — central config: Drive keys/folders, Handy key,
-   density, tag manager, backup/restore of everything above.
+   views/settings.js — central config: Drive keys/folders, Handy
+   key, density, tag manager, backup/restore of everything above.
    ============================================================ */
 (function () {
   function renderFolders() {
     const s = Store.getSettings();
     const el = document.getElementById('folderList');
+    if (!el) return;
     if (!s.driveFolders.length) { el.innerHTML = `<div class="small">No folders added yet.</div>`; return; }
     el.innerHTML = s.driveFolders.map((f, i) => `
       <div class="row" style="align-items:center;margin-bottom:8px">
@@ -23,6 +24,7 @@
 
   function renderTags() {
     const el = document.getElementById('tagManager');
+    if (!el) return;
     const all = Store.getTags();
     const freq = {};
     Object.values(all).forEach(arr => arr.forEach(t => freq[t] = (freq[t] || 0) + 1));
@@ -49,14 +51,99 @@
     document.getElementById('driveApiKey').value = s.driveApiKey || '';
     document.getElementById('handyKey').value = s.handyKey || '';
     document.getElementById('handyBaseUrl').value = s.handyBaseUrl || '';
-    document.getElementById('landingPage').value = s.landingPage || 'index.html';
+    document.getElementById('landingPage').value = s.landingPage || '/';
     document.getElementById('density').value = s.density || 'comfortable';
     renderFolders();
     renderTags();
   }
 
-  function init() {
-    NB.initChrome('settings');
+  function render(container) {
+    NB.configureHeader(null);
+    container.innerHTML = `
+      <div class="eyebrow" style="margin-bottom:8px">Settings</div>
+      <h1 style="font-size:1.6rem;margin-bottom:14px">Everything lives here, and only here</h1>
+      <p class="small" style="max-width:640px;margin-bottom:20px">No accounts, no server, no analytics. Every key and preference below is saved to this browser's local storage only. Clear your browser data and it's gone — back it up below if that matters to you.</p>
+
+      <div class="panel">
+        <h2>Google Drive Library</h2>
+        <div class="sub">A free API key with Drive API enabled. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--gold)">Create one in Google Cloud Console</a> — restrict it to the Drive API for safety. Folders must be shared as "Anyone with the link — Viewer".</div>
+        <div class="field">
+          <label>Drive API Key</label>
+          <input id="driveApiKey" type="password" placeholder="AIza…">
+        </div>
+        <button class="btn btn-gold" id="saveDrive" style="width:auto;padding:10px 18px">Save Key</button>
+
+        <div class="mt-lg" style="border-top:1px solid var(--border);padding-top:18px">
+          <div class="field" style="margin-bottom:10px">
+            <label>Add a library folder</label>
+            <div class="row">
+              <input id="newFolderLabel" type="text" placeholder="Label, e.g. Femdom">
+              <input id="newFolderId" type="text" placeholder="Drive folder ID (from the folder's URL)">
+            </div>
+          </div>
+          <button class="btn btn-ghost" id="addFolder" style="width:auto;padding:10px 18px">Add Folder</button>
+          <div class="mt" id="folderList"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>The Handy</h2>
+        <div class="sub">Your Connection Key, from the Handy app under Settings.</div>
+        <div class="row">
+          <div class="field">
+            <label>Connection Key</label>
+            <input id="handyKey" type="password" placeholder="e.g. AbCdEf12">
+          </div>
+          <div class="field">
+            <label>API Base URL</label>
+            <input id="handyBaseUrl" type="text" placeholder="https://www.handyfeeling.com/api/handy/v2">
+          </div>
+        </div>
+        <button class="btn btn-gold" id="saveHandy" style="width:auto;padding:10px 18px">Save Handy Settings</button>
+      </div>
+
+      <div class="panel">
+        <h2>Preferences</h2>
+        <div class="row">
+          <div class="field">
+            <label>Landing page</label>
+            <select id="landingPage">
+              <option value="/">Home</option>
+              <option value="/directory">Directory</option>
+              <option value="/library">My Library</option>
+              <option value="/handy">The Handy</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Density</label>
+            <select id="density">
+              <option value="comfortable">Comfortable</option>
+              <option value="compact">Compact</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-gold" id="savePrefs" style="width:auto;padding:10px 18px">Save Preferences</button>
+      </div>
+
+      <div class="panel">
+        <h2>Tag Manager</h2>
+        <div class="sub">Every tag currently used in My Library.</div>
+        <div class="chip-row" id="tagManager"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Backup &amp; Reset</h2>
+        <div class="sub">Export everything (keys, favorites, tags) as a JSON file, or restore from one.</div>
+        <div class="row">
+          <button class="btn btn-ghost" id="exportBtn">⬇ Export Backup</button>
+          <label class="btn btn-ghost" style="cursor:pointer">
+            ⬆ Import Backup
+            <input id="importFile" type="file" accept="application/json" style="display:none">
+          </label>
+          <button class="btn btn-crimson" id="resetBtn">Reset Everything</button>
+        </div>
+      </div>`;
+
     loadForm();
 
     document.getElementById('saveDrive').addEventListener('click', () => {
@@ -90,6 +177,7 @@
         landingPage: document.getElementById('landingPage').value,
         density: document.getElementById('density').value,
       });
+      NB.applyDensity && NB.applyDensity();
       toast('Preferences saved', 'gold');
     });
 
@@ -124,5 +212,5 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  Router.register('/settings', { id: 'settings', title: 'Settings — Noir Index', render });
 })();

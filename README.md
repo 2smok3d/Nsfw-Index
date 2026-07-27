@@ -1,44 +1,50 @@
 # Noir Index
 
-A private, self-contained, multi-page adult link index — no backend, no accounts, no tracking. Everything is static HTML/CSS/vanilla JS and every setting lives in your own browser's `localStorage`.
+A private, self-contained adult link index — no backend, no accounts, no tracking. A **single-page app**: one HTML shell (`index.html`), every section is a client-side route, navigation never triggers a full page reload. Everything is static HTML/CSS/vanilla JS and every setting lives in your own browser's `localStorage`.
 
 Built around one focus: **step fetish, femdom, and mommy domme**, with a personal Google Drive-backed library and full Handy device control alongside it.
 
-## Pages
+## Routes
 
-| Page | Purpose |
+One page, six sections, addressed by hash (`index.html#/directory`, etc.) so the back/forward buttons and bookmarks work normally without ever reloading the app shell:
+
+| Route | Purpose |
 |---|---|
-| `index.html` | Hub — a big directory-wide search bar front and center in the hero, the Taboo directory as the primary banner, everything else (Library/Handy/Tools) secondary |
-| `directory.html` | The curated Taboo directory: text search, tag filters, favorites, in-app multi-site search — 32 free sites covering step fetish, femdom, and mommy domme, one card per site, links go to each site's homepage (not a taboo-tagged search dump), no paywalled entries |
-| `library.html` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
-| `handy.html` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
-| `tools.html` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |
-| `settings.html` | Drive API key & folders, Handy connection key, density/landing-page prefs, tag manager, JSON backup/restore, full reset |
+| `#/` | Hub — a big search bar front and center in the hero, the Taboo directory as the primary banner, everything else (Library/Handy/Tools) secondary |
+| `#/directory` | The curated Taboo directory: text filter, tag chips, favorites, usage-based "Most Visited" ranking — 58 free sites, one card per site, links go to each site's homepage, no paywalled entries |
+| `#/search` | In-app multi-site search — type once, flip between every searchable site's live results as tabs, all inside the app (see below) |
+| `#/library` | Your own video library, read live from Google Drive — folder browsing, inline preview, per-file tags, direct download |
+| `#/handy` | Full control panel for The Handy over its official public REST API (manual mode, stroke range, script sync), plus curated interactive/script resources |
+| `#/tools` | Downloaders (yt-dlp & friends) and self-hosted media server recommendations |
+| `#/settings` | Drive API key & folders, Handy connection key, density/landing-page prefs, tag manager, JSON backup/restore, full reset |
+
+The old separate files (`directory.html`, `library.html`, `handy.html`, `tools.html`, `settings.html`) still exist as one-line redirects to their `index.html#/route` equivalent, so any existing bookmarks or home-screen icons keep working.
 
 ## Design
 
-"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole site works offline once loaded, e.g. via GitHub Pages or a plain `file://` open). Layered shadows, gradient hairlines, and a fine film-grain texture give it depth instead of flat digital gradients; native View Transitions cross-fade between pages on supporting browsers.
+"Noir Boudoir" — obsidian black, antique gold, deep crimson. Serif display type for headings, system fonts throughout (no external font/CDN requests — the whole app works offline once loaded, e.g. via GitHub Pages or a plain `file://` open). Layered shadows, gradient hairlines, and a fine film-grain texture give it depth instead of flat digital gradients.
 
 ## Premium features
 
-- **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any page instantly or fuzzy-search the whole Taboo directory without leaving where you are.
-- **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar, pulled from the same local resume data the player already tracks.
-- **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
-- **Mobile bottom tab bar** — on phones, a persistent native-app-style tab bar (Home / Directory / Library / Handy / More) replaces the old hamburger-only nav. "More" opens a full sheet with Tools, Settings, and a one-tap Quick Search that opens the command palette (no keyboard needed).
-- **In-app multi-site search** — search once, then flip between all 19 searchable sites' results as tabs inside a full-screen viewer, without ever leaving the app (grows automatically as more sites get a search URL in `sites.js`). Every card's own "search this site" icon uses the same viewer. A persistent ↗ link opens the current results externally if a site refuses to be framed. Since it's a real iframe of the actual site, playing a video from the results stays inside the same in-app view too.
+- **True single-page app** — one load, then every navigation (header nav, mobile tab bar, command palette, in-app links) is instant, client-side, and reload-free. The age gate, header, and tab bar are built once and never re-rendered.
+- **In-app multi-site search** (`#/search`) — search once, then flip between every searchable site's results as tabs inside a full-screen viewer, without ever leaving the app. Every card's own "search this site" icon lands here too, pre-selecting that site's tab. A persistent ↗ link opens the current results externally if a site refuses to be framed. Since it's a real iframe of the actual site, playing a video from the results stays inside the same in-app view.
 - **Most Visited** — the directory quietly tracks which sites you actually click (locally, nothing leaves the browser) and promotes them to the top hero row with a "🔥 Most Visited" badge, pushing the rest of the grid into the same order. Curated picks are just the starting point until your own usage takes over.
+- **Command palette** (`⌘K` / `Ctrl+K`, anywhere) — jump to any section instantly or fuzzy-search the whole Taboo directory without leaving where you are.
+- **Continue Watching** — the homepage surfaces your in-progress videos from My Library with a Netflix-style progress bar.
+- **Bulk tagging** — tag every visible video in My Library in one action instead of one file at a time.
+- **Mobile bottom tab bar** — on phones, a persistent native-app-style tab bar (Home / Directory / Library / Handy / More) replaces a hamburger. "More" opens a full sheet with Tools, Settings, and a one-tap Quick Search into the command palette.
 
 ## Setting up your Drive library
 
 1. Create a Google Cloud API key restricted to the **Drive API** ([console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)).
 2. Share your Drive folder(s) as **"Anyone with the link — Viewer."**
-3. In `settings.html`, paste the API key and add each folder's ID (the string after `/folders/` in its URL).
-4. Open `library.html` — your videos load directly from Drive, client-side. Nothing passes through any third-party server.
+3. In Settings, paste the API key and add each folder's ID (the string after `/folders/` in its URL).
+4. Open My Library — your videos load directly from Drive, client-side. Nothing passes through any third-party server.
 
 ## Setting up The Handy
 
 1. Open the Handy app, copy your Connection Key from Settings.
-2. Paste it into `handy.html` or `settings.html`.
+2. Paste it into The Handy or Settings.
 3. Control manual mode, stroke range, and best-effort script sync directly from the browser, using Handy's own public API (`handyfeeling.com/api/handy/v2`).
 
 ## Notes
@@ -46,3 +52,4 @@ Built around one focus: **step fetish, femdom, and mommy domme**, with a persona
 - Nothing here is sent to any server other than the ones you explicitly configure (Google Drive, Handy) or the destination sites you click through to.
 - Age-gated on first visit per browser (`localStorage`-based, not a real verification mechanism).
 - All data — favorites, tags, keys — can be exported/imported as a single JSON file from Settings.
+- Not every directory entry has the in-app "search this site" icon wired up — only sites whose search-URL pattern is confidently known get one, rather than guessing and silently shipping a broken search. Adding it for a specific site is a one-line change in `assets/data/sites.js` (the `su` field) once the right pattern is known.

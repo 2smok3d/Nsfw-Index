@@ -1,24 +1,16 @@
 /* ============================================================
-   directory.js — search, filter, tag, and render engine for
-   directory.html. Reads SITES / CATEGORIES from sites.js.
+   views/directory.js — browse/filter/tag the curated site list.
+   Actual content search across sites lives in views/search.js —
+   this view is for browsing which sites exist, not searching
+   inside them.
    ============================================================ */
 (function () {
-  // Every site with a known search-url pattern (`su` in sites.js) is
-  // searchable here — this list grows automatically as sites.js does,
-  // instead of a separate hand-maintained subset.
-  function crossSearchSites() {
-    return SITES.filter(s => s.su).map(s => ({ n: s.name, u: s.su }));
-  }
-
   const S = {
     q: '',
-    openCats: new Set(CATEGORIES.map(c => c.id)), // all open by default
     activeTags: new Set(),
     showFavs: false,
+    open: true,
   };
-
-  const params = new URLSearchParams(location.search);
-  if (params.get('q')) S.q = params.get('q');
 
   function popularTags(limit) {
     const freq = {};
@@ -26,7 +18,6 @@
     return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, limit);
   }
 
-  // ── most-visited: real usage overrides curated ordering ──
   function withVisits(list) {
     const v = Store.getVisits();
     return list.map(x => Object.assign({ _visits: v[x.id] || 0 }, x));
@@ -70,12 +61,11 @@
       <div class="c-tag">${visited ? '🔥 visited' : (entry.tags && entry.tags[0] ? entry.tags[0] : entry.category)}</div>
       <div class="c-name">${entry.name}</div>
       ${entry.note ? `<div class="c-note">${entry.note}</div>` : ''}
-      ${entry.su ? `<button class="c-srch" data-search="${esc(entry.su)}" data-term="${esc(term)}" data-name="${esc(entry.name)}" title="Search this site">⌕</button>` : ''}
+      ${entry.su ? `<button class="c-srch" data-siteid="${entry.id}" data-term="${esc(term)}" title="Search this site">⌕</button>` : ''}
     </a>`;
   }
 
   function sectionBlock(cat, rawItems) {
-    const isOpen = S.openCats.has(cat.id);
     const items = withVisits(rawItems);
     const HERO_N = 6;
     const visitedSorted = items.filter(x => x._visits > 0).sort(byVisitsDesc);
@@ -97,7 +87,7 @@
     }
 
     return `<div class="sec" id="${cat.id}">
-      <div class="sec-hdr${isOpen ? ' open' : ''}" data-toggle="${cat.id}">
+      <div class="sec-hdr${S.open ? ' open' : ''}" data-toggle="${cat.id}">
         <div>
           <div class="sec-title">${cat.label}</div>
           <div class="small" style="margin-top:2px">${cat.blurb}</div>
@@ -105,7 +95,7 @@
         <div class="sec-count">${items.length}</div>
         <span class="sec-chev">›</span>
       </div>
-      <div class="sec-body${isOpen ? ' open' : ''}" data-body="${cat.id}">
+      <div class="sec-body${S.open ? ' open' : ''}" data-body="${cat.id}">
         <div class="sec-inner"><div class="sec-pad">
           ${heroes.length ? `<div class="hero-grid">${heroes.map(hcard).join('')}</div>` : ''}
           ${rest.length ? `<div class="card-grid">${rest.map(card).join('')}</div>` : ''}
@@ -174,10 +164,9 @@
       hdr.addEventListener('click', () => {
         const id = hdr.dataset.toggle;
         const body = document.querySelector(`[data-body="${id}"]`);
-        const open = S.openCats.has(id);
-        open ? S.openCats.delete(id) : S.openCats.add(id);
-        hdr.classList.toggle('open', !open);
-        body.classList.toggle('open', !open);
+        S.open = !S.open;
+        hdr.classList.toggle('open', S.open);
+        body.classList.toggle('open', S.open);
       });
     });
     document.querySelectorAll('[data-fav]').forEach(btn => {
@@ -188,127 +177,66 @@
         render();
       });
     });
-    document.querySelectorAll('[data-search]').forEach(btn => {
+    document.querySelectorAll('[data-siteid]').forEach(btn => {
       btn.addEventListener('click', e => {
         e.preventDefault(); e.stopPropagation();
         const q = S.q || btn.dataset.term || '';
         if (!q) { toast('Type a search term first'); return; }
-        openSearchResults(q, [{ n: btn.dataset.name || 'Results', u: btn.dataset.search }], 0);
+        Router.go('/search?q=' + encodeURIComponent(q) + '&site=' + encodeURIComponent(btn.dataset.siteid));
       });
     });
-  }
-
-  // ── in-app multi-site search results (iframe viewer, stays in the app) ──
-  function openSearchResults(term, sites, startIndex) {
-    const view = document.getElementById('sr-view');
-    const tabs = document.getElementById('sr-tabs');
-    const frame = document.getElementById('sr-frame');
-    const extLink = document.getElementById('srExternal');
-    const titleEl = document.getElementById('srTerm');
-
-    function load(i) {
-      const site = sites[i];
-      const url = site.u + encodeURIComponent(term);
-      frame.src = url;
-      extLink.href = url;
-      tabs.querySelectorAll('.sr-tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
-    }
-
-    titleEl.textContent = `"${term}"`;
-    tabs.innerHTML = sites.map((s, i) => `<button class="sr-tab" data-i="${i}">${s.n}</button>`).join('');
-    tabs.querySelectorAll('.sr-tab').forEach(btn => btn.addEventListener('click', () => load(Number(btn.dataset.i))));
-    load(startIndex || 0);
-    view.classList.add('open');
-  }
-
-  function closeSearchResults() {
-    document.getElementById('sr-view').classList.remove('open');
-    document.getElementById('sr-frame').src = 'about:blank';
   }
 
   function randomOpen() {
     const pool = filteredEntries();
     if (!pool.length) return;
     const item = pool[Math.floor(Math.random() * pool.length)];
+    Store.recordVisit(item.id);
     window.open(item.url, '_blank', 'noopener');
     toast('Opening ' + item.name);
   }
 
-  function openCrossSearch() {
-    const modal = document.getElementById('cs-modal');
-    const input = document.getElementById('csinput');
-    const sites = crossSearchSites();
-    input.value = S.q;
-    document.getElementById('cs-grid').innerHTML = sites.map((s, i) =>
-      `<button class="chip" data-i="${i}">${s.n}</button>`
-    ).join('');
-    document.querySelectorAll('#cs-grid [data-i]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const q = input.value.trim();
-        if (!q) { toast('Enter a search term first'); return; }
-        modal.classList.remove('open');
-        openSearchResults(q, sites, Number(btn.dataset.i));
-      });
-    });
-    modal.classList.add('open');
-    setTimeout(() => { input.select(); input.focus(); }, 80);
-  }
+  function render_(container, params) {
+    S.q = params.get('q') || '';
+    S.activeTags = new Set();
+    S.showFavs = false;
+    S.open = true;
 
-  function init() {
-    NB.initChrome('directory', {
+    container.innerHTML = `
+      <div class="eyebrow" style="margin-bottom:8px">The Directory</div>
+      <h1 style="font-size:1.6rem;margin-bottom:14px">Taboo — one search box, free sites only</h1>
+      <div class="panel" style="padding:16px 18px">
+        <div class="small">Filter by tag:</div>
+        <div class="chip-row mt" id="tagChips"></div>
+      </div>
+      <div id="content"></div>`;
+
+    NB.configureHeader({
       search: {
-        placeholder: 'Search the directory…',
+        placeholder: 'Filter the directory…',
         initial: S.q,
         onInput: v => { S.q = v; render(); },
       },
       actions: [
-        { id: 'csBtn', icon: '⌕', title: 'Search all sites (S)' },
-        { id: 'favBtn', icon: '♥', title: 'Saved (F)' },
-        { id: 'randBtn', icon: '⚡', title: 'Random (R)' },
+        { id: 'searchAllBtn', icon: '⌕', title: 'Search all sites (S)', onClick: () => Router.go('/search' + (S.q ? '?q=' + encodeURIComponent(S.q) : '')) },
+        { id: 'favBtn', icon: '♥', title: 'Saved (F)', onClick: () => { S.showFavs = !S.showFavs; document.getElementById('favBtn').classList.toggle('on', S.showFavs); render(); } },
+        { id: 'randBtn', icon: '⚡', title: 'Random (R)', onClick: randomOpen },
       ],
     });
 
     renderTagChips();
     render();
 
-    document.getElementById('favBtn').addEventListener('click', () => {
-      S.showFavs = !S.showFavs;
-      document.getElementById('favBtn').classList.toggle('on', S.showFavs);
-      render();
-    });
-    document.getElementById('randBtn').addEventListener('click', randomOpen);
-    document.getElementById('csBtn').addEventListener('click', openCrossSearch);
-    document.getElementById('cs-modal').addEventListener('click', e => {
-      if (e.target.id === 'cs-modal') e.target.classList.remove('open');
-    });
-    document.getElementById('csClose').addEventListener('click', () => document.getElementById('cs-modal').classList.remove('open'));
-    document.getElementById('csinput').addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return;
-      const q = e.target.value.trim();
-      if (!q) { toast('Enter a search term first'); return; }
-      document.getElementById('cs-modal').classList.remove('open');
-      openSearchResults(q, crossSearchSites(), 0);
-    });
-    document.getElementById('srClose').addEventListener('click', closeSearchResults);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearchResults(); });
-
-    document.addEventListener('keydown', e => {
+    function onKeydown(e) {
       const inInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
       if (inInput) return;
       if (e.key.toLowerCase() === 'f') document.getElementById('favBtn').click();
       if (e.key.toLowerCase() === 'r') randomOpen();
-      if (e.key.toLowerCase() === 's') openCrossSearch();
-    });
-
-    if (location.hash) {
-      const id = location.hash.slice(1);
-      if (CATEGORIES.some(c => c.id === id)) {
-        S.openCats.add(id);
-        render();
-        setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
-      }
+      if (e.key.toLowerCase() === 's') Router.go('/search' + (S.q ? '?q=' + encodeURIComponent(S.q) : ''));
     }
+    document.addEventListener('keydown', onKeydown);
+    return () => document.removeEventListener('keydown', onKeydown);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  Router.register('/directory', { id: 'directory', title: 'Directory — Noir Index', render: render_ });
 })();
