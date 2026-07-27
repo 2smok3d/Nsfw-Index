@@ -1,19 +1,25 @@
 /* ============================================================
-   nav.js — shared chrome: age gate, header/nav, mobile nav,
-   toast, scroll-to-top. Injected on every page via NB.initChrome().
+   nav.js — shared chrome: age gate, header/nav, mobile nav, tab
+   bar, toast, scroll-to-top. Built ONCE by NB.initChrome() when
+   the app boots (single-page shell — see router.js). Individual
+   views reconfigure the header search/actions via
+   NB.configureHeader() on every navigation instead of the whole
+   chrome being rebuilt.
    Depends on store.js being loaded first.
    ============================================================ */
 const NB = (() => {
   const PAGES = [
-    { id: 'index',     href: 'index.html',     label: 'Home',      icon: '⌂' },
-    { id: 'directory', href: 'directory.html', label: 'Directory', icon: '⌕' },
-    { id: 'library',   href: 'library.html',   label: 'Library',   icon: '▣' },
-    { id: 'handy',     href: 'handy.html',     label: 'The Handy', icon: '⚡' },
-    { id: 'tools',     href: 'tools.html',     label: 'Tools',     icon: '⬇' },
-    { id: 'settings',  href: 'settings.html',  label: 'Settings',  icon: '⚙' },
+    { id: 'home',      route: '/',          label: 'Home',      icon: '⌂' },
+    { id: 'directory', route: '/directory', label: 'Directory', icon: '⌕' },
+    { id: 'library',   route: '/library',   label: 'Library',   icon: '▣' },
+    { id: 'handy',     route: '/handy',     label: 'The Handy', icon: '⚡' },
+    { id: 'tools',     route: '/tools',     label: 'Tools',     icon: '⬇' },
+    { id: 'settings',  route: '/settings',  label: 'Settings',  icon: '⚙' },
   ];
 
+  let activeId = null;
   let toastTimer;
+
   function toast(msg, tone) {
     const t = document.getElementById('toast');
     if (!t) return;
@@ -45,54 +51,105 @@ const NB = (() => {
     document.getElementById('gate-exit').onclick = () => location.href = 'https://www.google.com';
   }
 
-  function buildHeader(activeId, opts) {
+  function buildHeader() {
     const el = document.getElementById('nb-header');
     if (!el) return;
-    const links = PAGES.map(p => `<a href="${p.href}" class="${p.id === activeId ? 'active' : ''}">${p.label}</a>`).join('');
-    const showSearch = opts && opts.search;
+    const links = PAGES.map(p => `<a href="#${p.route}" data-route="${p.route}">${p.label}</a>`).join('');
     el.innerHTML = `
       <header id="hdr">
         <div class="hdr-inner">
-          <a class="brand" href="index.html">
+          <a class="brand" href="#/">
             <span class="brand-mark">♛</span><span class="brand-word">Noir Index</span>
           </a>
-          <nav class="primary">${links}</nav>
+          <nav class="primary" id="navPrimary">${links}</nav>
           <div class="hdr-spacer"></div>
-          ${showSearch ? `
-          <div class="srch-wrap">
+          <div class="srch-wrap" id="hdrSearchWrap" style="display:none">
             <span class="srch-icon">⌕</span>
-            <input id="search" type="search" placeholder="${opts.search.placeholder || 'Search…'}" autocomplete="off">
+            <input id="search" type="search" autocomplete="off">
             <button class="srch-clr" id="sclr">✕</button>
-          </div>` : ''}
+          </div>
           <div class="hdr-actions">
+            <span id="hdrPageActions" style="display:contents"></span>
             <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)">⌘K</button>
-            ${(opts && opts.actions || []).map(a => `<button class="hact" id="${a.id}" title="${a.title}">${a.icon}</button>`).join('')}
-            <button class="hact" id="navToggle" title="Menu">☰</button>
           </div>
         </div>
       </header>`;
 
-    const cmdkBtn = document.getElementById('cmdkBtn');
-    if (cmdkBtn) cmdkBtn.addEventListener('click', () => { if (typeof Palette !== 'undefined') Palette.toggle(); });
+    document.getElementById('cmdkBtn').addEventListener('click', () => {
+      if (typeof Palette !== 'undefined') Palette.toggle();
+    });
 
     const mob = document.getElementById('nb-mobilenav');
     if (mob) {
       mob.innerHTML = `<div id="mobileNav">
         <button type="button" class="mobilenav-search" id="mobNavSearch"><span>⌕ Quick Search</span><span class="cmdk-kbd">⌘K</span></button>
-        ${PAGES.map(p =>
-        `<a href="${p.href}" class="${p.id === activeId ? 'active' : ''}"><span>${p.icon}</span> ${p.label}</a>`
-      ).join('')}</div>`;
-      document.getElementById('navToggle').onclick = () => mob.querySelector('#mobileNav').classList.toggle('open');
+        ${PAGES.map(p => `<a href="#${p.route}" data-route="${p.route}"><span>${p.icon}</span> ${p.label}</a>`).join('')}
+      </div>`;
       document.getElementById('mobNavSearch').onclick = () => {
         mob.querySelector('#mobileNav').classList.remove('open');
         if (typeof Palette !== 'undefined') Palette.toggle();
       };
+      mob.querySelectorAll('#mobileNav a').forEach(a => {
+        a.addEventListener('click', () => mob.querySelector('#mobileNav').classList.remove('open'));
+      });
     }
+  }
 
+  function buildTabBar() {
+    let bar = document.getElementById('tabbar');
+    const mainItems = PAGES.slice(0, 4);
+    const html = mainItems.map(p =>
+      `<a href="#${p.route}" data-route="${p.route}" class="tabbar-item"><span class="ti-icon">${p.icon}</span><span>${p.label.replace('The ', '')}</span></a>`
+    ).join('') + `<button type="button" class="tabbar-item" id="tabbarMore"><span class="ti-icon">☰</span><span>More</span></button>`;
+    if (!bar) {
+      bar = document.createElement('nav');
+      bar.id = 'tabbar';
+      bar.setAttribute('aria-label', 'Primary');
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = html;
+    document.getElementById('tabbarMore').addEventListener('click', () => {
+      const mob = document.getElementById('nb-mobilenav');
+      if (mob) mob.querySelector('#mobileNav').classList.toggle('open');
+    });
+  }
+
+  // Called on every route change — updates .active classes on the
+  // header nav, mobile nav, and tab bar without rebuilding any of
+  // them (avoids re-wiring listeners on every navigation).
+  function setActive(routeId) {
+    activeId = routeId;
+    const page = PAGES.find(p => p.id === routeId);
+    const inMainNav = page && PAGES.slice(0, 4).some(p => p.id === routeId);
+    document.querySelectorAll('#navPrimary a, #mobileNav a').forEach(a => {
+      a.classList.toggle('active', !!(page && a.dataset.route === page.route));
+    });
+    document.querySelectorAll('.tabbar-item[data-route]').forEach(a => {
+      a.classList.toggle('active', !!(page && a.dataset.route === page.route));
+    });
+    const more = document.getElementById('tabbarMore');
+    if (more) more.classList.toggle('active', !inMainNav);
+  }
+
+  // Called by each view's render() to configure the shared header
+  // search box and page-specific action buttons for that view.
+  // Passing null/omitting a field hides/clears it.
+  function configureHeader(opts) {
+    opts = opts || {};
+    const wrap = document.getElementById('hdrSearchWrap');
+    const showSearch = !!opts.search;
+    wrap.style.display = showSearch ? 'flex' : 'none';
     if (showSearch) {
-      const input = document.getElementById('search');
-      const clr = document.getElementById('sclr');
-      if (opts.search.initial) input.value = opts.search.initial;
+      // clone to strip any listeners from the previous view
+      const oldInput = document.getElementById('search');
+      const input = oldInput.cloneNode(true);
+      oldInput.parentNode.replaceChild(input, oldInput);
+      const oldClr = document.getElementById('sclr');
+      const clr = oldClr.cloneNode(true);
+      oldClr.parentNode.replaceChild(clr, oldClr);
+
+      input.placeholder = opts.search.placeholder || 'Search…';
+      input.value = opts.search.initial || '';
       const fire = () => {
         clr.classList.toggle('vis', !!input.value);
         opts.search.onInput && opts.search.onInput(input.value.trim());
@@ -102,12 +159,20 @@ const NB = (() => {
       if (opts.search.onEnter) input.addEventListener('keydown', e => { if (e.key === 'Enter') opts.search.onEnter(input.value.trim()); });
       fire();
     }
+
+    const actionsEl = document.getElementById('hdrPageActions');
+    const actions = opts.actions || [];
+    actionsEl.innerHTML = actions.map(a => `<button class="hact${a.on ? ' on' : ''}" id="${a.id}" title="${a.title}">${a.icon}</button>`).join('');
+    actions.forEach(a => {
+      const btn = document.getElementById(a.id);
+      if (btn && a.onClick) btn.addEventListener('click', a.onClick);
+    });
   }
 
   function buildFooter() {
     const el = document.getElementById('nb-footer');
     if (!el) return;
-    el.innerHTML = `Noir Index — private, self-hosted, no accounts, no tracking. Data lives in <em>this</em> browser. · <a href="settings.html">Settings</a>`;
+    el.innerHTML = `Noir Index — private, self-hosted, no accounts, no tracking. Data lives in <em>this</em> browser. · <a href="#/settings">Settings</a>`;
   }
 
   function buildToast() {
@@ -124,26 +189,6 @@ const NB = (() => {
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }
 
-  function buildTabBar(activeId) {
-    let bar = document.getElementById('tabbar');
-    const mainItems = PAGES.slice(0, 4);
-    const isMore = !mainItems.some(p => p.id === activeId);
-    const html = mainItems.map(p =>
-      `<a href="${p.href}" class="tabbar-item${p.id === activeId ? ' active' : ''}"><span class="ti-icon">${p.icon}</span><span>${p.label.replace('The ', '')}</span></a>`
-    ).join('') + `<button type="button" class="tabbar-item${isMore ? ' active' : ''}" id="tabbarMore"><span class="ti-icon">☰</span><span>More</span></button>`;
-    if (!bar) {
-      bar = document.createElement('nav');
-      bar.id = 'tabbar';
-      bar.setAttribute('aria-label', 'Primary');
-      document.body.appendChild(bar);
-    }
-    bar.innerHTML = html;
-    document.getElementById('tabbarMore').addEventListener('click', () => {
-      const mob = document.getElementById('nb-mobilenav');
-      if (mob) mob.querySelector('#mobileNav').classList.toggle('open');
-    });
-  }
-
   function buildAmbience() {
     if (document.querySelector('.ambience')) return;
     const div = document.createElement('div');
@@ -155,12 +200,12 @@ const NB = (() => {
     document.body.classList.toggle('density-compact', Store.getSettings().density === 'compact');
   }
 
-  function initChrome(pageId, opts) {
+  function initChrome() {
     buildAmbience();
     applyDensity();
     buildGate();
-    buildHeader(pageId, opts);
-    buildTabBar(pageId);
+    buildHeader();
+    buildTabBar();
     buildFooter();
     buildToast();
     buildScrollTop();
@@ -170,7 +215,7 @@ const NB = (() => {
       const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
       if (e.key === '/' && !inInput) {
         const s = document.getElementById('search');
-        if (s) { e.preventDefault(); s.focus(); }
+        if (s && document.getElementById('hdrSearchWrap').style.display !== 'none') { e.preventDefault(); s.focus(); }
       }
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
@@ -180,5 +225,5 @@ const NB = (() => {
     });
   }
 
-  return { PAGES, toast, initChrome };
+  return { PAGES, toast, initChrome, setActive, configureHeader, applyDensity };
 })();

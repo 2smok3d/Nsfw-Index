@@ -7,7 +7,7 @@
         entry's category is one of the declared CATEGORIES
    No npm dependencies — keeps CI as self-contained as the site.
    ============================================================ */
-import { readdirSync, existsSync, readFileSync } from 'node:fs';
+import { readdirSync, existsSync, readFileSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,15 +41,25 @@ for (const file of htmlFiles) {
   if (checkedInFile) ok(`${file}: ${checkedInFile} local reference(s) resolved`);
 }
 
-// ── 2. JS syntax check ──
+// ── 2. JS syntax check (recurses into assets/js/**, e.g. views/) ──
+function walkJs(dir) {
+  let out = [];
+  for (const entry of readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) out = out.concat(walkJs(full));
+    else if (entry.endsWith('.js')) out.push(full);
+  }
+  return out;
+}
 const jsDir = path.join(root, 'assets', 'js');
-const jsFiles = existsSync(jsDir) ? readdirSync(jsDir).filter(f => f.endsWith('.js')) : [];
-for (const file of jsFiles) {
+const jsFiles = existsSync(jsDir) ? walkJs(jsDir) : [];
+for (const full of jsFiles) {
+  const rel = path.relative(root, full);
   try {
-    execFileSync(process.execPath, ['--check', path.join(jsDir, file)], { stdio: 'pipe' });
-    ok(`assets/js/${file}: valid syntax`);
+    execFileSync(process.execPath, ['--check', full], { stdio: 'pipe' });
+    ok(`${rel}: valid syntax`);
   } catch (e) {
-    fail(`assets/js/${file}: syntax error\n${e.stderr?.toString() || e.message}`);
+    fail(`${rel}: syntax error\n${e.stderr?.toString() || e.message}`);
   }
 }
 const dataFile = path.join(root, 'assets', 'data', 'sites.js');
@@ -84,6 +94,22 @@ if (existsSync(dataFile)) {
   } catch (e) {
     fail(`sites.js: failed to evaluate — ${e.message}`);
   }
+}
+
+// ── 4. SPA route table sanity ──
+const viewsDir = path.join(root, 'assets', 'js', 'views');
+if (existsSync(viewsDir)) {
+  const registered = new Set();
+  for (const full of walkJs(viewsDir)) {
+    const src = readFileSync(full, 'utf8');
+    const re = /Router\.register\(\s*'([^']+)'/g;
+    let m;
+    while ((m = re.exec(src))) registered.add(m[1]);
+  }
+  const expected = ['/', '/directory', '/library', '/handy', '/tools', '/settings', '/search'];
+  const missing = expected.filter(p => !registered.has(p));
+  if (missing.length) fail(`router: expected route(s) not registered: ${missing.join(', ')}`);
+  else ok(`router: all ${expected.length} expected routes registered (${[...registered].join(', ')})`);
 }
 
 console.log('');

@@ -53,9 +53,16 @@ const Store = (() => {
     handyKey: '',
     handyBaseUrl: 'https://www.handyfeeling.com/api/handy/v2',
     density: 'comfortable', // comfortable | compact
-    landingPage: 'index.html',
+    landingPage: '/',
   };
-  function getSettings() { return Object.assign({}, DEFAULT_SETTINGS, get('settings', {})); }
+  // pre-SPA builds stored landingPage as a filename ("directory.html");
+  // transparently upgrade it to the equivalent route on read.
+  const LEGACY_LANDING = { 'index.html': '/', 'directory.html': '/directory', 'library.html': '/library', 'handy.html': '/handy', 'tools.html': '/tools', 'settings.html': '/settings' };
+  function getSettings() {
+    const s = Object.assign({}, DEFAULT_SETTINGS, get('settings', {}));
+    if (s.landingPage in LEGACY_LANDING) s.landingPage = LEGACY_LANDING[s.landingPage];
+    return s;
+  }
   function setSettings(patch) {
     const cur = getSettings();
     const next = Object.assign({}, cur, patch);
