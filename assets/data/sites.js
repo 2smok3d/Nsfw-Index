@@ -29,6 +29,13 @@
                any of these and it's a one-line addition.
      sq        (optional) default term used with `su` when the
                global search box is empty
+     noFrame   (optional) true → this site's X-Frame-Options/CSP
+               blocks it from being embedded, confirmed by hitting
+               a real blank iframe. views/search.js skips the iframe
+               attempt entirely for these and opens a new tab
+               instead, rather than leaving a dead blank box in the
+               app. Only mark this from an actual confirmed failure —
+               most su sites are simply unverified either way.
    ============================================================ */
 
 const CATEGORIES = [
@@ -38,24 +45,24 @@ const CATEGORIES = [
 const SITES = [
   // ── featured ──
   { id: 'momvids', name: 'MomVids', url: 'https://www.momvids.com', category: 'taboo', tags: ['taboo', 'stepmom', 'dedicated', 'free'], hot: true, note: 'Dedicated stepmom tube' },
-  { id: 'ph', name: 'PornHub', url: 'https://www.pornhub.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Massive taboo, stepmom & femdom library', su: 'https://www.pornhub.com/video/search?search=', sq: 'taboo' },
-  { id: 'xh', name: 'xHamster', url: 'https://xhamster.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Top taboo category', su: 'https://xhamster.com/search/', sq: 'taboo' },
+  { id: 'ph', name: 'PornHub', url: 'https://www.pornhub.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Massive taboo, stepmom & femdom library', su: 'https://www.pornhub.com/video/search?search=', sq: 'taboo', noFrame: true },
+  { id: 'xh', name: 'xHamster', url: 'https://xhamster.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Top taboo category', su: 'https://xhamster.com/search/', sq: 'taboo', noFrame: true },
   { id: 'sb', name: 'SpankBang', url: 'https://spankbang.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'joi', 'tube', 'free', 'hd'], hot: true, note: 'Great quality across the board', su: 'https://spankbang.com/s/', sq: 'taboo' },
   { id: 'noodle', name: 'Noodlemagazine', url: 'https://noodlemagazine.com', category: 'taboo', tags: ['taboo', 'tube', 'free', 'hd'], hot: true, note: 'Huge free library, consistently well-rated' },
   { id: 'pornhoarder', name: 'PornHoarder', url: 'https://pornhoarder.tv', category: 'taboo', tags: ['tube', 'free', 'hd'], hot: true, note: 'Curated, harder-to-find full scenes' },
   { id: 'nsfwbase', name: 'NSFWBase', url: 'https://www.nsfwbase.com', category: 'taboo', tags: ['free', 'tube'], hot: true, note: 'Multi-site search — one box searches dozens of tubes at once' },
 
   // ── major tubes with verified search patterns ──
-  { id: 'xnxx', name: 'XNXX', url: 'https://www.xnxx.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], note: 'Huge catalog', su: 'https://www.xnxx.com/search/', sq: 'taboo' },
-  { id: 'xv', name: 'xVideos', url: 'https://www.xvideos.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], note: 'Massive free library', su: 'https://www.xvideos.com/?k=', sq: 'taboo' },
-  { id: 'ep', name: 'EPorner', url: 'https://www.eporner.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'hd', '4k', 'free'], note: 'HD & 4K free', su: 'https://www.eporner.com/search/', sq: 'taboo' },
-  { id: 'hq', name: 'HQPorner', url: 'https://hqporner.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', '4k', 'free'], note: '4K available', su: 'https://hqporner.com/search/', sq: 'taboo' },
-  { id: 'txxx', name: 'Txxx', url: 'https://txxx.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Large collection', su: 'https://txxx.com/search/', sq: 'taboo' },
-  { id: 'beeg', name: 'Beeg', url: 'https://beeg.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Clean UI', su: 'https://beeg.com/sex/', sq: 'taboo' },
-  { id: 'redtube', name: 'RedTube', url: 'https://www.redtube.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Classic tube', su: 'https://www.redtube.com/?search=', sq: 'taboo' },
-  { id: 'youporn', name: 'YouPorn', url: 'https://www.youporn.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Large catalog', su: 'https://www.youporn.com/search/?query=', sq: 'taboo' },
-  { id: 'drtuber', name: 'DrTuber', url: 'https://www.drtuber.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Good quality', su: 'https://www.drtuber.com/search/video?q=', sq: 'taboo' },
-  { id: 'porntrex', name: 'PornTrex', url: 'https://www.porntrex.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Big catalog', su: 'https://www.porntrex.com/search/', sq: 'taboo' },
+  { id: 'xnxx', name: 'XNXX', url: 'https://www.xnxx.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], note: 'Huge catalog', su: 'https://www.xnxx.com/search/', sq: 'taboo', noFrame: true },
+  { id: 'xv', name: 'xVideos', url: 'https://www.xvideos.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], note: 'Massive free library', su: 'https://www.xvideos.com/?k=', sq: 'taboo', noFrame: true },
+  { id: 'ep', name: 'EPorner', url: 'https://www.eporner.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'hd', '4k', 'free'], note: 'HD & 4K free', su: 'https://www.eporner.com/search/', sq: 'taboo', noFrame: true },
+  { id: 'hq', name: 'HQPorner', url: 'https://hqporner.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', '4k', 'free'], note: '4K available', su: 'https://hqporner.com/search/', sq: 'taboo', noFrame: true },
+  { id: 'txxx', name: 'Txxx', url: 'https://txxx.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Large collection', su: 'https://txxx.com/search/', sq: 'taboo', noFrame: true },
+  { id: 'beeg', name: 'Beeg', url: 'https://beeg.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Clean UI', su: 'https://beeg.com/sex/', sq: 'taboo', noFrame: true },
+  { id: 'redtube', name: 'RedTube', url: 'https://www.redtube.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Classic tube', su: 'https://www.redtube.com/?search=', sq: 'taboo', noFrame: true },
+  { id: 'youporn', name: 'YouPorn', url: 'https://www.youporn.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Large catalog', su: 'https://www.youporn.com/search/?query=', sq: 'taboo', noFrame: true },
+  { id: 'drtuber', name: 'DrTuber', url: 'https://www.drtuber.com', category: 'taboo', tags: ['taboo', 'stepmom', 'tube', 'free'], note: 'Good quality', su: 'https://www.drtuber.com/search/video?q=', sq: 'taboo', noFrame: true },
+  { id: 'porntrex', name: 'PornTrex', url: 'https://www.porntrex.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'tube', 'free'], note: 'Big catalog', su: 'https://www.porntrex.com/search/', sq: 'taboo', noFrame: true },
   { id: 'tube8', name: 'Tube8', url: 'https://www.tube8.com', category: 'taboo', tags: ['tube', 'free', 'classic'], note: 'Long-running mainstream tube' },
   { id: 'tnaflix', name: 'TNAFlix', url: 'https://www.tnaflix.com', category: 'taboo', tags: ['tube', 'free', 'classic'], note: 'Classic tube, deep archive' },
   { id: 'youjizz', name: 'Youjizz', url: 'https://www.youjizz.com', category: 'taboo', tags: ['tube', 'free', 'classic', 'amateur'], note: 'Long-running amateur-leaning tube' },
