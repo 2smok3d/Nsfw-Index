@@ -3,16 +3,12 @@
    directory.html. Reads SITES / CATEGORIES from sites.js.
    ============================================================ */
 (function () {
-  const CROSS_SEARCH_SITES = [
-    { n: 'PornHub',   u: 'https://www.pornhub.com/video/search?search=' },
-    { n: 'xVideos',   u: 'https://www.xvideos.com/?k=' },
-    { n: 'xHamster',  u: 'https://xhamster.com/search/' },
-    { n: 'SpankBang', u: 'https://spankbang.com/s/' },
-    { n: 'XNXX',      u: 'https://www.xnxx.com/search/' },
-    { n: 'EPorner',   u: 'https://www.eporner.com/search/' },
-    { n: 'HQPorner',  u: 'https://hqporner.com/search/' },
-    { n: 'ThisVid',   u: 'https://thisvid.com/search/videos/?q=' },
-  ];
+  // Every site with a known search-url pattern (`su` in sites.js) is
+  // searchable here — this list grows automatically as sites.js does,
+  // instead of a separate hand-maintained subset.
+  function crossSearchSites() {
+    return SITES.filter(s => s.su).map(s => ({ n: s.name, u: s.su }));
+  }
 
   const S = {
     q: '',
@@ -241,8 +237,9 @@
   function openCrossSearch() {
     const modal = document.getElementById('cs-modal');
     const input = document.getElementById('csinput');
+    const sites = crossSearchSites();
     input.value = S.q;
-    document.getElementById('cs-grid').innerHTML = CROSS_SEARCH_SITES.map((s, i) =>
+    document.getElementById('cs-grid').innerHTML = sites.map((s, i) =>
       `<button class="chip" data-i="${i}">${s.n}</button>`
     ).join('');
     document.querySelectorAll('#cs-grid [data-i]').forEach(btn => {
@@ -250,7 +247,7 @@
         const q = input.value.trim();
         if (!q) { toast('Enter a search term first'); return; }
         modal.classList.remove('open');
-        openSearchResults(q, CROSS_SEARCH_SITES, Number(btn.dataset.i));
+        openSearchResults(q, sites, Number(btn.dataset.i));
       });
     });
     modal.classList.add('open');
@@ -290,7 +287,7 @@
       const q = e.target.value.trim();
       if (!q) { toast('Enter a search term first'); return; }
       document.getElementById('cs-modal').classList.remove('open');
-      openSearchResults(q, CROSS_SEARCH_SITES, 0);
+      openSearchResults(q, crossSearchSites(), 0);
     });
     document.getElementById('srClose').addEventListener('click', closeSearchResults);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearchResults(); });
