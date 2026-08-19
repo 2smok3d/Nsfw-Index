@@ -8,7 +8,7 @@
     container.innerHTML = `
       <div class="eyebrow" style="margin-bottom:8px">Tools</div>
       <h1 style="font-size:1.6rem;margin-bottom:6px">Download &amp; build a permanent archive</h1>
-      <p class="small mt-lg" style="max-width:640px">Streaming sites vanish. These are the tools worth knowing for pulling content down and keeping a private, self-hosted archive — feed a downloaded file straight into your Drive library and it'll show up in <a href="#/library" style="color:var(--gold)">My Library</a>.</p>
+      <p class="small mt-lg" style="max-width:640px">Streaming sites vanish. These are the tools worth knowing for pulling content down and keeping a private, self-hosted archive.</p>
 
       <div class="sec mt-lg">
         <div class="sec-hdr open"><div class="sec-title">Downloaders</div><div class="sec-count">6</div></div>
@@ -47,11 +47,6 @@
             <a class="card" href="https://github.com/xinntao/Real-ESRGAN" target="_blank" rel="noopener"><div class="c-tag">ai</div><div class="c-name">Real-ESRGAN</div><div class="c-note">AI video/image upscaling for older archives</div></a>
           </div>
         </div></div></div>
-      </div>
-
-      <div class="panel mt-lg">
-        <h2>Feeding your Drive library</h2>
-        <div class="sub">A simple loop: download with yt-dlp → drop the file into a Drive folder → set that folder to "Anyone with the link — Viewer" → paste its folder ID into <a href="#/settings" style="color:var(--gold)">Settings</a>. It'll appear in <a href="#/library" style="color:var(--gold)">My Library</a> automatically, taggable and downloadable from any device.</div>
       </div>`;
   }
 

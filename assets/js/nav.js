@@ -1,18 +1,16 @@
 /* ============================================================
-   nav.js — shared chrome: age gate, header/nav, mobile nav, tab
-   bar, toast, scroll-to-top. Built ONCE by NB.initChrome() when
-   the app boots (single-page shell — see router.js). Individual
-   views reconfigure the header search/actions via
-   NB.configureHeader() on every navigation instead of the whole
-   chrome being rebuilt.
+   nav.js — shared chrome: age gate, header/nav, tab bar, toast,
+   scroll-to-top. Built ONCE by NB.initChrome() when the app boots
+   (single-page shell — see router.js). Individual views
+   reconfigure the header search/actions via NB.configureHeader()
+   on every navigation instead of the whole chrome being rebuilt.
    Depends on store.js being loaded first.
    ============================================================ */
 const NB = (() => {
   const PAGES = [
     { id: 'home',      route: '/',          label: 'Home',      icon: '⌂' },
     { id: 'directory', route: '/directory', label: 'Directory', icon: '⌕' },
-    { id: 'library',   route: '/library',   label: 'Library',   icon: '▣' },
-    { id: 'handy',     route: '/handy',     label: 'The Handy', icon: '⚡' },
+    { id: 'search',    route: '/search',    label: 'Search',    icon: '🔍' },
     { id: 'tools',     route: '/tools',     label: 'Tools',     icon: '⬇' },
     { id: 'settings',  route: '/settings',  label: 'Settings',  icon: '⚙' },
   ];
@@ -39,7 +37,7 @@ const NB = (() => {
           <div class="gate-crest">♛</div>
           <div class="gate-logo">Noir&nbsp;Index</div>
           <div class="eyebrow gate-eyebrow">Adults Only · 18+ · Private</div>
-          <div class="gate-msg">A private, self-hosted collection of adult links and tools. By entering you confirm you are 18 or older and that explicit content is legal to view in your jurisdiction. Nothing you do here is tracked or sent anywhere — everything lives in this browser only.</div>
+          <div class="gate-msg">A private, self-hosted directory of adult sites. By entering you confirm you are 18 or older and that explicit content is legal to view in your jurisdiction. Nothing you do here is tracked or sent anywhere — everything lives in this browser only.</div>
           <button class="btn btn-gold gate-enter" id="gate-enter">Enter — I am 18+</button>
           <button class="btn btn-ghost" id="gate-exit">Take me elsewhere</button>
         </div>
@@ -78,29 +76,13 @@ const NB = (() => {
     document.getElementById('cmdkBtn').addEventListener('click', () => {
       if (typeof Palette !== 'undefined') Palette.toggle();
     });
-
-    const mob = document.getElementById('nb-mobilenav');
-    if (mob) {
-      mob.innerHTML = `<div id="mobileNav">
-        <button type="button" class="mobilenav-search" id="mobNavSearch"><span>⌕ Quick Search</span><span class="cmdk-kbd">⌘K</span></button>
-        ${PAGES.map(p => `<a href="#${p.route}" data-route="${p.route}"><span>${p.icon}</span> ${p.label}</a>`).join('')}
-      </div>`;
-      document.getElementById('mobNavSearch').onclick = () => {
-        mob.querySelector('#mobileNav').classList.remove('open');
-        if (typeof Palette !== 'undefined') Palette.toggle();
-      };
-      mob.querySelectorAll('#mobileNav a').forEach(a => {
-        a.addEventListener('click', () => mob.querySelector('#mobileNav').classList.remove('open'));
-      });
-    }
   }
 
   function buildTabBar() {
     let bar = document.getElementById('tabbar');
-    const mainItems = PAGES.slice(0, 4);
-    const html = mainItems.map(p =>
-      `<a href="#${p.route}" data-route="${p.route}" class="tabbar-item"><span class="ti-icon">${p.icon}</span><span>${p.label.replace('The ', '')}</span></a>`
-    ).join('') + `<button type="button" class="tabbar-item" id="tabbarMore"><span class="ti-icon">☰</span><span>More</span></button>`;
+    const html = PAGES.map(p =>
+      `<a href="#${p.route}" data-route="${p.route}" class="tabbar-item"><span class="ti-icon">${p.icon}</span><span>${p.label}</span></a>`
+    ).join('');
     if (!bar) {
       bar = document.createElement('nav');
       bar.id = 'tabbar';
@@ -108,27 +90,20 @@ const NB = (() => {
       document.body.appendChild(bar);
     }
     bar.innerHTML = html;
-    document.getElementById('tabbarMore').addEventListener('click', () => {
-      const mob = document.getElementById('nb-mobilenav');
-      if (mob) mob.querySelector('#mobileNav').classList.toggle('open');
-    });
   }
 
   // Called on every route change — updates .active classes on the
-  // header nav, mobile nav, and tab bar without rebuilding any of
-  // them (avoids re-wiring listeners on every navigation).
+  // header nav and tab bar without rebuilding either (avoids
+  // re-wiring listeners on every navigation).
   function setActive(routeId) {
     activeId = routeId;
     const page = PAGES.find(p => p.id === routeId);
-    const inMainNav = page && PAGES.slice(0, 4).some(p => p.id === routeId);
-    document.querySelectorAll('#navPrimary a, #mobileNav a').forEach(a => {
+    document.querySelectorAll('#navPrimary a').forEach(a => {
       a.classList.toggle('active', !!(page && a.dataset.route === page.route));
     });
     document.querySelectorAll('.tabbar-item[data-route]').forEach(a => {
       a.classList.toggle('active', !!(page && a.dataset.route === page.route));
     });
-    const more = document.getElementById('tabbarMore');
-    if (more) more.classList.toggle('active', !inMainNav);
   }
 
   // Called by each view's render() to configure the shared header
@@ -219,8 +194,6 @@ const NB = (() => {
       }
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
-        const mob = document.getElementById('mobileNav');
-        if (mob) mob.classList.remove('open');
       }
     });
   }

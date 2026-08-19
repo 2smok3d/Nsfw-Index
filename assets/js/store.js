@@ -38,26 +38,16 @@ const Store = (() => {
     return v[id];
   }
 
-  // ── per-item tags (used by library.html mainly) ──
-  function getTags() { return get('tags', {}); } // { itemId: ['tag1','tag2'] }
-  function setTagsFor(id, tags) {
-    const all = getTags();
-    if (tags.length) all[id] = tags; else delete all[id];
-    set('tags', all);
-  }
-
-  // ── settings (API keys, prefs — all local only) ──
+  // ── settings (prefs — all local only) ──
   const DEFAULT_SETTINGS = {
-    driveApiKey: '',
-    driveFolders: [], // [{ id, label }]
-    handyKey: '',
-    handyBaseUrl: 'https://www.handyfeeling.com/api/handy/v2',
     density: 'comfortable', // comfortable | compact
     landingPage: '/',
   };
   // pre-SPA builds stored landingPage as a filename ("directory.html");
-  // transparently upgrade it to the equivalent route on read.
-  const LEGACY_LANDING = { 'index.html': '/', 'directory.html': '/directory', 'library.html': '/library', 'handy.html': '/handy', 'tools.html': '/tools', 'settings.html': '/settings' };
+  // transparently upgrade it to the equivalent route on read. library.html
+  // and handy.html no longer exist (those sections were removed), so they
+  // fall back to home rather than a dead route.
+  const LEGACY_LANDING = { 'index.html': '/', 'directory.html': '/directory', 'library.html': '/', 'handy.html': '/', 'tools.html': '/tools', 'settings.html': '/settings' };
   function getSettings() {
     const s = Object.assign({}, DEFAULT_SETTINGS, get('settings', {}));
     if (s.landingPage in LEGACY_LANDING) s.landingPage = LEGACY_LANDING[s.landingPage];
@@ -94,7 +84,6 @@ const Store = (() => {
     get, set, remove,
     getFavs, toggleFav,
     getVisits, recordVisit,
-    getTags, setTagsFor,
     getSettings, setSettings,
     ageVerified, setAgeVerified,
     exportAll, importAll, resetAll,

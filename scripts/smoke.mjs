@@ -15,11 +15,9 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const ROUTES = ['/', '/directory', '/library', '/handy', '/tools', '/settings', '/search'];
+const ROUTES = ['/', '/directory', '/tools', '/settings', '/search'];
 const REDIRECTS = {
   'directory.html': '/directory',
-  'library.html': '/library',
-  'handy.html': '/handy',
   'tools.html': '/tools',
   'settings.html': '/settings',
 };
