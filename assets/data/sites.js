@@ -48,7 +48,7 @@ const SITES = [
   { id: 'ph', name: 'PornHub', url: 'https://www.pornhub.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Massive taboo, stepmom & femdom library', su: 'https://www.pornhub.com/video/search?search=', sq: 'taboo', noFrame: true },
   { id: 'xh', name: 'xHamster', url: 'https://xhamster.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'milf', 'tube', 'free'], hot: true, note: 'Top taboo category', su: 'https://xhamster.com/search/', sq: 'taboo', noFrame: true },
   { id: 'sb', name: 'SpankBang', url: 'https://spankbang.com', category: 'taboo', tags: ['taboo', 'stepmom', 'femdom', 'joi', 'tube', 'free', 'hd'], hot: true, note: 'Great quality across the board', su: 'https://spankbang.com/s/', sq: 'taboo', noFrame: true },
-  { id: 'noodle', name: 'Noodlemagazine', url: 'https://noodlemagazine.com', category: 'taboo', tags: ['taboo', 'tube', 'free', 'hd'], hot: true, note: 'Huge free library, consistently well-rated', su: 'https://noodlemagazine.com/video/', sq: 'taboo' },
+  { id: 'noodle', name: 'Noodlemagazine', url: 'https://noodlemagazine.com', category: 'taboo', tags: ['taboo', 'tube', 'free', 'hd'], hot: true, note: 'Huge free library, consistently well-rated', su: 'https://noodlemagazine.com/video/', sq: 'taboo', noFrame: true },
   { id: 'pornhoarder', name: 'PornHoarder', url: 'https://pornhoarder.tv', category: 'taboo', tags: ['tube', 'free', 'hd'], hot: true, note: 'Curated, harder-to-find full scenes' },
   { id: 'nsfwbase', name: 'NSFWBase', url: 'https://www.nsfwbase.com', category: 'taboo', tags: ['free', 'tube'], hot: true, note: 'Multi-site search — one box searches dozens of tubes at once' },
 
