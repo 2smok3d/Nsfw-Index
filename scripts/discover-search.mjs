@@ -36,8 +36,15 @@ const SEARCH_INPUT_SELECTOR = [
 ].join(', ');
 const TEST_TERM = 'test';
 
-async function findSuPattern(page, homepage) {
-  await page.goto(homepage, { waitUntil: 'domcontentloaded', timeout: 25000 });
+async function findSuPattern(page, homepage, { retries = 0 } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await page.goto(homepage, { waitUntil: 'domcontentloaded', timeout: 25000 });
+      break;
+    } catch (e) {
+      if (attempt >= retries) return { status: 'error', error: e.message };
+    }
+  }
   const input = page.locator(SEARCH_INPUT_SELECTOR).first();
   if (!(await input.count())) return { status: 'no-search-box' };
   try {
@@ -58,10 +65,22 @@ async function findSuPattern(page, homepage) {
   const idx = finalUrl.lastIndexOf(TEST_TERM);
   const su = finalUrl.slice(0, idx);
   const suffix = finalUrl.slice(idx + TEST_TERM.length);
-  if (suffix.length > 0) {
-    return { status: 'complex-pattern', finalUrl, note: 'trailing content after query term — needs manual su' };
+  if (suffix === '') return { status: 'ok', su, finalUrl };
+
+  // A lone trailing slash (…/search/test/) is a very common REST-style
+  // pattern — verify the no-trailing-slash form (what this app's
+  // `site.u + encodeURIComponent(q)` actually produces) still resolves
+  // to a real page rather than a 404, instead of guessing.
+  if (suffix === '/') {
+    try {
+      const resp = await page.goto(su + TEST_TERM, { waitUntil: 'domcontentloaded', timeout: 15000 });
+      if (resp && resp.ok()) return { status: 'ok', su, finalUrl, note: 'verified without trailing slash' };
+      return { status: 'complex-pattern', finalUrl, note: `no-slash form returned ${resp ? resp.status() : 'no response'}` };
+    } catch (e) {
+      return { status: 'complex-pattern', finalUrl, note: 'no-slash form failed: ' + e.message };
+    }
   }
-  return { status: 'ok', su, finalUrl };
+  return { status: 'complex-pattern', finalUrl, note: 'trailing content after query term — needs manual su' };
 }
 
 async function checkEmbeddable(context, url) {
@@ -87,7 +106,7 @@ async function main() {
     const page = await context.newPage();
     let result;
     try {
-      result = await findSuPattern(page, site.url);
+      result = await findSuPattern(page, site.url, { retries: 1 });
     } catch (e) {
       result = { status: 'error', error: e.message };
     }
