@@ -4,8 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Noir Index</title>
+<meta name="theme-color" content="#0a0808">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Noir Index">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="assets/css/theme.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%230a0808%27/%3E%3Ctext x=%2750%27 y=%2568%27 font-size=%2755%27 text-anchor=%27middle%27 fill=%27%23c9a24b%27%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 </head>
 <body>
 <div id="nb-gate"></div>
@@ -39,6 +46,9 @@
       location.hash = landing;
     } else {
       Router.render();
+    }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
     }
   })();
 </script>

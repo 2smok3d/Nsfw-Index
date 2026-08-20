@@ -71,6 +71,15 @@ if (existsSync(dataFile)) {
     fail(`assets/data/sites.js: syntax error\n${e.stderr?.toString() || e.message}`);
   }
 }
+const swFile = path.join(root, 'sw.js');
+if (existsSync(swFile)) {
+  try {
+    execFileSync(process.execPath, ['--check', swFile], { stdio: 'pipe' });
+    ok('sw.js: valid syntax');
+  } catch (e) {
+    fail(`sw.js: syntax error\n${e.stderr?.toString() || e.message}`);
+  }
+}
 
 // ── 3. directory dataset sanity ──
 if (existsSync(dataFile)) {
@@ -110,6 +119,26 @@ if (existsSync(viewsDir)) {
   const missing = expected.filter(p => !registered.has(p));
   if (missing.length) fail(`router: expected route(s) not registered: ${missing.join(', ')}`);
   else ok(`router: all ${expected.length} expected routes registered (${[...registered].join(', ')})`);
+}
+
+// ── 5. PWA manifest sanity ──
+const manifestFile = path.join(root, 'manifest.json');
+if (existsSync(manifestFile)) {
+  try {
+    const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
+    ok('manifest.json: valid JSON');
+    if (!Array.isArray(manifest.icons) || !manifest.icons.length) {
+      fail('manifest.json: no icons declared');
+    } else {
+      for (const icon of manifest.icons) {
+        const resolved = path.join(root, icon.src);
+        if (!existsSync(resolved)) fail(`manifest.json: icon src missing on disk: ${icon.src}`);
+      }
+      ok(`manifest.json: ${manifest.icons.length} icon(s) resolved`);
+    }
+  } catch (e) {
+    fail(`manifest.json: failed to parse — ${e.message}`);
+  }
 }
 
 console.log('');
