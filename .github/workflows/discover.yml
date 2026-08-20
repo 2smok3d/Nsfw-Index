@@ -1,0 +1,26 @@
+name: Discover search URLs
+
+# Manual, one-off research tool — NOT part of the regular CI gate.
+# Run from the Actions tab (or via API dispatch) to find search-URL
+# patterns + embeddability for sites.js entries that lack `su`.
+on:
+  workflow_dispatch:
+    inputs:
+      site_ids:
+        description: 'Space-separated site ids to test (blank = every entry without su)'
+        required: false
+        default: ''
+
+jobs:
+  discover:
+    name: Discover search URLs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/discover-search.mjs ${{ github.event.inputs.site_ids }}
