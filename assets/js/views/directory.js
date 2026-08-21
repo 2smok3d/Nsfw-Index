@@ -41,10 +41,10 @@
 
   function esc(str) { return String(str).replace(/'/g, "\\'"); }
 
-  function hcard(entry) {
+  function hcard(entry, isFeature) {
     const fav = Store.getFavs().has(entry.id);
     const visited = entry._visits > 0;
-    return `<a class="hcard" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
+    return `<a class="hcard${isFeature ? ' hcard-feature' : ''}" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
       <div class="hc-badge${visited ? ' hc-badge-hot' : ''}">${visited ? '🔥 Most Visited' : 'Featured'}</div>
       <button class="hc-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
       <div class="hc-title-row">${NB.siteIcon(entry.name, entry.url)}<div class="hc-name">${entry.name}</div></div>
@@ -97,7 +97,7 @@
       </div>
       <div class="sec-body${S.open ? ' open' : ''}" data-body="${cat.id}">
         <div class="sec-inner"><div class="sec-pad">
-          ${heroes.length ? `<div class="hero-grid">${heroes.map(hcard).join('')}</div>` : ''}
+          ${heroes.length ? `<div class="hero-grid">${heroes.map((h, i) => hcard(h, i === 0)).join('')}</div>` : ''}
           ${rest.length ? `<div class="card-grid">${rest.map(card).join('')}</div>` : ''}
         </div></div>
       </div>

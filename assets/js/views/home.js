@@ -31,6 +31,8 @@
         <span class="feat-primary-arrow">→</span>
       </a>
 
+      <div class="ornament"><span class="ornament-glyph">♛</span></div>
+
       <div class="feat-secondary-label">Also here</div>
       <section class="feat-grid">
         <a class="feat-card accent-gold" href="#/search">
