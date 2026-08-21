@@ -17,7 +17,7 @@
   function esc(str) { return String(str).replace(/</g, '&lt;'); }
 
   function searchableSites() {
-    return SITES.filter(s => s.su).map(s => ({ id: s.id, n: s.name, u: s.su, noFrame: !!s.noFrame }));
+    return SITES.filter(s => s.su).map(s => ({ id: s.id, n: s.name, u: s.su, home: s.url, noFrame: !!s.noFrame }));
   }
 
   function render(container, params) {
@@ -99,7 +99,7 @@
       }
     }
 
-    tabsEl.innerHTML = sites.map((s, i) => `<button class="chip" data-i="${i}">${s.n}${s.noFrame ? ' ↗' : ''}</button>`).join('');
+    tabsEl.innerHTML = sites.map((s, i) => `<button class="chip" data-i="${i}">${NB.siteIcon(s.n, s.home)}${s.n}${s.noFrame ? ' ↗' : ''}</button>`).join('');
     tabsEl.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', () => load(Number(btn.dataset.i)));
     });

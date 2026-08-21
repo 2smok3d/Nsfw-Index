@@ -100,7 +100,7 @@ async function main() {
     page.on('console', msg => {
       if (msg.type() === 'error' && /X-Frame-Options|frame-ancestors/i.test(msg.text())) frameErrors.push(msg.text());
     });
-    await page.goto(base + 'index.html#/search?q=test', { waitUntil: 'networkidle' });
+    await page.goto(base + 'index.html#/search?q=test', { waitUntil: 'load' });
     const enter = await page.$('#gate-enter');
     if (enter) await enter.click();
     await page.waitForTimeout(300);
