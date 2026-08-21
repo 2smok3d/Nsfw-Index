@@ -38,6 +38,13 @@ const Router = (() => {
     container.innerHTML = '';
     // a view's render() may return a cleanup function, run before the next navigation
     cleanup = route.render(container, params) || null;
+
+    // restart the page-load reveal animation (see theme.css .view-enter) —
+    // removing then re-adding the class forces the browser to treat it as
+    // a fresh animation instead of a no-op on an already-applied class
+    container.classList.remove('view-enter');
+    void container.offsetWidth;
+    container.classList.add('view-enter');
   }
 
   window.addEventListener('hashchange', render);
