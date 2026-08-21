@@ -164,6 +164,20 @@ const NB = (() => {
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }
 
+  // spotlight hover (see theme.css .card::after etc.) — a single
+  // delegated listener sets --mx/--my on whichever card is under the
+  // cursor, so it keeps working across every render without being
+  // re-wired per card.
+  function bindSpotlight() {
+    document.addEventListener('pointermove', e => {
+      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    }, { passive: true });
+  }
+
   function buildAmbience() {
     if (document.querySelector('.ambience')) return;
     const div = document.createElement('div');
@@ -184,6 +198,7 @@ const NB = (() => {
     buildFooter();
     buildToast();
     buildScrollTop();
+    bindSpotlight();
     window.toast = toast;
 
     document.addEventListener('keydown', e => {

@@ -4,6 +4,29 @@
    Self-contained: system fonts only, no external requests.
    ============================================================ */
 
+/* Self-hosted rather than linked from Google's CDN — a page load
+   shouldn't have to phone a third party to render its own type,
+   and this site's whole pitch is "nothing leaves this browser".
+   Both are open-source (SIL OFL) variable fonts covering their
+   full weight (and, for Fraunces, optical-size) range in one file
+   per style, latin-only subset — this is an English-only site. */
+@font-face{
+  font-family:'Fraunces';font-style:normal;font-weight:300 900;font-display:swap;
+  src:url('../fonts/fraunces-normal-variable.woff2') format('woff2-variations'),url('../fonts/fraunces-normal-variable.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Fraunces';font-style:italic;font-weight:300 900;font-display:swap;
+  src:url('../fonts/fraunces-italic-variable.woff2') format('woff2-variations'),url('../fonts/fraunces-italic-variable.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Instrument Sans';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('../fonts/instrument-sans-normal-variable.woff2') format('woff2-variations'),url('../fonts/instrument-sans-normal-variable.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Instrument Sans';font-style:italic;font-weight:400 700;font-display:swap;
+  src:url('../fonts/instrument-sans-italic-variable.woff2') format('woff2-variations'),url('../fonts/instrument-sans-italic-variable.woff2') format('woff2');
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* surfaces */
@@ -41,8 +64,12 @@
   --hh:64px;
   --maxw:1360px;
 
-  --serif:'Iowan Old Style','Palatino Linotype','Book Antiqua',Georgia,'Times New Roman',serif;
-  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+  --serif:'Fraunces','Iowan Old Style','Palatino Linotype','Book Antiqua',Georgia,'Times New Roman',serif;
+  --sans:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+
+  /* motion */
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.4,.64,1);
 }
 
 /* smooth native cross-page navigation on browsers that support it
@@ -72,7 +99,7 @@ a{color:inherit}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:8px;border:2px solid var(--bg)}
 ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
 
-h1,h2,h3,h4{font-family:var(--serif);font-weight:700;letter-spacing:.01em}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;letter-spacing:-.01em;font-optical-sizing:auto}
 
 .eyebrow{
   font-size:.68rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
@@ -88,7 +115,14 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:700;letter-spacing:.01em}
     radial-gradient(ellipse 60% 45% at 15% 8%,rgba(139,30,63,.14),transparent 60%),
     radial-gradient(ellipse 55% 50% at 90% 15%,rgba(201,162,75,.10),transparent 65%),
     radial-gradient(ellipse 70% 60% at 50% 100%,rgba(139,30,63,.08),transparent 60%);
+  animation:ambienceBreathe 16s ease-in-out infinite;
 }
+/* a slow, near-subliminal drift — candlelight rather than a lava lamp */
+@keyframes ambienceBreathe{
+  0%,100%{opacity:1;filter:saturate(1)}
+  50%{opacity:.82;filter:saturate(1.12)}
+}
+@media(prefers-reduced-motion:reduce){.ambience{animation:none}}
 /* fine film-grain texture — the single cheapest thing that reads as
    "print quality" instead of flat digital gradients */
 .ambience::after{
@@ -575,4 +609,45 @@ footer.site a:hover{color:var(--gold)}
   display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;
   background:var(--s2);border:1px solid var(--border);color:var(--t2);font-size:.72rem;font-weight:700;
 }
+
+/* ── page-load reveal ──────────────────────────────────────────
+   One orchestrated entrance per navigation beats scattered micro-
+   interactions: #view's direct children stagger-fade-rise in, and
+   the first cards inside any grid stagger a second time on top of
+   that. Router.render() re-triggers this by toggling the class
+   (see router.js). Capped so a 50-card directory grid doesn't turn
+   into a slow cascade — only the first screenful staggers. */
+@keyframes viewRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardRise{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.view-enter>*{animation:viewRise .55s var(--ease-out) both}
+.view-enter>*:nth-child(1){animation-delay:.01s}
+.view-enter>*:nth-child(2){animation-delay:.06s}
+.view-enter>*:nth-child(3){animation-delay:.11s}
+.view-enter>*:nth-child(4){animation-delay:.16s}
+.view-enter>*:nth-child(n+5){animation-delay:.2s}
+.view-enter .card-grid>*,.view-enter .hero-grid>*,.view-enter .feat-grid>*{animation:cardRise .45s var(--ease-out) both}
+.view-enter .card-grid>*:nth-child(1),.view-enter .hero-grid>*:nth-child(1),.view-enter .feat-grid>*:nth-child(1){animation-delay:.22s}
+.view-enter .card-grid>*:nth-child(2),.view-enter .hero-grid>*:nth-child(2),.view-enter .feat-grid>*:nth-child(2){animation-delay:.25s}
+.view-enter .card-grid>*:nth-child(3),.view-enter .hero-grid>*:nth-child(3),.view-enter .feat-grid>*:nth-child(3){animation-delay:.28s}
+.view-enter .card-grid>*:nth-child(4),.view-enter .hero-grid>*:nth-child(4),.view-enter .feat-grid>*:nth-child(4){animation-delay:.31s}
+.view-enter .card-grid>*:nth-child(5),.view-enter .hero-grid>*:nth-child(5){animation-delay:.34s}
+.view-enter .card-grid>*:nth-child(6),.view-enter .hero-grid>*:nth-child(6){animation-delay:.37s}
+.view-enter .card-grid>*:nth-child(n+7),.view-enter .hero-grid>*:nth-child(n+7){animation-delay:.4s}
+@media(prefers-reduced-motion:reduce){.view-enter>*,.view-enter .card-grid>*,.view-enter .hero-grid>*,.view-enter .feat-grid>*{animation:none}}
+
+/* ── spotlight hover ──────────────────────────────────────────
+   A soft light that follows the cursor across a card's surface,
+   like gold leaf catching candlelight — set on nav.js's delegated
+   pointermove via --mx/--my (defaults center the glow when a
+   touch/keyboard user never fires pointermove at all). Applied to
+   every clickable card surface without needing a dedicated class
+   in each view's markup. */
+.card,.hcard,.feat-card,.feat-primary{position:relative;--mx:50%;--my:50%}
+.card::after,.hcard::after,.feat-card::after,.feat-primary::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  opacity:0;transition:opacity .35s var(--ease-out);
+  background:radial-gradient(280px circle at var(--mx) var(--my),rgba(232,200,116,.16),transparent 65%);
+}
+.card:hover::after,.hcard:hover::after,.feat-card:hover::after,.feat-primary:hover::after{opacity:1}
+@media(hover:none){.card::after,.hcard::after,.feat-card::after,.feat-primary::after{display:none}}
 
