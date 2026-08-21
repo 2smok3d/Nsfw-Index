@@ -47,7 +47,7 @@
     return `<a class="hcard" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
       <div class="hc-badge${visited ? ' hc-badge-hot' : ''}">${visited ? '🔥 Most Visited' : 'Featured'}</div>
       <button class="hc-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
-      <div class="hc-name">${entry.name}</div>
+      <div class="hc-title-row">${NB.siteIcon(entry.name, entry.url)}<div class="hc-name">${entry.name}</div></div>
       ${entry.note ? `<div class="hc-note">${entry.note}</div>` : ''}
     </a>`;
   }
@@ -59,7 +59,7 @@
     return `<a class="card${fav ? ' faved' : ''}" href="${entry.url}" target="_blank" rel="noopener" data-visit="${entry.id}">
       <button class="c-fav${fav ? ' on' : ''}" data-fav="${entry.id}" title="${fav ? 'Unsave' : 'Save'}">♥</button>
       <div class="c-tag">${visited ? '🔥 visited' : (entry.tags && entry.tags[0] ? entry.tags[0] : entry.category)}</div>
-      <div class="c-name">${entry.name}</div>
+      <div class="c-title-row">${NB.siteIcon(entry.name, entry.url)}<div class="c-name">${entry.name}</div></div>
       ${entry.note ? `<div class="c-note">${entry.note}</div>` : ''}
       ${entry.su ? `<button class="c-srch" data-siteid="${entry.id}" data-term="${esc(term)}" title="Search this site">⌕</button>` : ''}
     </a>`;

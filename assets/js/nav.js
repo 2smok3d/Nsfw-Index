@@ -164,6 +164,41 @@ const NB = (() => {
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }
 
+  // ── site icons ──────────────────────────────────────────────
+  // A small favicon per card beats a wall of identical text rows.
+  // Real icon when Settings > "Site icons" is on (fetched from
+  // Google's public favicon service — the one thing in this app
+  // that leaves the browser if enabled, off by one click if that
+  // matters to you); otherwise, and as the fallback when a fetch
+  // fails, a deterministically-colored monogram so every card still
+  // reads as visually distinct at a glance.
+  function hueFor(seed) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
+    return h;
+  }
+  function siteIcon(name, url) {
+    const letter = (name || '?').trim().charAt(0).toUpperCase();
+    const hue = hueFor(name || url || '');
+    const fallback = `<span class="icon-fallback" style="--hue:${hue}">${letter}</span>`;
+    let img = '';
+    if (Store.getSettings().showFavicons) {
+      try {
+        const host = new URL(url).hostname;
+        img = `<img src="https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(host)}" alt="" loading="lazy">`;
+      } catch (e) { /* not a real URL — fall through to monogram-only */ }
+    }
+    return `<span class="site-icon">${img}${fallback}</span>`;
+  }
+  // <img> error events don't bubble, but they do fire in the capture
+  // phase — one delegated listener on document handles every icon
+  // across every render instead of re-wiring per card.
+  function bindIconFallback() {
+    document.addEventListener('error', e => {
+      if (e.target.tagName === 'IMG' && e.target.closest('.site-icon')) e.target.remove();
+    }, true);
+  }
+
   // spotlight hover (see theme.css .card::after etc.) — a single
   // delegated listener sets --mx/--my on whichever card is under the
   // cursor, so it keeps working across every render without being
@@ -199,6 +234,7 @@ const NB = (() => {
     buildToast();
     buildScrollTop();
     bindSpotlight();
+    bindIconFallback();
     window.toast = toast;
 
     document.addEventListener('keydown', e => {
@@ -213,5 +249,5 @@ const NB = (() => {
     });
   }
 
-  return { PAGES, toast, initChrome, setActive, configureHeader, applyDensity };
+  return { PAGES, toast, initChrome, setActive, configureHeader, applyDensity, siteIcon };
 })();

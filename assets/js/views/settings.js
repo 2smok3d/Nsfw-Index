@@ -7,6 +7,7 @@
     const s = Store.getSettings();
     document.getElementById('landingPage').value = s.landingPage || '/';
     document.getElementById('density').value = s.density || 'comfortable';
+    document.getElementById('showFavicons').value = s.showFavicons === false ? 'off' : 'on';
   }
 
   function render(container) {
@@ -35,6 +36,14 @@
               <option value="compact">Compact</option>
             </select>
           </div>
+          <div class="field">
+            <label>Site icons</label>
+            <select id="showFavicons">
+              <option value="on">On — fetch each site's icon</option>
+              <option value="off">Off — initials only</option>
+            </select>
+            <div class="hint">The one thing in this app that leaves the browser if it's on: a small icon request per site, from Google's public favicon service. Off shows a plain monogram instead.</div>
+          </div>
         </div>
         <button class="btn btn-gold" id="savePrefs" style="width:auto;padding:10px 18px">Save Preferences</button>
       </div>
@@ -58,6 +67,7 @@
       Store.setSettings({
         landingPage: document.getElementById('landingPage').value,
         density: document.getElementById('density').value,
+        showFavicons: document.getElementById('showFavicons').value !== 'off',
       });
       NB.applyDensity && NB.applyDensity();
       toast('Preferences saved', 'gold');

@@ -42,6 +42,7 @@ const Store = (() => {
   const DEFAULT_SETTINGS = {
     density: 'comfortable', // comfortable | compact
     landingPage: '/',
+    showFavicons: true, // fetches each site's icon from Google's favicon service — the one thing that does leave this browser if left on
   };
   // pre-SPA builds stored landingPage as a filename ("directory.html");
   // transparently upgrade it to the equivalent route on read. library.html
