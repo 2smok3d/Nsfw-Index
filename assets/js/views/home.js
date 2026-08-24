@@ -1,77 +1,9 @@
-/* ============================================================
-   views/home.js — the hub. Search is the primary action.
-   ============================================================ */
-(function () {
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  function memoryPanel() {
-    const ranked = HomeMemory.ranked(4);
-    const favs = HomeMemory.favorites(4);
-    const total = HomeMemory.totalVisits();
-    if (!ranked.length && !favs.length) return '';
-
-    const quick = (items, mode) => items.map(x => {
-      const site = mode === 'ranked' ? x.site : x;
-      const meta = mode === 'ranked' ? `${x.count} visit${x.count === 1 ? '' : 's'}` : 'Saved';
-      return `<a class="memory-card" href="${esc(site.url)}" target="_blank" rel="noopener" data-memory-visit="${esc(site.id)}">
-        ${NB.siteIcon(site.name, site.url)}
-        <span class="memory-copy"><strong>${esc(site.name)}</strong><small>${meta}</small></span>
-        <span class="memory-arrow">↗</span>
-      </a>`;
-    }).join('');
-
-    return `<section class="memory-panel" aria-label="Your local activity">
-      <div class="memory-head">
-        <div><div class="eyebrow">Your local index</div><h2>Pick up where you left off</h2></div>
-        <div class="memory-stat"><strong>${total}</strong><span>local visits</span></div>
-      </div>
-      <div class="memory-columns">
-        ${ranked.length ? `<div><div class="memory-label">Most visited</div><div class="memory-grid">${quick(ranked, 'ranked')}</div></div>` : ''}
-        ${favs.length ? `<div><div class="memory-label">Saved</div><div class="memory-grid">${quick(favs, 'favs')}</div></div>` : ''}
-      </div>
-    </section>`;
-  }
-
-  function render(container) {
-    NB.configureHeader(null);
-    container.innerHTML = `
-      <section class="hero">
-        <div class="eyebrow">Private Collection · 18+</div>
-        <h1 class="hero-title">Curated for one obsession:<br><em>step fetish, femdom &amp; mommy domme.</em></h1>
-        <p class="hero-sub">Free sites, one search box. No paid sites, no accounts, no tracking — nothing leaves this browser.</p>
-        <div class="hero-search">
-          <span class="srch-icon">⌕</span>
-          <input id="quickSearch" type="search" placeholder="Search across sites — “femdom”, “stepmom”, “findom”, “4k”…" autocomplete="off">
-          <button class="btn btn-gold hero-search-go" id="heroGo">Search</button>
-        </div>
-        <div class="hero-actions">
-          <a class="btn btn-ghost" href="#/directory" style="width:auto;padding:10px 20px">Browse all sites →</a>
-        </div>
-      </section>
-
-      ${memoryPanel()}
-
-      <a class="feat-primary" href="#/directory">
-        <span class="feat-primary-icon">♛</span>
-        <div><div class="feat-primary-eyebrow">The Directory</div><h2>Browse the full Taboo list</h2><p>Step fetish, femdom &amp; mommy domme — free sites only, tagged and searchable, with a live "most visited" row that learns what you actually use.</p></div>
-        <span class="feat-primary-arrow">→</span>
-      </a>
-
-      <div class="ornament"><span class="ornament-glyph">♛</span></div>
-      <div class="feat-secondary-label">Also here</div>
-      <section class="feat-grid">
-        <a class="feat-card accent-gold" href="#/search"><span class="feat-icon">🔍</span><h3>Multi-Site Search</h3><p>Search once, flip through every site's results as tabs — videos play right inside the app on the sites that allow it.</p></a>
-        <a class="feat-card" href="#/tools"><span class="feat-icon">⬇</span><h3>Download &amp; Self-Host</h3><p>yt-dlp and friends, media servers, and everything you need to build a permanent local archive.</p></a>
-      </section>`;
-
-    const qs = document.getElementById('quickSearch');
-    const goToSearch = () => { if (qs.value.trim()) Router.go('/search?q=' + encodeURIComponent(qs.value.trim())); };
-    qs.addEventListener('keydown', e => { if (e.key === 'Enter') goToSearch(); });
-    document.getElementById('heroGo').addEventListener('click', goToSearch);
-    document.querySelectorAll('[data-memory-visit]').forEach(a => a.addEventListener('click', () => Store.recordVisit(a.dataset.memoryVisit)));
-  }
-
-  Router.register('/', { id: 'home', title: 'Noir Index', render });
+/* Noir Index — Wave 4: personalized local discovery hub. */
+(function(){
+ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ function card(s,label){return `<a class="memory-card" href="${esc(s.url)}" target="_blank" rel="noopener" data-reco="${esc(s.id)}">${NB.siteIcon(s.name,s.url)}<span class="memory-copy"><strong>${esc(s.name)}</strong><small>${esc(label)}</small></span><span class="memory-arrow">↗</span></a>`}
+ function discovery(){const recent=Discovery.recent().slice(0,4),vis=Store.getVisits();let seed=recent[0]||SITES.slice().sort((a,b)=>(vis[b.id]||0)-(vis[a.id]||0))[0],rec=seed?Discovery.recommend(seed.id,6):[];if(!rec.length)return '';return `<section class="memory-panel discovery-panel"><div class="memory-head"><div><div class="eyebrow">Local intelligence</div><h2>Because you liked ${esc(seed.name)}</h2></div><div class="memory-stat"><strong>Local</strong><span>no tracking</span></div></div><div class="memory-grid">${rec.map(s=>card(s,'Recommended for you')).join('')}</div>${recent.length?`<div class="memory-label" style="margin-top:16px">Recently opened</div><div class="memory-grid">${recent.map(s=>card(s,'Recent')).join('')}</div>`:''}</section>`}
+ function memory(){const ranked=HomeMemory.ranked(4),favs=HomeMemory.favorites(4),total=HomeMemory.totalVisits();if(!ranked.length&&!favs.length)return '';const q=(items,mode)=>items.map(x=>{const s=mode==='ranked'?x.site:x;return card(s,mode==='ranked'?`${x.count} visit${x.count===1?'':'s'}`:'Saved')}).join('');return `<section class="memory-panel"><div class="memory-head"><div><div class="eyebrow">Your local index</div><h2>Pick up where you left off</h2></div><div class="memory-stat"><strong>${total}</strong><span>local visits</span></div></div><div class="memory-columns">${ranked.length?`<div><div class="memory-label">Most visited</div><div class="memory-grid">${q(ranked,'ranked')}</div></div>`:''}${favs.length?`<div><div class="memory-label">Saved</div><div class="memory-grid">${q(favs,'favs')}</div></div>`:''}</div></section>`}
+ function render(container){NB.configureHeader(null);container.innerHTML=`<section class="hero"><div class="eyebrow">Private Collection · 18+</div><h1 class="hero-title">Curated for one obsession:<br><em>step fetish, femdom &amp; mommy domme.</em></h1><p class="hero-sub">Free sites, one search box. No paid sites, no accounts, no tracking — nothing leaves this browser.</p><div class="hero-search"><span class="srch-icon">⌕</span><input id="quickSearch" type="search" placeholder="Search across sites — “femdom”, “stepmom”, “findom”, “4k”…" autocomplete="off"><button class="btn btn-gold hero-search-go" id="heroGo">Search</button></div><div class="hero-actions"><a class="btn btn-ghost" href="#/directory" style="width:auto;padding:10px 20px">Browse all sites →</a></div></section>${memory()}${discovery()}<a class="feat-primary" href="#/directory"><span class="feat-primary-icon">♛</span><div><div class="feat-primary-eyebrow">The Directory</div><h2>Browse the full Taboo list</h2><p>Tagged, searchable and personalized locally as you use it.</p></div><span class="feat-primary-arrow">→</span></a><div class="ornament"><span class="ornament-glyph">♛</span></div><div class="feat-secondary-label">Also here</div><section class="feat-grid"><a class="feat-card accent-gold" href="#/search"><span class="feat-icon">🔍</span><h3>Multi-Site Search</h3><p>Search once, rank locally, then flip through live results.</p></a><a class="feat-card" href="#/tools"><span class="feat-icon">⬇</span><h3>Download &amp; Self-Host</h3><p>Tools for building a permanent local archive.</p></a></section>`;const qs=document.getElementById('quickSearch'),go=()=>{if(qs.value.trim())Router.go('/search?q='+encodeURIComponent(qs.value.trim()))};qs.onkeydown=e=>{if(e.key==='Enter')go()};document.getElementById('heroGo').onclick=go;document.querySelectorAll('[data-reco]').forEach(a=>a.onclick=()=>Discovery.recordOpen(a.dataset.reco))}
+ Router.register('/',{id:'home',title:'Noir Index',render});
 })();
