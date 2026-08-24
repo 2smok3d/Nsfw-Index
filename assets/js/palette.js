@@ -1,115 +1,17 @@
-/* ============================================================
-   palette.js — global command palette (Cmd/Ctrl+K). Jump to any
-   view instantly, or fuzzy-search the Taboo directory from
-   anywhere in the app. SITES is loaded synchronously as part of
-   the single-page shell, so no lazy-fetch trick is needed here.
-   ============================================================ */
+/* Noir Index — intelligent command palette */
 const Palette = (() => {
-  const PAGES = NB.PAGES.map(p => ({ label: p.label, icon: p.icon, route: p.route }));
-
-  let modal, input, results, hint;
-  let activeIndex = 0;
-  let currentItems = [];
-
-  function build() {
-    if (document.getElementById('cmdk-modal')) return;
-    const wrap = document.createElement('div');
-    wrap.innerHTML = `
-      <div class="modal-bg" id="cmdk-modal">
-        <div class="sheet cmdk-sheet">
-          <input id="cmdk-input" type="text" placeholder="Jump to a page or search the directory…" autocomplete="off">
-          <div id="cmdk-results" class="cmdk-results"></div>
-          <div class="cmdk-hint small">
-            <span class="cmdk-kbd">↑</span><span class="cmdk-kbd">↓</span> navigate &nbsp;
-            <span class="cmdk-kbd">↵</span> open &nbsp;
-            <span class="cmdk-kbd">esc</span> close
-          </div>
-        </div>
-      </div>`;
-    document.body.appendChild(wrap.firstElementChild);
-    modal = document.getElementById('cmdk-modal');
-    input = document.getElementById('cmdk-input');
-    results = document.getElementById('cmdk-results');
-    hint = document.querySelector('.cmdk-hint');
-
-    modal.addEventListener('click', e => { if (e.target === modal) close(); });
-    input.addEventListener('input', () => render(input.value));
-    input.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-      if (e.key === 'Enter') { e.preventDefault(); select(); }
-      if (e.key === 'Escape') { e.preventDefault(); close(); }
-    });
-  }
-
-  function move(delta) {
-    if (!currentItems.length) return;
-    activeIndex = (activeIndex + delta + currentItems.length) % currentItems.length;
-    highlight();
-  }
-  function highlight() {
-    [...results.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    const el = results.children[activeIndex];
-    if (el) el.scrollIntoView({ block: 'nearest' });
-  }
-  function select() {
-    const item = currentItems[activeIndex];
-    if (!item) return;
-    if (item.route) Router.go(item.route);
-    else if (item.href) window.open(item.href, '_blank', 'noopener');
-    close();
-  }
-
-  function render(q) {
-    q = (q || '').trim().toLowerCase();
-    const pageMatches = PAGES.filter(p => !q || p.label.toLowerCase().includes(q));
-    const siteMatches = (typeof SITES !== 'undefined' ? SITES : [])
-      .filter(s => !q || s.name.toLowerCase().includes(q) || (s.tags || []).some(t => t.includes(q)))
-      .slice(0, 8);
-    currentItems = [
-      ...pageMatches.map(p => ({ label: p.label, icon: p.icon, route: p.route, tag: '' })),
-      ...siteMatches.map(s => ({ label: s.name, icon: '↗', href: s.url, tag: 'site' })),
-    ];
-    activeIndex = 0;
-
-    if (!currentItems.length) {
-      results.innerHTML = `<div class="cmdk-empty small">No matches</div>`;
-      return;
-    }
-    results.innerHTML = currentItems.map((item, i) => `
-      <button class="cmdk-item${i === 0 ? ' active' : ''}" data-i="${i}">
-        <span class="cmdk-icon">${item.icon}</span>
-        <span class="cmdk-label">${item.label}</span>
-        ${item.tag ? `<span class="cmdk-tag">${item.tag}</span>` : ''}
-      </button>`).join('');
-    results.querySelectorAll('.cmdk-item').forEach(btn => {
-      btn.addEventListener('click', () => { activeIndex = Number(btn.dataset.i); select(); });
-      btn.addEventListener('mouseenter', () => { activeIndex = Number(btn.dataset.i); highlight(); });
-    });
-  }
-
-  function open() {
-    build();
-    modal.classList.add('open');
-    input.value = '';
-    render('');
-    setTimeout(() => input.focus(), 50);
-  }
-  function close() {
-    if (modal) modal.classList.remove('open');
-  }
-  function toggle() {
-    if (modal && modal.classList.contains('open')) close();
-    else open();
-  }
-
-  function init() {
-    document.addEventListener('keydown', e => {
-      const mod = e.metaKey || e.ctrlKey;
-      if (mod && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(); }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', init);
-  return { open, close, toggle };
+  const PAGES = NB.PAGES.map(p => ({ label:p.label, icon:p.icon, route:p.route, kind:'page', keywords:p.label }));
+  let modal,input,results,activeIndex=0,currentItems=[];
+  const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
+  function score(item,q){if(!q)return 0;const n=norm(q),name=norm(item.label),hay=norm((item.keywords||'')+' '+(item.tags||[]).join(' '));if(name===n)return 1000;if(name.startsWith(n))return 800;if(name.includes(n))return 600;if(hay.includes(n))return 350;let qi=0,h=0;for(const c of name){if(c===n[qi]){h++;qi++;if(qi===n.length)break}}return qi===n.length?100+h:-1}
+  function build(){if(document.getElementById('cmdk-modal'))return;const w=document.createElement('div');w.innerHTML=`<div class="modal-bg" id="cmdk-modal"><div class="sheet cmdk-sheet"><input id="cmdk-input" type="search" placeholder="Search sites, tags, pages, or commands…" autocomplete="off" spellcheck="false"><div id="cmdk-results" class="cmdk-results"></div><div class="cmdk-hint small"><span class="cmdk-kbd">↑</span><span class="cmdk-kbd">↓</span> navigate &nbsp;<span class="cmdk-kbd">↵</span> open &nbsp;<span class="cmdk-kbd">esc</span> close</div></div></div>`;document.body.appendChild(w.firstElementChild);modal=document.getElementById('cmdk-modal');input=document.getElementById('cmdk-input');results=document.getElementById('cmdk-results');modal.addEventListener('click',e=>{if(e.target===modal)close()});input.addEventListener('input',()=>render(input.value));input.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();move(1)}else if(e.key==='ArrowUp'){e.preventDefault();move(-1)}else if(e.key==='Enter'){e.preventDefault();select()}else if(e.key==='Escape'){e.preventDefault();close()}})}
+  function move(d){if(!currentItems.length)return;activeIndex=(activeIndex+d+currentItems.length)%currentItems.length;highlight()}
+  function highlight(){[...results.children].forEach((x,i)=>x.classList.toggle('active',i===activeIndex));results.children[activeIndex]?.scrollIntoView({block:'nearest'})}
+  function select(){const x=currentItems[activeIndex];if(!x)return;if(x.route)Router.go(x.route);else if(x.href)window.open(x.href,'_blank','noopener');close()}
+  function render(q){q=(q||'').trim();const commands=[{label:'Open Directory',icon:'▦',route:'/directory',kind:'command',keywords:'browse filter sites'},{label:'Search all sites',icon:'⌕',route:'/search'+(q?'?q='+encodeURIComponent(q):''),kind:'command',keywords:'search multi site'},{label:'Open Settings',icon:'⚙',route:'/settings',kind:'command',keywords:'preferences configuration'}];const pages=PAGES.map(x=>({...x,score:score(x,q)})).filter(x=>!q||x.score>=0);const visits=Store.getVisits(),favs=Store.getFavs();const sites=(typeof SITES!=='undefined'?SITES:[]).map(s=>({label:s.name,icon:'↗',href:s.url,kind:'site',tags:s.tags||[],keywords:(s.note||'')+' '+(s.category||''),score:score({label:s.name,tags:s.tags,keywords:(s.note||'')+' '+(s.category||'')},q),visits:visits[s.id]||0,fav:favs.has(s.id)})).filter(x=>!q||x.score>=0).sort((a,b)=>(b.score-a.score)||(b.visits-a.visits)).slice(0,q?12:8);currentItems=[...commands.map(x=>({...x,score:score(x,q)})).filter(x=>!q||x.score>=0),...pages,...sites].sort((a,b)=>b.score-a.score).slice(0,18);activeIndex=0;results.innerHTML=currentItems.length?currentItems.map((x,i)=>`<button class="cmdk-item${i===0?' active':''}" data-i="${i}"><span class="cmdk-icon">${x.icon}</span><span class="cmdk-label">${x.label}</span>${x.fav?'<span class="cmdk-tag">saved</span>':''}${x.visits?`<span class="cmdk-tag">${x.visits} visits</span>`:`<span class="cmdk-tag">${x.kind}</span>`}</button>`).join(''):`<div class="cmdk-empty small">No matches — try a site name, category, or tag.</div>`;results.querySelectorAll('.cmdk-item').forEach(b=>{b.addEventListener('click',()=>{activeIndex=+b.dataset.i;select()});b.addEventListener('mouseenter',()=>{activeIndex=+b.dataset.i;highlight()})})}
+  function open(){build();modal.classList.add('open');input.value='';render('');setTimeout(()=>input.focus(),30)}
+  function close(){modal?.classList.remove('open')}
+  function toggle(){modal?.classList.contains('open')?close():open()}
+  function init(){document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();toggle()}})}
+  document.addEventListener('DOMContentLoaded',init);return{open,close,toggle};
 })();
