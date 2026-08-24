@@ -1,111 +1,13 @@
-/* ============================================================
-   views/search.js — in-app multi-site search. A first-class,
-   bookmarkable page (not a modal): type a term once, then flip
-   between every searchable site's live results as tabs, all
-   inside the app shell. Reuses each site's own search-url
-   pattern (`su` in sites.js) — grows automatically as that list
-   grows.
-
-   Some sites block being embedded in someone else's page
-   (X-Frame-Options / CSP frame-ancestors) — that's a platform
-   restriction this app can't override. Sites confirmed to block
-   framing are marked `noFrame: true` in sites.js; for those, this
-   view skips the iframe attempt entirely and opens a real tab
-   instead of leaving a dead blank box in the app.
-   ============================================================ */
-(function () {
-  function esc(str) { return String(str).replace(/</g, '&lt;'); }
-
-  function searchableSites() {
-    return SITES.filter(s => s.su).map(s => ({ id: s.id, n: s.name, u: s.su, home: s.url, noFrame: !!s.noFrame }));
-  }
-
-  function render(container, params) {
-    const q = (params.get('q') || '').trim();
-    const preferSite = params.get('site') || '';
-    const sites = searchableSites();
-    let startIndex = sites.findIndex(s => s.id === preferSite);
-    if (startIndex === -1) startIndex = sites.findIndex(s => !s.noFrame);
-    if (startIndex === -1) startIndex = 0;
-
-    NB.configureHeader(null);
-
-    container.innerHTML = `
-      <div class="eyebrow" style="margin-bottom:8px">Multi-Site Search</div>
-      <h1 style="font-size:1.6rem;margin-bottom:14px">${q ? `Results for &ldquo;${esc(q)}&rdquo;` : 'Search across every site at once'}</h1>
-
-      <div class="hero-search" style="max-width:640px;margin-bottom:14px">
-        <span class="srch-icon">⌕</span>
-        <input id="srchInput" type="search" value="${esc(q)}" placeholder="Search across sites — “femdom”, “stepmom”, “findom”, “4k”…" autocomplete="off">
-        <button class="btn btn-gold hero-search-go" id="srchGo">Search</button>
-      </div>
-
-      ${q ? `
-      <div id="srch-tabs" class="chip-row" style="margin-bottom:14px"></div>
-      <div class="small mt" style="margin-bottom:10px">
-        Playing inside the app where the site allows it — sites marked ↗ block embedding and open in a new tab instead.
-        <a id="srchExternal" href="#" target="_blank" rel="noopener" style="color:var(--gold);margin-left:8px">Open current site externally ↗</a>
-      </div>
-      <div id="srch-frame-wrap" style="position:relative;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-strong);height:min(72vh,900px);min-height:380px;background:#fff;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)">
-        <iframe id="srch-frame" title="Search results" referrerpolicy="no-referrer" style="width:100%;height:100%;border:0"></iframe>
-        <div id="srch-blocked" style="display:none;position:absolute;inset:0;background:var(--s1);flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px">
-          <div style="font-size:2rem">↗</div>
-          <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--text)" id="srch-blocked-name"></div>
-          <div class="small" style="max-width:360px;color:var(--t2)">This site blocks embedding in other pages — opened it in a new tab instead. Pick another tab above, or reopen it here:</div>
-          <a class="btn btn-gold" id="srch-blocked-open" target="_blank" rel="noopener" style="width:auto;padding:10px 20px">Open Externally ↗</a>
-        </div>
-      </div>` : `
-      <div class="empty">
-        <div class="empty-icon">⌕</div>
-        <div class="empty-txt">Type a term above and hit Search — results from ${sites.length} sites open right here, no new tabs.</div>
-      </div>`}
-    `;
-
-    const input = document.getElementById('srchInput');
-    const go = () => {
-      const term = input.value.trim();
-      if (!term) { toast('Type a search term first'); return; }
-      Router.go('/search?q=' + encodeURIComponent(term));
-    };
-    document.getElementById('srchGo').addEventListener('click', go);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
-
-    if (!q) { input.focus(); return; }
-
-    const tabsEl = document.getElementById('srch-tabs');
-    const frame = document.getElementById('srch-frame');
-    const extLink = document.getElementById('srchExternal');
-    const blocked = document.getElementById('srch-blocked');
-    const blockedName = document.getElementById('srch-blocked-name');
-    const blockedOpen = document.getElementById('srch-blocked-open');
-
-    function load(i, opts) {
-      const site = sites[i];
-      if (!site) return;
-      const url = site.u + encodeURIComponent(q);
-      extLink.href = url;
-      tabsEl.querySelectorAll('.chip').forEach((t, idx) => t.classList.toggle('on', idx === i));
-
-      if (site.noFrame) {
-        frame.style.display = 'none';
-        blocked.style.display = 'flex';
-        blockedName.textContent = site.n;
-        blockedOpen.href = url;
-        if (!opts || !opts.silent) window.open(url, '_blank', 'noopener');
-      } else {
-        blocked.style.display = 'none';
-        frame.style.display = 'block';
-        frame.src = url;
-      }
-    }
-
-    tabsEl.innerHTML = sites.map((s, i) => `<button class="chip" data-i="${i}">${NB.siteIcon(s.n, s.home)}${s.n}${s.noFrame ? ' ↗' : ''}</button>`).join('');
-    tabsEl.querySelectorAll('.chip').forEach(btn => {
-      btn.addEventListener('click', () => load(Number(btn.dataset.i)));
-    });
-    // don't auto-open a new tab on first load — only when the user actively picks a noFrame tab
-    load(startIndex, { silent: true });
-  }
-
-  Router.register('/search', { id: 'search', title: 'Search — Noir Index', render });
+/* Noir Index — Wave 3 multi-site search + local discovery UX. */
+(function(){
+ function esc(s){return Discovery.escape(s)}
+ function searchable(){return SITES.filter(s=>s.su).map(s=>({id:s.id,n:s.name,u:s.su,home:s.url,noFrame:!!s.noFrame}))}
+ function render(container,params){const q=(params.get('q')||'').trim(),prefer=params.get('site')||'',sites=searchable();let start=sites.findIndex(s=>s.id===prefer);if(start<0)start=sites.findIndex(s=>!s.noFrame);if(start<0)start=0;Discovery.recordQuery(q);const results=q?Discovery.search(q):[],facets=q?Discovery.facets(q):[];
+  NB.configureHeader(null);container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Discovery Search</div><h1 style="font-size:1.6rem;margin-bottom:14px">${q?`Results for &ldquo;${esc(q)}&rdquo;`:'Search across every site at once'}</h1><div class="hero-search" style="max-width:700px;margin-bottom:10px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, categories…" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${!q?`<div class="panel" style="padding:14px 16px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div><div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">Type a term to rank the directory instantly, then launch the live multi-site results.</div></div>`:`<div class="panel" style="padding:12px 14px;margin-bottom:14px"><div class="small">Smart facets</div><div id="facets" class="chip-row mt">${facets.map(f=>`<button class="chip crimson" data-facet="${esc(f[0])}">${esc(f[0])} <span>${f[1]}</span></button>`).join('')}</div></div><div class="res-hdr">${results.length} local matches ranked by relevance${results[0]?` · top result: <strong>${esc(results[0].name)}</strong>`:''}</div><div class="card-grid" id="discoveryCards">${results.slice(0,24).map(s=>`<a class="card richer-card" href="${s.url}" target="_blank" rel="noopener" data-discovery-open="${s.id}"><div class="c-title-row">${NB.siteIcon(s.name,s.url)}<div class="c-name">${esc(s.name)}</div></div>${s.note?`<div class="c-note">${esc(s.note)}</div>`:''}<div class="site-card-meta">${(s.tags||[]).slice(0,4).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}<span class="site-meta-chip">score ${s._score}</span></div></a>`).join('')}</div><div class="eyebrow" style="margin:22px 0 8px">Live search</div><div id="srch-tabs" class="chip-row" style="margin-bottom:14px"></div><div class="small mt" style="margin-bottom:10px">Playing inside the app where allowed. Sites marked ↗ block embedding.</div><div id="srch-frame-wrap" style="position:relative;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-strong);height:min(68vh,900px);min-height:360px;background:#fff"><iframe id="srch-frame" title="Search results" referrerpolicy="no-referrer" style="width:100%;height:100%;border:0"></iframe><div id="srch-blocked" style="display:none;position:absolute;inset:0;background:var(--s1);flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px"><div style="font-size:2rem">↗</div><div style="font-family:var(--serif);font-size:1.15rem;font-weight:700" id="srch-blocked-name"></div><a class="btn btn-gold" id="srch-blocked-open" target="_blank" rel="noopener">Open Externally ↗</a></div></div>`}`;
+  const input=document.getElementById('srchInput'),go=()=>{const term=input.value.trim();if(term)Router.go('/search?q='+encodeURIComponent(term))};document.getElementById('srchGo').onclick=go;input.onkeydown=e=>{if(e.key==='Enter')go()};
+  if(!q){const rq=document.getElementById('recentQ');Discovery.recentQueries().forEach(x=>{const b=document.createElement('button');b.className='chip crimson';b.textContent=x;b.onclick=()=>Router.go('/search?q='+encodeURIComponent(x));rq.appendChild(b)});input.focus();return}
+  document.querySelectorAll('[data-discovery-open]').forEach(a=>a.onclick=()=>Discovery.recordOpen(a.dataset.discoveryOpen));document.querySelectorAll('[data-facet]').forEach(b=>b.onclick=()=>Router.go('/search?q='+encodeURIComponent(b.dataset.facet)));
+  const tabs=document.getElementById('srch-tabs'),frame=document.getElementById('srch-frame'),blocked=document.getElementById('srch-blocked'),bn=document.getElementById('srch-blocked-name'),bo=document.getElementById('srch-blocked-open');function load(i,opts){const s=sites[i];if(!s)return;const url=s.u+encodeURIComponent(q);tabs.querySelectorAll('.chip').forEach((t,n)=>t.classList.toggle('on',n===i));if(s.noFrame){frame.style.display='none';blocked.style.display='flex';bn.textContent=s.n;bo.href=url;if(!opts?.silent)window.open(url,'_blank','noopener')}else{blocked.style.display='none';frame.style.display='block';frame.src=url}}tabs.innerHTML=sites.map((s,i)=>`<button class="chip" data-i="${i}">${NB.siteIcon(s.n,s.home)}${esc(s.n)}${s.noFrame?' ↗':''}</button>`).join('');tabs.querySelectorAll('.chip').forEach(b=>b.onclick=()=>load(+b.dataset.i));load(start,{silent:true});
+ }
+ Router.register('/search',{id:'search',title:'Search — Noir Index',render});
 })();
