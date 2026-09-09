@@ -27,14 +27,12 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Install Playwright Chromium (retry — the runner's pre-configured
-          Google Chrome apt source occasionally serves a stale package index
-          out of sync with its signed Release file, unrelated to this repo)
-        run: |
-          for i in 1 2 3; do
-            npx playwright install --with-deps chromium && exit 0
-            echo "Attempt $i failed, retrying in 20s..."
-            sleep 20
-          done
-          exit 1
+      - name: Drop the runner's pre-installed Google Chrome apt source
+        # We only need Playwright's own bundled Chromium, never actual
+        # Google Chrome, so there's no reason to depend on this repo at
+        # all — and it has, at times, served a package index out of sync
+        # with its own signed Release file, failing `apt-get update` (and
+        # so this whole job) on a source we don't even need.
+        run: sudo grep -rl 'dl\.google\.com/linux/chrome' /etc/apt/sources.list.d/ 2>/dev/null | xargs -r sudo rm -f
+      - run: npx playwright install --with-deps chromium
       - run: npm run smoke
