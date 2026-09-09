@@ -27,5 +27,14 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium (retry — the runner's pre-configured
+          Google Chrome apt source occasionally serves a stale package index
+          out of sync with its signed Release file, unrelated to this repo)
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Attempt $i failed, retrying in 20s..."
+            sleep 20
+          done
+          exit 1
       - run: npm run smoke
