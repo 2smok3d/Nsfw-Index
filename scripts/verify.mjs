@@ -141,6 +141,36 @@ if (existsSync(manifestFile)) {
   }
 }
 
+// ── 6. base design system sanity ──
+// Guards against the exact regression that broke the live site on
+// 2026-09-09: something (a tool, a bad merge, a careless edit)
+// overwrote theme.css down to just its newest feature-specific rules,
+// silently deleting the entire base stylesheet — CSS custom
+// properties, layout, every component — while every other check
+// here kept passing, because none of them look at CSS at all. A page
+// with no styling doesn't throw a JS console error, so smoke.mjs's
+// browser check didn't catch it either.
+const themeFile = path.join(root, 'assets', 'css', 'theme.css');
+if (existsSync(themeFile)) {
+  const css = readFileSync(themeFile, 'utf8');
+  const lineCount = css.split('\n').length;
+  if (lineCount < 400) {
+    fail(`theme.css: only ${lineCount} lines — the base design system may have been overwritten (expected 400+)`);
+  } else {
+    ok(`theme.css: ${lineCount} lines`);
+  }
+  const REQUIRED_VARS = ['--bg', '--gold', '--text', '--s1', '--border', '--radius', '--serif', '--sans'];
+  const missingVars = REQUIRED_VARS.filter(v => !css.includes(v + ':'));
+  if (missingVars.length) fail(`theme.css: missing core custom propert${missingVars.length === 1 ? 'y' : 'ies'}: ${missingVars.join(', ')}`);
+  else ok(`theme.css: all ${REQUIRED_VARS.length} core custom properties present`);
+  const REQUIRED_RULES = ['.hero{', '.card{', '.hcard{', '.btn-gold{', '.panel{', '#hdr{'];
+  const missingRules = REQUIRED_RULES.filter(r => !css.includes(r));
+  if (missingRules.length) fail(`theme.css: missing core rule(s): ${missingRules.join(', ')}`);
+  else ok(`theme.css: all ${REQUIRED_RULES.length} core structural rules present`);
+} else {
+  fail('theme.css: file not found');
+}
+
 console.log('');
 if (failures) {
   console.error(`verify: ${failures} check(s) failed`);

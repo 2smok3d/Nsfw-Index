@@ -205,7 +205,7 @@ const NB = (() => {
   // re-wired per card.
   function bindSpotlight() {
     document.addEventListener('pointermove', e => {
-      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary');
+      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary,.memory-card');
       if (!el) return;
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
