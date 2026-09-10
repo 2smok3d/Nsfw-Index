@@ -22,5 +22,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Drop the runner's pre-installed Google Chrome apt source
+        # We only need Playwright's own bundled Chromium, never actual
+        # Google Chrome — see ci.yml for why this source gets removed.
+        run: sudo grep -rl 'dl\.google\.com/linux/chrome' /etc/apt/sources.list.d/ 2>/dev/null | xargs -r sudo rm -f
       - run: npx playwright install --with-deps chromium
       - run: node scripts/discover-search.mjs ${{ github.event.inputs.site_ids }}
