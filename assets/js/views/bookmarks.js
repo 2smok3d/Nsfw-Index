@@ -2,16 +2,15 @@
    links; you paste one in yourself and it's stored locally, nothing more. */
 (function(){
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return url}}
  function isHttpUrl(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:'}catch(e){return false}}
 
  function card(b){
-  const label=b.title||hostOf(b.url);
+  const label=b.title||NB.hostOf(b.url);
   return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener">
     <button class="c-fav on" data-remove="${esc(b.id)}" title="Remove">✕</button>
     <div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>
     ${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}
-    <div class="site-card-meta"><span class="site-meta-chip">${esc(hostOf(b.url))}</span></div>
+    <div class="site-card-meta"><span class="site-meta-chip">${esc(NB.hostOf(b.url))}</span></div>
   </a>`;
  }
 

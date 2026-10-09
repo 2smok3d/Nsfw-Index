@@ -163,6 +163,13 @@ const NB = (() => {
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }
 
+  // bare hostname for display (e.g. a bookmark card with no title) —
+  // shared by views/home.js and views/bookmarks.js
+  function hostOf(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ''); }
+    catch (e) { return url; }
+  }
+
   // ── site icons ──────────────────────────────────────────────
   // A small favicon per card beats a wall of identical text rows.
   // Fetched from Google's public favicon service — the one request
@@ -239,5 +246,5 @@ const NB = (() => {
     });
   }
 
-  return { PAGES, toast, initChrome, setActive, configureHeader, siteIcon };
+  return { PAGES, toast, initChrome, setActive, configureHeader, siteIcon, hostOf };
 })();
