@@ -15,11 +15,11 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const ROUTES = ['/', '/directory', '/tools', '/settings', '/search'];
+const ROUTES = ['/', '/directory', '/search', '/bookmarks'];
 const REDIRECTS = {
   'directory.html': '/directory',
-  'tools.html': '/tools',
-  'settings.html': '/settings',
+  'tools.html': '/',
+  'settings.html': '/',
 };
 
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
@@ -87,41 +87,6 @@ async function main() {
     } else {
       console.log(`✓ ${label}: no console errors`);
     }
-    await page.close();
-  }
-
-  // Click through every search tab NOT marked noFrame — catches sites that
-  // silently gained an X-Frame-Options block without being flagged in
-  // sites.js (this is how the SpankBang regression should have been caught
-  // automatically instead of via a user report).
-  {
-    const page = await browser.newPage();
-    const frameErrors = [];
-    page.on('console', msg => {
-      if (msg.type() === 'error' && /X-Frame-Options|frame-ancestors/i.test(msg.text())) frameErrors.push(msg.text());
-    });
-    await page.goto(base + 'index.html#/search?q=test', { waitUntil: 'load' });
-    const enter = await page.$('#gate-enter');
-    if (enter) await enter.click();
-    await page.waitForTimeout(300);
-
-    const claimedFrameable = await page.evaluate(() => SITES.filter(s => s.su && !s.noFrame).map(s => s.name));
-    for (const name of claimedFrameable) {
-      frameErrors.length = 0;
-      const tab = page.locator('#srch-tabs .chip', { hasText: name }).first();
-      if (await tab.count()) {
-        await tab.click();
-        await page.waitForTimeout(600);
-        if (frameErrors.length) {
-          failures++;
-          console.error(`✗ search tab "${name}" claims frameable but blocked embedding — mark it noFrame:true in sites.js`);
-          frameErrors.forEach(e => console.error('   ' + e));
-        } else {
-          console.log(`✓ search tab "${name}": embeds without a frame-block error`);
-        }
-      }
-    }
-    if (!claimedFrameable.length) console.log('✓ search: no sites currently claim to be frameable (all su entries marked noFrame)');
     await page.close();
   }
 

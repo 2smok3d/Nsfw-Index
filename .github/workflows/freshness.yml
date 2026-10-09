@@ -1,8 +1,7 @@
 name: Weekly freshness check
 
 # Re-verifies every sites.js entry against the live internet: dead
-# domains, parked/lapsed domains, broken search patterns, and
-# noFrame drift in both directions. Files or updates a single
+# domains and parked/lapsed domains. Files or updates a single
 # tracking issue with the report so it surfaces without digging
 # through Actions logs, and auto-closes that issue on a clean run.
 on:

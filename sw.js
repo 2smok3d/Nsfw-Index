@@ -3,11 +3,11 @@
    Caches this app's own static files (stale-while-revalidate:
    serve from cache instantly, refresh in the background) so the
    shell loads offline. Never touches cross-origin requests — the
-   directory's external site links and the in-app search iframes
-   are untouched, exactly as if there were no service worker at all.
+   directory's external site links are untouched, exactly as if
+   there were no service worker at all.
    Bump CACHE_VERSION on any shell-file change to force a refresh.
    ============================================================ */
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `noir-index-${CACHE_VERSION}`;
 
 const SHELL_ASSETS = [
@@ -22,8 +22,7 @@ const SHELL_ASSETS = [
   './assets/js/views/home.js',
   './assets/js/views/directory.js',
   './assets/js/views/search.js',
-  './assets/js/views/tools.js',
-  './assets/js/views/settings.js',
+  './assets/js/views/bookmarks.js',
   './assets/data/sites.js',
   './assets/fonts/fraunces-normal-variable.woff2',
   './assets/fonts/fraunces-italic-variable.woff2',
