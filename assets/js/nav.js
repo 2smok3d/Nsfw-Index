@@ -11,8 +11,7 @@ const NB = (() => {
     { id: 'home',      route: '/',          label: 'Home',      icon: '⌂' },
     { id: 'directory', route: '/directory', label: 'Directory', icon: '⌕' },
     { id: 'search',    route: '/search',    label: 'Search',    icon: '🔍' },
-    { id: 'tools',     route: '/tools',     label: 'Tools',     icon: '⬇' },
-    { id: 'settings',  route: '/settings',  label: 'Settings',  icon: '⚙' },
+    { id: 'bookmarks', route: '/bookmarks', label: 'Saved',      icon: '♥' },
   ];
 
   let activeId = null;
@@ -147,7 +146,7 @@ const NB = (() => {
   function buildFooter() {
     const el = document.getElementById('nb-footer');
     if (!el) return;
-    el.innerHTML = `Noir Index — private, self-hosted, no accounts, no tracking. Data lives in <em>this</em> browser. · <a href="#/settings">Settings</a>`;
+    el.innerHTML = `Noir Index — private, self-hosted, no accounts, no tracking. Data lives in <em>this</em> browser.`;
   }
 
   function buildToast() {
@@ -166,12 +165,10 @@ const NB = (() => {
 
   // ── site icons ──────────────────────────────────────────────
   // A small favicon per card beats a wall of identical text rows.
-  // Real icon when Settings > "Site icons" is on (fetched from
-  // Google's public favicon service — the one thing in this app
-  // that leaves the browser if enabled, off by one click if that
-  // matters to you); otherwise, and as the fallback when a fetch
-  // fails, a deterministically-colored monogram so every card still
-  // reads as visually distinct at a glance.
+  // Fetched from Google's public favicon service — the one request
+  // in this app that leaves the browser — with a deterministically
+  // colored monogram as the fallback when a fetch fails, so every
+  // card still reads as visually distinct at a glance.
   function hueFor(seed) {
     let h = 0;
     for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
@@ -182,12 +179,10 @@ const NB = (() => {
     const hue = hueFor(name || url || '');
     const fallback = `<span class="icon-fallback" style="--hue:${hue}">${letter}</span>`;
     let img = '';
-    if (Store.getSettings().showFavicons) {
-      try {
-        const host = new URL(url).hostname;
-        img = `<img src="https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(host)}" alt="" loading="lazy">`;
-      } catch (e) { /* not a real URL — fall through to monogram-only */ }
-    }
+    try {
+      const host = new URL(url).hostname;
+      img = `<img src="https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(host)}" alt="" loading="lazy">`;
+    } catch (e) { /* not a real URL — fall through to monogram-only */ }
     return `<span class="site-icon">${img}${fallback}</span>`;
   }
   // <img> error events don't bubble, but they do fire in the capture
@@ -205,7 +200,7 @@ const NB = (() => {
   // re-wired per card.
   function bindSpotlight() {
     document.addEventListener('pointermove', e => {
-      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary,.memory-card');
+      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary,.memory-card,.panel');
       if (!el) return;
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
@@ -220,13 +215,8 @@ const NB = (() => {
     document.body.insertBefore(div, document.body.firstChild);
   }
 
-  function applyDensity() {
-    document.body.classList.toggle('density-compact', Store.getSettings().density === 'compact');
-  }
-
   function initChrome() {
     buildAmbience();
-    applyDensity();
     buildGate();
     buildHeader();
     buildTabBar();
@@ -249,5 +239,5 @@ const NB = (() => {
     });
   }
 
-  return { PAGES, toast, initChrome, setActive, configureHeader, applyDensity, siteIcon };
+  return { PAGES, toast, initChrome, setActive, configureHeader, siteIcon };
 })();

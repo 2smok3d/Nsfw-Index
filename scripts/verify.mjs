@@ -115,7 +115,7 @@ if (existsSync(viewsDir)) {
     let m;
     while ((m = re.exec(src))) registered.add(m[1]);
   }
-  const expected = ['/', '/directory', '/tools', '/settings', '/search'];
+  const expected = ['/', '/directory', '/search', '/bookmarks'];
   const missing = expected.filter(p => !registered.has(p));
   if (missing.length) fail(`router: expected route(s) not registered: ${missing.join(', ')}`);
   else ok(`router: all ${expected.length} expected routes registered (${[...registered].join(', ')})`);

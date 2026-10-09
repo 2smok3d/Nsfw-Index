@@ -417,11 +417,6 @@ input[type=search]::-webkit-search-cancel-button{display:none}
 }
 .c-name{font-size:.85rem;font-weight:600;color:var(--text);line-height:1.3;padding-right:18px}
 .c-note{font-size:.7rem;color:var(--t2);line-height:1.3}
-.c-srch{
-  position:absolute;bottom:7px;right:7px;width:20px;height:20px;background:none;border:none;cursor:pointer;
-  font-size:.78rem;color:var(--t3);display:flex;align-items:center;justify-content:center;border-radius:5px;transition:color .15s;
-}
-.c-srch:hover{color:var(--gold)}
 
 /* ── chips / tags ── */
 .chip-row{display:flex;flex-wrap:wrap;gap:7px}
@@ -611,16 +606,8 @@ footer.site a:hover{color:var(--gold)}
   /* touch devices never trigger :hover — show favorite/search
      icons at a usable size without it */
   .c-fav{width:32px;height:32px;font-size:.85rem}
-  .c-srch{width:28px;height:28px;font-size:.82rem}
   .hc-fav{width:32px;height:32px}
 }
-
-/* ── density ── */
-.density-compact .card{padding:9px 9px 8px;min-height:54px}
-.density-compact .card-grid{gap:6px;grid-template-columns:repeat(auto-fill,minmax(138px,1fr))}
-.density-compact .panel{padding:16px}
-.density-compact .hero{padding:32px 24px}
-.density-compact .sec-pad{padding:6px 2px 2px}
 
 .small{font-size:.78rem;color:var(--t2)}
 .mt{margin-top:14px}
@@ -683,14 +670,14 @@ footer.site a:hover{color:var(--gold)}
    touch/keyboard user never fires pointermove at all). Applied to
    every clickable card surface without needing a dedicated class
    in each view's markup. */
-.card,.hcard,.feat-card,.feat-primary,.memory-card{position:relative;--mx:50%;--my:50%}
-.card::after,.hcard::after,.feat-card::after,.feat-primary::after,.memory-card::after{
+.card,.hcard,.feat-card,.feat-primary,.memory-card,.panel{position:relative;--mx:50%;--my:50%}
+.card::after,.hcard::after,.feat-card::after,.feat-primary::after,.memory-card::after,.panel::after{
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   opacity:0;transition:opacity .35s var(--ease-out);
   background:radial-gradient(280px circle at var(--mx) var(--my),rgba(232,200,116,.16),transparent 65%);
 }
-.card:hover::after,.hcard:hover::after,.feat-card:hover::after,.feat-primary:hover::after,.memory-card:hover::after{opacity:1}
-@media(hover:none){.card::after,.hcard::after,.feat-card::after,.feat-primary::after,.memory-card::after{display:none}}
+.card:hover::after,.hcard:hover::after,.feat-card:hover::after,.feat-primary:hover::after,.memory-card:hover::after,.panel:hover::after{opacity:1}
+@media(hover:none){.card::after,.hcard::after,.feat-card::after,.feat-primary::after,.memory-card::after,.panel::after{display:none}}
 
 
 /* ── adaptive home memory ── */

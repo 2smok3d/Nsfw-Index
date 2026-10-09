@@ -38,55 +38,13 @@ const Store = (() => {
     return v[id];
   }
 
-  // ── settings (prefs — all local only) ──
-  const DEFAULT_SETTINGS = {
-    density: 'comfortable', // comfortable | compact
-    landingPage: '/',
-    showFavicons: true, // fetches each site's icon from Google's favicon service — the one thing that does leave this browser if left on
-  };
-  // pre-SPA builds stored landingPage as a filename ("directory.html");
-  // transparently upgrade it to the equivalent route on read. library.html
-  // and handy.html no longer exist (those sections were removed), so they
-  // fall back to home rather than a dead route.
-  const LEGACY_LANDING = { 'index.html': '/', 'directory.html': '/directory', 'library.html': '/', 'handy.html': '/', 'tools.html': '/tools', 'settings.html': '/settings' };
-  function getSettings() {
-    const s = Object.assign({}, DEFAULT_SETTINGS, get('settings', {}));
-    if (s.landingPage in LEGACY_LANDING) s.landingPage = LEGACY_LANDING[s.landingPage];
-    return s;
-  }
-  function setSettings(patch) {
-    const cur = getSettings();
-    const next = Object.assign({}, cur, patch);
-    set('settings', next);
-    return next;
-  }
-
   function ageVerified() { return get('age_ok', false) === true; }
   function setAgeVerified() { set('age_ok', true); }
-
-  function exportAll() {
-    const out = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith(PREFIX)) out[k.slice(PREFIX.length)] = get(k.slice(PREFIX.length));
-    }
-    return out;
-  }
-  function importAll(obj) {
-    Object.keys(obj || {}).forEach(k => set(k, obj[k]));
-  }
-  function resetAll() {
-    Object.keys(localStorage)
-      .filter(k => k.startsWith(PREFIX))
-      .forEach(k => localStorage.removeItem(k));
-  }
 
   return {
     get, set, remove,
     getFavs, toggleFav,
     getVisits, recordVisit,
-    getSettings, setSettings,
     ageVerified, setAgeVerified,
-    exportAll, importAll, resetAll,
   };
 })();
