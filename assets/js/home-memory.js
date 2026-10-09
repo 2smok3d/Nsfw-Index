@@ -9,14 +9,13 @@ const HomeMemory = (() => {
       .slice(0, limit);
   }
 
-  function favorites(limit = 6) {
-    const favs = Store.getFavs();
-    return SITES.filter(s => favs.has(s.id)).slice(0, limit);
+  function bookmarks(limit = 6) {
+    return Store.getVideoBookmarks().slice(0, limit);
   }
 
   function totalVisits() {
     return Object.values(Store.getVisits()).reduce((sum, n) => sum + Number(n || 0), 0);
   }
 
-  return { ranked, favorites, totalVisits };
+  return { ranked, bookmarks, totalVisits };
 })();

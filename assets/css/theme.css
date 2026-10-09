@@ -258,7 +258,7 @@ nav.primary a.active{
 /* ── search field ── */
 .srch-wrap{flex:1;position:relative;min-width:0;display:flex;align-items:center;max-width:420px}
 .srch-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.95rem;pointer-events:none}
-input[type=search],input[type=text],input[type=password],input[type=number],select,textarea{
+input[type=search],input[type=text],input[type=password],input[type=number],input[type=url],select,textarea{
   font-family:var(--sans);background:var(--s2);border:1.5px solid var(--border);border-radius:11px;
   color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
 }

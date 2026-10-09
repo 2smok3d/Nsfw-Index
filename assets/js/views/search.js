@@ -4,7 +4,7 @@
    from anywhere else — this is the single hub every search runs through. */
 (function(){
  function esc(s){return Discovery.escape(s)}
- function card(s){const fav=Store.getFavs().has(s.id);return `<a class="card richer-card${fav?' faved':''}" href="${s.url}" target="_blank" rel="noopener" data-discovery-open="${s.id}"><button class="c-fav${fav?' on':''}" data-fav="${s.id}" title="${fav?'Unsave':'Save'}">♥</button><div class="c-title-row">${NB.siteIcon(s.name,s.url)}<div class="c-name">${esc(s.name)}</div></div>${s.note?`<div class="c-note">${esc(s.note)}</div>`:''}<div class="site-card-meta">${(s.tags||[]).slice(0,4).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}</div></a>`}
+ function card(s){return `<a class="card richer-card" href="${s.url}" target="_blank" rel="noopener" data-discovery-open="${s.id}"><div class="c-title-row">${NB.siteIcon(s.name,s.url)}<div class="c-name">${esc(s.name)}</div></div>${s.note?`<div class="c-note">${esc(s.note)}</div>`:''}<div class="site-card-meta">${(s.tags||[]).slice(0,4).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}</div></a>`}
  function render(container,params){
   const q=(params.get('q')||'').trim();
   Discovery.recordQuery(q);
@@ -34,7 +34,6 @@
 
   document.querySelectorAll('[data-discovery-open]').forEach(a=>a.addEventListener('click',()=>{Discovery.recordOpen(a.dataset.discoveryOpen);Store.recordVisit(a.dataset.discoveryOpen)}));
   document.querySelectorAll('[data-facet]').forEach(b=>b.onclick=()=>Router.go('/search?q='+encodeURIComponent(b.dataset.facet)));
-  document.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const on=Store.toggleFav(b.dataset.fav);toast(on?'Saved ♥':'Removed from saved',on?'crimson':null);render(container,params)}));
  }
  Router.register('/search',{id:'search',title:'Search — Noir Index',render});
 })();

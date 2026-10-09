@@ -1,19 +1,56 @@
-/* Noir Index — saved/bookmarked sites. Pure localStorage, nothing leaves the browser. */
+/* Noir Index — video bookmarks. The app never fetches or previews these
+   links; you paste one in yourself and it's stored locally, nothing more. */
 (function(){
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function card(e){const v=Store.getVisits()[e.id]||0;return `<a class="card richer-card faved" href="${e.url}" target="_blank" rel="noopener" data-visit="${e.id}"><button class="c-fav on" data-fav="${e.id}" title="Unsave">♥</button><div class="c-title-row">${NB.siteIcon(e.name,e.url)}<div class="c-name">${esc(e.name)}</div></div>${e.note?`<div class="c-note">${esc(e.note)}</div>`:''}<div class="site-card-meta">${(e.tags||[]).slice(0,4).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}${v?`<span class="site-meta-chip site-meta-hot">🔥 ${v}</span>`:''}</div></a>`}
+ function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return url}}
+ function isHttpUrl(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:'}catch(e){return false}}
+
+ function card(b){
+  const label=b.title||hostOf(b.url);
+  return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener">
+    <button class="c-fav on" data-remove="${esc(b.id)}" title="Remove">✕</button>
+    <div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>
+    ${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}
+    <div class="site-card-meta"><span class="site-meta-chip">${esc(hostOf(b.url))}</span></div>
+  </a>`;
+ }
+
  function render(container){
   NB.configureHeader(null);
   const draw=()=>{
-   const favs=Store.getFavs();
-   const list=SITES.filter(s=>favs.has(s.id));
-   container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:14px">Your saved sites</h1>${
+   const list=Store.getVideoBookmarks();
+   container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:6px">Your saved videos</h1><p class="small" style="max-width:640px;margin-bottom:18px">Paste the link to a specific video you want to find again. Nothing is fetched or previewed — just the link, a title, and an optional note, saved in this browser only.</p>
+   <div class="panel" style="padding:16px 18px;margin-bottom:20px">
+     <div class="row">
+       <div class="field"><label>Video URL</label><input id="bmUrl" type="url" placeholder="https://…" autocomplete="off"></div>
+       <div class="field"><label>Title (optional)</label><input id="bmTitle" type="text" placeholder="What is it?" autocomplete="off"></div>
+     </div>
+     <div class="field" style="margin-top:10px"><label>Note (optional)</label><input id="bmNote" type="text" placeholder="Anything to remember about it" autocomplete="off"></div>
+     <button class="btn btn-gold" id="bmAdd" style="width:auto;padding:10px 18px;margin-top:12px">+ Add Bookmark</button>
+   </div>
+   ${
      list.length
-       ? `<div class="res-hdr">${list.length} saved site${list.length===1?'':'s'}</div><div class="card-grid">${list.map(card).join('')}</div>`
-       : `<div class="empty"><div class="empty-icon">♥</div><div class="empty-txt">Nothing saved yet — tap the ♥ on any site in the Directory or Search to bookmark it here.</div></div>`
+       ? `<div class="res-hdr">${list.length} saved video${list.length===1?'':'s'}</div><div class="card-grid">${list.map(card).join('')}</div>`
+       : `<div class="empty"><div class="empty-icon">♥</div><div class="empty-txt">Nothing saved yet — paste a video's link above to bookmark it here.</div></div>`
    }`;
-   document.querySelectorAll('[data-visit]').forEach(a=>a.onclick=()=>Store.recordVisit(a.dataset.visit));
-   document.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();Store.toggleFav(b.dataset.fav);toast('Removed from saved');draw()}));
+
+   const urlEl=document.getElementById('bmUrl'),titleEl=document.getElementById('bmTitle'),noteEl=document.getElementById('bmNote');
+   const add=()=>{
+    const url=urlEl.value.trim();
+    if(!isHttpUrl(url)){toast('Paste a valid http(s) video link first');return}
+    Store.addVideoBookmark({url,title:titleEl.value,note:noteEl.value});
+    toast('Bookmarked ♥','crimson');
+    draw();
+   };
+   document.getElementById('bmAdd').onclick=add;
+   [urlEl,titleEl,noteEl].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')add()}));
+
+   document.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();
+    Store.removeVideoBookmark(b.dataset.remove);
+    toast('Removed');
+    draw();
+   }));
   };
   draw();
  }

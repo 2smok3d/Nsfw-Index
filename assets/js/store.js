@@ -19,14 +19,22 @@ const Store = (() => {
     try { localStorage.removeItem(PREFIX + key); } catch (e) {}
   }
 
-  // ── favorites (directory + library) ──
-  function getFavs() { return new Set(get('favs', [])); }
-  function toggleFav(id) {
-    const favs = getFavs();
-    const had = favs.has(id);
-    had ? favs.delete(id) : favs.add(id);
-    set('favs', [...favs]);
-    return !had;
+  // ── video bookmarks — specific videos you paste a link to, not
+  // whole sites. The app never fetches these URLs; it only stores
+  // what you typed in and links out to it. ──
+  function getVideoBookmarks() { return get('video_bookmarks', []); } // [{id,url,title,note,addedAt}]
+  function addVideoBookmark({ url, title, note }) {
+    const list = getVideoBookmarks();
+    const entry = {
+      id: 'vb_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      url, title: (title || '').trim(), note: (note || '').trim(), addedAt: Date.now(),
+    };
+    list.unshift(entry);
+    set('video_bookmarks', list);
+    return entry;
+  }
+  function removeVideoBookmark(id) {
+    set('video_bookmarks', getVideoBookmarks().filter(b => b.id !== id));
   }
 
   // ── visit counts (directory — drives "most visited" ordering) ──
@@ -43,7 +51,7 @@ const Store = (() => {
 
   return {
     get, set, remove,
-    getFavs, toggleFav,
+    getVideoBookmarks, addVideoBookmark, removeVideoBookmark,
     getVisits, recordVisit,
     ageVerified, setAgeVerified,
   };
