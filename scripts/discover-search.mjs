@@ -25,7 +25,10 @@ const src = readFileSync(path.join(root, 'assets', 'data', 'sites.js'), 'utf8');
 const { SITES } = new Function(src + '\nreturn { SITES };')();
 
 const requested = process.argv.slice(2);
-const candidates = SITES.filter(s => !s.su && (!requested.length || requested.includes(s.id)));
+// With explicit ids, test exactly those (even if they already have `su` —
+// useful for re-verifying a pattern the freshness check flagged as broken).
+// With no args, only test entries that don't have `su` yet.
+const candidates = SITES.filter(s => requested.length ? requested.includes(s.id) : !s.su);
 
 const SEARCH_INPUT_SELECTOR = [
   'input[type="search"]',
