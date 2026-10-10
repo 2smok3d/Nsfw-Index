@@ -1,7 +1,7 @@
 /* Directory — instant local filtering + richer cards */
 (function(){
   const S={q:'',activeTags:new Set(),open:true};
-  const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
+  const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\p{M}]/gu,'');
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function popularTags(n){const f={};SITES.forEach(s=>(s.tags||[]).forEach(t=>f[t]=(f[t]||0)+1));return Object.keys(f).sort((a,b)=>f[b]-f[a]).slice(0,n)}
   function withVisits(list){const v=Store.getVisits();return list.map(x=>({...x,_visits:v[x.id]||0}))}

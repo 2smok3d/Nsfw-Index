@@ -1,13 +1,38 @@
 /* Noir Index — video bookmarks. The app never fetches or previews these
-   links; you paste one in yourself and it's stored locally, nothing more. */
+   links; you paste one in yourself (or capture it with the bookmarklet
+   below, which reads the page you're already on) and it's stored
+   locally, nothing more. */
 (function(){
  const S={q:'',activeTags:new Set()};
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'');
+ const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\p{M}]/gu,'');
  function isHttpUrl(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:'}catch(e){return false}}
  function popularTags(list,n){const f={};list.forEach(b=>(b.tags||[]).forEach(t=>f[t]=(f[t]||0)+1));return Object.keys(f).sort((a,b)=>f[b]-f[a]).slice(0,n)}
  function matches(b,q){if(!q)return true;const hay=norm([b.title,b.note,NB.hostOf(b.url),...(b.tags||[])].join(' '));return hay.includes(norm(q))}
  function filtered(all){let list=all;if(S.activeTags.size)list=list.filter(b=>(b.tags||[]).some(t=>S.activeTags.has(t)));return S.q?list.filter(b=>matches(b,S.q)):list}
+
+ // The bookmarklet: dragged to the browser's bookmarks bar, it runs
+ // IN the page you're currently viewing — so reading that page's own
+ // <title>/og: tags isn't a cross-origin fetch, it's the browser's
+ // native same-page access, triggered by you. It only ever opens this
+ // app's own Bookmarks page with those values as a prefilled draft;
+ // nothing is sent anywhere and nothing auto-saves.
+ function bookmarkletHref(){
+  const target=location.origin+location.pathname+'#/bookmarks';
+  const src=[
+   '(function(){',
+   'var d=document;',
+   'function og(p){var m=d.querySelector(\'meta[property="og:\'+p+\'"]\');return m?m.content:""}',
+   'var t=og("title")||d.title||"";',
+   'var n=og("description")||"";',
+   'var u=location.href;',
+   'var b='+JSON.stringify(target)+';',
+   'var q="?add=1&url="+encodeURIComponent(u)+"&title="+encodeURIComponent(t)+"&note="+encodeURIComponent(n);',
+   'window.open(b+q,"_blank");',
+   '})();',
+  ].join('');
+  return 'javascript:'+encodeURIComponent(src);
+ }
 
  function card(b){
   const label=b.title||NB.hostOf(b.url);
@@ -26,7 +51,7 @@
   const tagsEl=document.getElementById('bmTags');
   if(tagsEl)tagsEl.innerHTML=popularTags(all,16).map(t=>`<button class="chip crimson${S.activeTags.has(t)?' on':''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('');
   if(!all.length){
-   el.innerHTML=`<div class="empty"><div class="empty-icon">♥</div><div class="empty-txt">Nothing saved yet — paste a video's link above to bookmark it here.</div></div>`;
+   el.innerHTML=`<div class="empty"><div class="empty-icon">♥</div><div class="empty-txt">Nothing saved yet — paste a video's link below, or drag the bookmarklet above into your bookmarks bar.</div></div>`;
   }else if(!list.length){
    el.innerHTML=`<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No matches. Try another term or clear a filter.</div></div>`;
   }else{
@@ -45,10 +70,21 @@
   }));
  }
 
- function render(container){
+ function render(container,params){
   S.q='';S.activeTags=new Set();
   NB.configureHeader({search:{placeholder:'Filter your saved videos…',initial:'',onInput:v=>{S.q=v;renderList()}}});
-  container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:6px">Your saved videos</h1><p class="small" style="max-width:640px;margin-bottom:18px">Paste the link to a specific video you want to find again. Nothing is fetched or previewed — just the link, a title, and an optional note, saved in this browser only. These also surface automatically in Search when they match your query.</p>
+
+  const prefill=params&&params.get('add')==='1'?{
+   url:params.get('url')||'', title:params.get('title')||'', note:params.get('note')||'',
+  }:null;
+
+  container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:6px">Your saved videos</h1><p class="small" style="max-width:640px;margin-bottom:18px">Nothing is fetched or previewed by this app — just the link, a title, and an optional note, saved in this browser only. These also surface automatically in Search when they match your query.</p>
+
+   <div class="panel" style="padding:16px 18px;margin-bottom:16px">
+     <div class="small" style="margin-bottom:10px">⇥ Bookmarklet — drag this to your bookmarks bar, then click it while viewing any video to pull in its real title automatically</div>
+     <a class="btn btn-ghost" style="width:auto;padding:9px 16px;cursor:grab" href="${bookmarkletHref()}" onclick="return false" title="Drag me to your bookmarks bar">♥ Save to Noir Index</a>
+   </div>
+
    <div class="panel" style="padding:16px 18px;margin-bottom:20px">
      <div class="row">
        <div class="field"><label>Video URL</label><input id="bmUrl" type="url" placeholder="https://…" autocomplete="off"></div>
@@ -64,6 +100,11 @@
    <div id="bmList"></div>`;
 
   const urlEl=document.getElementById('bmUrl'),titleEl=document.getElementById('bmTitle'),noteEl=document.getElementById('bmNote'),tagsInputEl=document.getElementById('bmTagsInput');
+  if(prefill){
+   urlEl.value=prefill.url;titleEl.value=prefill.title;noteEl.value=prefill.note;
+   if(prefill.url)toast('Review the captured details, then Add Bookmark','gold');
+   history.replaceState(null,'',location.pathname+location.search+'#/bookmarks');
+  }
   const add=()=>{
    const url=urlEl.value.trim();
    if(!isHttpUrl(url)){toast('Paste a valid http(s) video link first');return}
