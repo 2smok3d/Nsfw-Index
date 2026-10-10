@@ -3,13 +3,11 @@
    below, which reads the page you're already on) and it's stored
    locally, nothing more. */
 (function(){
- const S={q:'',activeTags:new Set()};
+ const S={activeTags:new Set()};
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\p{M}]/gu,'');
  function isHttpUrl(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:'}catch(e){return false}}
  function popularTags(list,n){const f={};list.forEach(b=>(b.tags||[]).forEach(t=>f[t]=(f[t]||0)+1));return Object.keys(f).sort((a,b)=>f[b]-f[a]).slice(0,n)}
- function matches(b,q){if(!q)return true;const hay=norm([b.title,b.note,NB.hostOf(b.url),...(b.tags||[])].join(' '));return hay.includes(norm(q))}
- function filtered(all){let list=all;if(S.activeTags.size)list=list.filter(b=>(b.tags||[]).some(t=>S.activeTags.has(t)));return S.q?list.filter(b=>matches(b,S.q)):list}
+ function filtered(all){return S.activeTags.size?all.filter(b=>(b.tags||[]).some(t=>S.activeTags.has(t))):all}
 
  // The bookmarklet: dragged to the browser's bookmarks bar, it runs
  // IN the page you're currently viewing — so reading that page's own
@@ -53,7 +51,7 @@
   if(!all.length){
    el.innerHTML=`<div class="empty"><div class="empty-icon">♥</div><div class="empty-txt">Nothing saved yet — paste a video's link below, or drag the bookmarklet above into your bookmarks bar.</div></div>`;
   }else if(!list.length){
-   el.innerHTML=`<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No matches. Try another term or clear a filter.</div></div>`;
+   el.innerHTML=`<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No matches for that tag filter. Clear it to see everything.</div></div>`;
   }else{
    el.innerHTML=`<div class="res-hdr">${list.length} of ${all.length} saved video${all.length===1?'':'s'}</div><div class="card-grid">${list.map(card).join('')}</div>`;
   }
@@ -71,14 +69,14 @@
  }
 
  function render(container,params){
-  S.q='';S.activeTags=new Set();
-  NB.configureHeader({search:{placeholder:'Filter your saved videos…',initial:'',onInput:v=>{S.q=v;renderList()}}});
+  S.activeTags=new Set();
+  NB.configureHeader(null);
 
   const prefill=params&&params.get('add')==='1'?{
    url:params.get('url')||'', title:params.get('title')||'', note:params.get('note')||'',
   }:null;
 
-  container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:6px">Your saved videos</h1><p class="small" style="max-width:640px;margin-bottom:18px">Nothing is fetched or previewed by this app — just the link, a title, and an optional note, saved in this browser only. These also surface automatically in Search when they match your query.</p>
+  container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Bookmarks</div><h1 style="font-size:1.6rem;margin-bottom:6px">Your saved videos</h1><p class="small" style="max-width:640px;margin-bottom:18px">Nothing is fetched or previewed by this app — just the link, a title, and an optional note, saved in this browser only. These also surface automatically on Home when they match your search.</p>
 
    <div class="panel" style="padding:16px 18px;margin-bottom:16px">
      <div class="small" style="margin-bottom:10px">⇥ Bookmarklet — drag this to your bookmarks bar, then click it while viewing any video to pull in its real title automatically</div>
