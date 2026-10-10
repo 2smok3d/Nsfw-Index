@@ -8,9 +8,8 @@
    ============================================================ */
 const NB = (() => {
   const PAGES = [
-    { id: 'home',      route: '/',          label: 'Home',      icon: '⌂' },
+    { id: 'home',      route: '/',          label: 'Home',      icon: '⌕' },
     { id: 'directory', route: '/directory', label: 'Directory', icon: '▦' },
-    { id: 'search',    route: '/search',    label: 'Search',    icon: '⌕' },
     { id: 'bookmarks', route: '/bookmarks', label: 'Saved',      icon: '♥' },
   ];
 
@@ -207,7 +206,7 @@ const NB = (() => {
   // re-wired per card.
   function bindSpotlight() {
     document.addEventListener('pointermove', e => {
-      const el = e.target.closest && e.target.closest('.card,.hcard,.feat-card,.feat-primary,.memory-card,.panel');
+      const el = e.target.closest && e.target.closest('.card,.memory-card,.panel');
       if (!el) return;
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');

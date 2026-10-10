@@ -1,20 +1,29 @@
-/* Directory — instant local filtering + richer cards */
+/* Directory — every free site, one flat grid, instant local filtering */
 (function(){
-  const S={q:'',activeTags:new Set(),open:true};
+  const S={q:''};
   const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\p{M}]/gu,'');
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  function popularTags(n){const f={};SITES.forEach(s=>(s.tags||[]).forEach(t=>f[t]=(f[t]||0)+1));return Object.keys(f).sort((a,b)=>f[b]-f[a]).slice(0,n)}
   function withVisits(list){const v=Store.getVisits();return list.map(x=>({...x,_visits:v[x.id]||0}))}
   function matches(e,q){if(!q)return true;const hay=norm([e.name,e.note,e.category,...(e.tags||[])].join(' '));return hay.includes(norm(q))}
-  function filtered(){let list=SITES;if(S.activeTags.size)list=list.filter(e=>(e.tags||[]).some(t=>S.activeTags.has(t)));return S.q?list.filter(e=>matches(e,S.q)):list}
+  function filtered(){return S.q?SITES.filter(e=>matches(e,S.q)):SITES}
   function meta(e){const tags=(e.tags||[]).slice(0,3).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('');return `<div class="site-card-meta">${tags}${e._visits?`<span class="site-meta-chip site-meta-hot">🔥 ${e._visits}</span>`:''}</div>`}
   function card(e){return `<a class="card richer-card" href="${e.url}" target="_blank" rel="noopener noreferrer" data-visit="${e.id}"><div class="c-title-row">${NB.siteIcon(e.name,e.url)}<div class="c-name">${esc(e.name)}</div></div>${e.note?`<div class="c-note">${esc(e.note)}</div>`:''}${meta(e)}</a>`}
-  function hcard(e,feature){return `<a class="hcard${feature?' hcard-feature':''}" href="${e.url}" target="_blank" rel="noopener noreferrer" data-visit="${e.id}"><div class="hc-badge${e._visits?' hc-badge-hot':''}">${e._visits?'🔥 '+e._visits+' visits':'Featured'}</div><div class="hc-title-row">${NB.siteIcon(e.name,e.url)}<div class="hc-name">${esc(e.name)}</div></div>${e.note?`<div class="hc-note">${esc(e.note)}</div>`:''}${meta(e)}</a>`}
-  function section(cat,raw){const items=withVisits(raw),hero=items.filter(x=>x._visits>0).sort((a,b)=>b._visits-a._visits).slice(0,6);const ids=new Set(hero.map(x=>x.id));const hot=items.filter(x=>x.hot&&!ids.has(x.id)).slice(0,6-hero.length);hot.forEach(x=>ids.add(x.id));const heroes=hero.concat(hot);const rest=items.filter(x=>!ids.has(x.id)).sort((a,b)=>b._visits-a._visits);return `<div class="sec"><div class="sec-hdr${S.open?' open':''}" data-toggle="${cat.id}"><div><div class="sec-title">${esc(cat.label)}</div><div class="small">${esc(cat.blurb)}</div></div><div class="sec-count">${items.length}</div><span class="sec-chev">›</span></div><div class="sec-body${S.open?' open':''}" data-body="${cat.id}"><div class="sec-inner"><div class="sec-pad">${heroes.length?`<div class="hero-grid">${heroes.map((x,i)=>hcard(x,i===0)).join('')}</div>`:''}${rest.length?`<div class="card-grid">${rest.map(card).join('')}</div>`:''}</div></div></div></div>`}
-  function render(){const el=document.getElementById('content'),data=filtered();if(!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No matches. Try another term or clear a filter.</div></div>';wire();return}if(S.q||S.activeTags.size){const sorted=withVisits(data).sort((a,b)=>b._visits-a._visits);el.innerHTML=`<div class="res-hdr">Showing <strong>${data.length} sites</strong>${S.q?` matching <span>“${esc(S.q)}”</span>`:''}</div><div class="card-grid">${sorted.map(card).join('')}</div>`;wire();return}el.innerHTML=CATEGORIES.map(c=>{const x=SITES.filter(s=>s.category===c.id);return x.length?section(c,x):''}).join('');wire()}
-  function tags(){const el=document.getElementById('tagChips');el.innerHTML=popularTags(18).map(t=>`<button class="chip crimson${S.activeTags.has(t)?' on':''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('');el.querySelectorAll('[data-tag]').forEach(b=>b.onclick=()=>{const t=b.dataset.tag;S.activeTags.has(t)?S.activeTags.delete(t):S.activeTags.add(t);tags();render()})}
-  function wire(){document.querySelectorAll('[data-visit]').forEach(a=>a.onclick=()=>Store.recordVisit(a.dataset.visit));document.querySelectorAll('[data-toggle]').forEach(h=>h.onclick=()=>{const b=document.querySelector(`[data-body="${h.dataset.toggle}"]`);S.open=!S.open;h.classList.toggle('open',S.open);b.classList.toggle('open',S.open)})}
+  function render(){
+    const el=document.getElementById('content'),data=withVisits(filtered()).sort((a,b)=>b._visits-a._visits||a.name.localeCompare(b.name));
+    if(!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">⌕</div><div class="empty-txt">No matches. Try another term.</div></div>';return}
+    el.innerHTML=`<div class="res-hdr">${data.length} site${data.length===1?'':'s'}${S.q?` matching <span>"${esc(S.q)}"</span>`:''}</div><div class="card-grid">${data.map(card).join('')}</div>`;
+    wire();
+  }
+  function wire(){document.querySelectorAll('[data-visit]').forEach(a=>a.onclick=()=>Store.recordVisit(a.dataset.visit))}
   function randomOpen(){const p=filtered();if(!p.length)return;const x=p[Math.floor(Math.random()*p.length)];Store.recordVisit(x.id);window.open(x.url,'_blank','noopener,noreferrer');toast('Opening '+x.name)}
-  function render_(container,params){S.q=params.get('q')||'';S.activeTags=new Set();S.open=true;container.innerHTML=`<div class="eyebrow" style="margin-bottom:8px">The Directory</div><h1 style="font-size:1.6rem;margin-bottom:14px">Taboo — one search box, free sites only</h1><div class="panel" style="padding:16px 18px"><div class="small">Filter by tag:</div><div class="chip-row mt" id="tagChips"></div></div><div id="content"></div>`;NB.configureHeader({search:{placeholder:'Filter instantly — name, tags, category…',initial:S.q,onInput:v=>{S.q=v;render()}},actions:[{id:'searchAllBtn',icon:'⌕',title:'Search all sites (S)',onClick:()=>Router.go('/search'+(S.q?'?q='+encodeURIComponent(S.q):''))},{id:'randBtn',icon:'⚡',title:'Random (R)',onClick:randomOpen}]});tags();render();function key(e){if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key.toLowerCase()==='r')randomOpen();if(e.key.toLowerCase()==='s')Router.go('/search'+(S.q?'?q='+encodeURIComponent(S.q):''))}document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key)}
+  function render_(container,params){
+    S.q=params.get('q')||'';
+    container.innerHTML=`<div id="content"></div>`;
+    NB.configureHeader({search:{placeholder:'Filter — name, tags, category…',initial:S.q,onInput:v=>{S.q=v;render()}},actions:[{id:'randBtn',icon:'⚡',title:'Random (R)',onClick:randomOpen}]});
+    render();
+    function key(e){if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key.toLowerCase()==='r')randomOpen()}
+    document.addEventListener('keydown',key);
+    return()=>document.removeEventListener('keydown',key);
+  }
   Router.register('/directory',{id:'directory',title:'Directory — Noir Index',render:render_});
 })();

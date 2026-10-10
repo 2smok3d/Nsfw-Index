@@ -115,7 +115,7 @@ if (existsSync(viewsDir)) {
     let m;
     while ((m = re.exec(src))) registered.add(m[1]);
   }
-  const expected = ['/', '/directory', '/search', '/bookmarks'];
+  const expected = ['/', '/directory', '/bookmarks'];
   const missing = expected.filter(p => !registered.has(p));
   if (missing.length) fail(`router: expected route(s) not registered: ${missing.join(', ')}`);
   else ok(`router: all ${expected.length} expected routes registered (${[...registered].join(', ')})`);
@@ -163,7 +163,7 @@ if (existsSync(themeFile)) {
   const missingVars = REQUIRED_VARS.filter(v => !css.includes(v + ':'));
   if (missingVars.length) fail(`theme.css: missing core custom propert${missingVars.length === 1 ? 'y' : 'ies'}: ${missingVars.join(', ')}`);
   else ok(`theme.css: all ${REQUIRED_VARS.length} core custom properties present`);
-  const REQUIRED_RULES = ['.hero{', '.card{', '.hcard{', '.btn-gold{', '.panel{', '#hdr{'];
+  const REQUIRED_RULES = ['.hero-search{', '.card{', '.btn-gold{', '.panel{', '#hdr{'];
   const missingRules = REQUIRED_RULES.filter(r => !css.includes(r));
   if (missingRules.length) fail(`theme.css: missing core rule(s): ${missingRules.join(', ')}`);
   else ok(`theme.css: all ${REQUIRED_RULES.length} core structural rules present`);
