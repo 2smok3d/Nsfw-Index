@@ -33,7 +33,7 @@
   const fanoutSites=searchable();
 
   NB.configureHeader(null);
-  container.innerHTML=`<div class="eyebrow" style="margin-bottom:10px">Private Collection · 18+</div><div class="hero-search" style="max-width:700px;margin-bottom:16px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, your bookmarks…" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${
+  container.innerHTML=`<div class="noir-header"><div class="noir-brand"><span class="noir-brand-mark">⌕</span><span class="noir-brand-word">Noir Index</span></div><div class="eyebrow">Private Collection · 18+</div></div><div class="hero-search" style="max-width:700px;margin-bottom:16px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, your bookmarks…" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${
     !q
       ? `<div class="panel" style="padding:14px 16px;margin-bottom:18px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div>${memory()}${discovery()}`
       : `${fanoutPanel(fanoutSites,q)}${
