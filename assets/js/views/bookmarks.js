@@ -36,7 +36,7 @@
 
  function card(b){
   const label=b.title||NB.hostOf(b.url);
-  return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener">
+  return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer">
     <button class="c-fav on" data-remove="${esc(b.id)}" title="Remove">✕</button>
     <div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>
     ${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}

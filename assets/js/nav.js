@@ -9,8 +9,8 @@
 const NB = (() => {
   const PAGES = [
     { id: 'home',      route: '/',          label: 'Home',      icon: '⌂' },
-    { id: 'directory', route: '/directory', label: 'Directory', icon: '⌕' },
-    { id: 'search',    route: '/search',    label: 'Search',    icon: '🔍' },
+    { id: 'directory', route: '/directory', label: 'Directory', icon: '▦' },
+    { id: 'search',    route: '/search',    label: 'Search',    icon: '⌕' },
     { id: 'bookmarks', route: '/bookmarks', label: 'Saved',      icon: '♥' },
   ];
 
@@ -33,7 +33,7 @@ const NB = (() => {
     el.innerHTML = `
       <div id="gate" class="${Store.ageVerified() ? 'hidden' : ''}">
         <div class="gate-box">
-          <div class="gate-crest">♛</div>
+          <div class="gate-crest">⌕</div>
           <div class="gate-logo">Noir&nbsp;Index</div>
           <div class="eyebrow gate-eyebrow">Adults Only · 18+ · Private</div>
           <div class="gate-msg">A private, self-hosted directory of adult sites. By entering you confirm you are 18 or older and that explicit content is legal to view in your jurisdiction. Nothing you do here is tracked or sent anywhere — everything lives in this browser only.</div>
@@ -56,7 +56,7 @@ const NB = (() => {
       <header id="hdr">
         <div class="hdr-inner">
           <a class="brand" href="#/">
-            <span class="brand-mark">♛</span><span class="brand-word">Noir Index</span>
+            <span class="brand-mark">⌕</span><span class="brand-word">Noir Index</span>
           </a>
           <nav class="primary" id="navPrimary">${links}</nav>
           <div class="hdr-spacer"></div>

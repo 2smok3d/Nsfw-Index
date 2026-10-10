@@ -1,13 +1,13 @@
 {
   "name": "Noir Index",
   "short_name": "Noir Index",
-  "description": "A private, self-hosted directory of free adult sites — step fetish, femdom, and mommy domme, with in-app multi-site search.",
+  "description": "A private, self-hosted directory of free adult sites — step fetish, femdom, and mommy domme, with multi-site search and video bookmarks.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0a0808",
-  "theme_color": "#0a0808",
+  "background_color": "#0a0a12",
+  "theme_color": "#0a0a12",
   "icons": [
     { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
