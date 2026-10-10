@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const ROUTES = ['/', '/directory', '/search', '/bookmarks'];
+const ROUTES = ['/', '/directory', '/bookmarks'];
 const REDIRECTS = {
   'directory.html': '/directory',
   'tools.html': '/',
@@ -73,9 +73,9 @@ async function main() {
     if (enter) await enter.click();
     await page.waitForTimeout(300);
 
-    // /search needs a query to render its results state — exercise that too
-    if (route === '/search') {
-      await page.goto(base + 'index.html#/search?q=test', { waitUntil: 'load' });
+    // home needs a query to render its search-results state — exercise that too
+    if (route === '/') {
+      await page.goto(base + 'index.html#/?q=test', { waitUntil: 'load' });
       await page.waitForTimeout(300);
     }
 

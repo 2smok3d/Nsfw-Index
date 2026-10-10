@@ -10,7 +10,6 @@ const Discovery=(()=>{
  function recordOpen(id){const d=data();d.recent=[id,...d.recent.filter(x=>x!==id)].slice(0,16);save(d)}
  function recent(){const d=data(),m=new Map(SITES.map(s=>[s.id,s]));return d.recent.map(id=>m.get(id)).filter(Boolean)}
  function recentQueries(){return data().queries||[]}
- function facets(q){const o={};search(q).forEach(s=>(s.tags||[]).forEach(t=>o[t]=(o[t]||0)+1));return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,20)}
  function recommend(id,limit=6){const seed=SITES.find(s=>s.id===id);if(!seed)return[];const tags=new Set((seed.tags||[]).map(norm)),v=Store.getVisits();return SITES.filter(s=>s.id!==id).map(s=>{let score=s.category===seed.category?3:0;(s.tags||[]).forEach(t=>{if(tags.has(norm(t)))score+=5});score+=(v[s.id]||0)*.15;return{...s,_recommend:score}}).filter(s=>s._recommend>0).sort((a,b)=>b._recommend-a._recommend).slice(0,limit)}
- return{build,search,recordQuery,recordOpen,recent,recentQueries,facets,recommend,escape:esc};
+ return{build,search,recordQuery,recordOpen,recent,recentQueries,recommend,escape:esc};
 })();
