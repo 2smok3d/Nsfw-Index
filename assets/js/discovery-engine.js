@@ -1,6 +1,6 @@
 /* Noir Index — Wave 3 discovery engine: local index, relevance, recents, facets, recommendations. */
 const Discovery=(()=>{
- const KEY='discovery',norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,''),esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const KEY='discovery',norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\p{M}]/gu,''),esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let index=[],built=false;
  function build(){if(built)return index;index=SITES.map(s=>({s,text:norm([s.name,s.note,s.category,...(s.tags||[])].join(' '))}));built=true;return index}
  function rank(s,q){if(!q)return 0;const n=norm(q).trim(),name=norm(s.name),text=norm([s.name,s.note,s.category,...(s.tags||[])].join(' '));let score=0;if(name===n)score+=1200;if(name.startsWith(n))score+=700;if(name.includes(n))score+=400;if(text.includes(n))score+=180;for(const t of n.split(/\s+/)){if((s.tags||[]).some(x=>norm(x)===t))score+=260;else if(text.includes(t))score+=40}return score}
