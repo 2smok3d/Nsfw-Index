@@ -33,9 +33,10 @@
   const fanoutSites=searchable();
 
   NB.configureHeader(null);
+  const recentQueries=Discovery.recentQueries();
   container.innerHTML=`<div class="noir-header"><div class="noir-brand"><span class="noir-brand-mark">⌕</span><span class="noir-brand-word">Noir Index</span></div><div class="eyebrow">Private Collection · 18+</div></div><div class="hero-search" style="max-width:700px;margin-bottom:16px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, your bookmarks…" aria-label="Search sites, tags, and your bookmarks" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${
     !q
-      ? `<div class="panel" style="padding:14px 16px;margin-bottom:18px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div>${memory()}${discovery()}`
+      ? `${recentQueries.length?`<div class="panel" style="padding:14px 16px;margin-bottom:18px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div>`:''}${memory()}${discovery()}`
       : `${fanoutPanel(fanoutSites,q)}${
           bookmarkResults.length
             ? `<div class="res-hdr">${bookmarkResults.length} of your saved video${bookmarkResults.length===1?'':'s'}</div><div class="card-grid" style="margin-bottom:22px">${bookmarkResults.map(bookmarkCard).join('')}</div>`
@@ -53,7 +54,7 @@
 
   if(!q){
    const rq=document.getElementById('recentQ');
-   Discovery.recentQueries().forEach(x=>{const b=document.createElement('button');b.className='chip crimson';b.textContent=x;b.onclick=()=>Router.go('/?q='+encodeURIComponent(x));rq.appendChild(b)});
+   if(rq)recentQueries.forEach(x=>{const b=document.createElement('button');b.className='chip crimson';b.textContent=x;b.onclick=()=>Router.go('/?q='+encodeURIComponent(x));rq.appendChild(b)});
    document.querySelectorAll('[data-reco]').forEach(a=>a.onclick=()=>Discovery.recordOpen(a.dataset.reco));
    return;
   }

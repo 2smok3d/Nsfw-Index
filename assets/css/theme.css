@@ -83,6 +83,12 @@ body{
 }
 *{-webkit-tap-highlight-color:transparent}
 a{color:inherit}
+/* keyboard-focus ring in the theme's own accent instead of each
+   browser's default blue — mouse/touch users see nothing new since
+   this is :focus-visible, not :focus */
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--gold-bright);outline-offset:2px;
+}
 ::selection{background:var(--crimson);color:#fff}
 
 /* scrollbar */
