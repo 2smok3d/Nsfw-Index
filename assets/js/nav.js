@@ -20,7 +20,7 @@ const NB = (() => {
     const t = document.getElementById('toast');
     if (!t) return;
     t.textContent = msg;
-    t.style.borderColor = tone === 'crimson' ? 'rgba(201,47,91,.5)' : tone === 'gold' ? 'var(--gold)' : '';
+    t.style.borderColor = tone === 'crimson' ? 'var(--crimson-bright)' : tone === 'gold' ? 'var(--gold)' : '';
     t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
@@ -61,7 +61,7 @@ const NB = (() => {
           <div class="hdr-spacer"></div>
           <div class="hdr-actions">
             <span id="hdrPageActions" style="display:contents"></span>
-            <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)">⌘K</button>
+            <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)" aria-label="Quick jump">⌘K</button>
           </div>
         </div>
       </header>`;
@@ -107,7 +107,7 @@ const NB = (() => {
     opts = opts || {};
     const actionsEl = document.getElementById('hdrPageActions');
     const actions = opts.actions || [];
-    actionsEl.innerHTML = actions.map(a => `<button class="hact${a.on ? ' on' : ''}" id="${a.id}" title="${a.title}">${a.icon}</button>`).join('');
+    actionsEl.innerHTML = actions.map(a => `<button class="hact${a.on ? ' on' : ''}" id="${a.id}" title="${a.title}" aria-label="${a.title}">${a.icon}</button>`).join('');
     actions.forEach(a => {
       const btn = document.getElementById(a.id);
       if (btn && a.onClick) btn.addEventListener('click', a.onClick);
@@ -123,13 +123,15 @@ const NB = (() => {
   function buildToast() {
     const el = document.getElementById('nb-toast');
     if (!el) return;
-    el.innerHTML = `<div id="toast"></div>`;
+    el.innerHTML = `<div id="toast" role="status" aria-live="polite"></div>`;
   }
 
   function buildScrollTop() {
     const btn = document.getElementById('nb-stb');
     if (!btn) return;
     btn.textContent = '↑';
+    btn.title = 'Scroll to top';
+    btn.setAttribute('aria-label', 'Scroll to top');
     btn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }

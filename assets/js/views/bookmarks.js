@@ -35,7 +35,7 @@
  function card(b){
   const label=b.title||NB.hostOf(b.url);
   return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer">
-    <button class="c-fav on" data-remove="${esc(b.id)}" title="Remove">✕</button>
+    <button class="c-fav on" data-remove="${esc(b.id)}" title="Remove" aria-label="Remove ${esc(label)} from saved">✕</button>
     <div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>
     ${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}
     <div class="site-card-meta">${(b.tags||[]).slice(0,3).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}<span class="site-meta-chip">${esc(NB.hostOf(b.url))}</span></div>
