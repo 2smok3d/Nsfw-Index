@@ -13,7 +13,7 @@
 
  function siteCard(s){return `<a class="card richer-card" href="${s.url}" target="_blank" rel="noopener noreferrer" data-discovery-open="${s.id}"><div class="c-title-row">${NB.siteIcon(s.name,s.url)}<div class="c-name">${esc(s.name)}</div></div>${s.note?`<div class="c-note">${esc(s.note)}</div>`:''}<div class="site-card-meta">${(s.tags||[]).slice(0,4).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}</div></a>`}
  function bookmarkMatches(b,q){const hay=norm([b.title,b.note,NB.hostOf(b.url),...(b.tags||[])].join(' '));return hay.includes(norm(q))}
- function bookmarkCard(b){const label=b.title||NB.hostOf(b.url);return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer"><button class="c-fav on" data-remove-bm="${esc(b.id)}" title="Remove">✕</button><div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}<div class="site-card-meta">${(b.tags||[]).slice(0,3).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}<span class="site-meta-chip">${esc(NB.hostOf(b.url))}</span></div></a>`}
+ function bookmarkCard(b){const label=b.title||NB.hostOf(b.url);return `<a class="card richer-card faved" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer"><button class="c-fav on" data-remove-bm="${esc(b.id)}" title="Remove" aria-label="Remove ${esc(label)} from saved">✕</button><div class="c-title-row">${NB.siteIcon(label,b.url)}<div class="c-name">${esc(label)}</div></div>${b.note?`<div class="c-note">${esc(b.note)}</div>`:''}<div class="site-card-meta">${(b.tags||[]).slice(0,3).map(t=>`<span class="site-meta-chip">${esc(t)}</span>`).join('')}<span class="site-meta-chip">${esc(NB.hostOf(b.url))}</span></div></a>`}
  function searchable(){const v=Store.getVisits();return SITES.filter(s=>s.su).sort((a,b)=>(v[b.id]||0)-(v[a.id]||0)||a.name.localeCompare(b.name))}
  function searchBtn(s,q){const url=s.su+encodeURIComponent(q||s.sq||'');return `<a class="chip" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-fanout="${esc(s.id)}">${NB.siteIcon(s.name,s.url)}${esc(s.name)} ↗</a>`}
  function fanoutPanel(sites,q){
@@ -21,7 +21,7 @@
   const VISIBLE=10,head=sites.slice(0,VISIBLE),rest=sites.slice(VISIBLE);
   return `<div class="panel" style="padding:12px 14px;margin-bottom:14px">
     <div class="small">Open this search on every site — sorted by how often you use them, each opens the real results page in a new tab</div>
-    <div class="chip-row mt">${head.map(s=>searchBtn(s,q)).join('')}${rest.length?`<span id="fanoutMore" style="display:none">${rest.map(s=>searchBtn(s,q)).join('')}</span><button class="chip crimson" id="fanoutToggle">+${rest.length} more ↓</button>`:''}</div>
+    <div class="chip-row mt">${head.map(s=>searchBtn(s,q)).join('')}${rest.length?`<span id="fanoutMore" style="display:none">${rest.map(s=>searchBtn(s,q)).join('')}</span><button class="chip crimson" id="fanoutToggle" aria-expanded="false" aria-controls="fanoutMore">+${rest.length} more ↓</button>`:''}</div>
   </div>`;
  }
 
@@ -33,9 +33,10 @@
   const fanoutSites=searchable();
 
   NB.configureHeader(null);
-  container.innerHTML=`<div class="noir-header"><div class="noir-brand"><span class="noir-brand-mark">⌕</span><span class="noir-brand-word">Noir Index</span></div><div class="eyebrow">Private Collection · 18+</div></div><div class="hero-search" style="max-width:700px;margin-bottom:16px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, your bookmarks…" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${
+  const recentQueries=Discovery.recentQueries();
+  container.innerHTML=`<div class="noir-header"><div class="noir-brand"><span class="noir-brand-mark">⌕</span><span class="noir-brand-word">Noir Index</span></div><div class="eyebrow">Private Collection · 18+</div></div><div class="hero-search" style="max-width:700px;margin-bottom:16px"><span class="srch-icon">⌕</span><input id="srchInput" type="search" value="${esc(q)}" placeholder="Search sites, tags, your bookmarks…" aria-label="Search sites, tags, and your bookmarks" autocomplete="off"><button class="btn btn-gold hero-search-go" id="srchGo">Search</button></div>${
     !q
-      ? `<div class="panel" style="padding:14px 16px;margin-bottom:18px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div>${memory()}${discovery()}`
+      ? `${recentQueries.length?`<div class="panel" style="padding:14px 16px;margin-bottom:18px"><div class="small">Recent searches</div><div id="recentQ" class="chip-row mt"></div></div>`:''}${memory()}${discovery()}`
       : `${fanoutPanel(fanoutSites,q)}${
           bookmarkResults.length
             ? `<div class="res-hdr">${bookmarkResults.length} of your saved video${bookmarkResults.length===1?'':'s'}</div><div class="card-grid" style="margin-bottom:22px">${bookmarkResults.map(bookmarkCard).join('')}</div>`
@@ -53,7 +54,7 @@
 
   if(!q){
    const rq=document.getElementById('recentQ');
-   Discovery.recentQueries().forEach(x=>{const b=document.createElement('button');b.className='chip crimson';b.textContent=x;b.onclick=()=>Router.go('/?q='+encodeURIComponent(x));rq.appendChild(b)});
+   if(rq)recentQueries.forEach(x=>{const b=document.createElement('button');b.className='chip crimson';b.textContent=x;b.onclick=()=>Router.go('/?q='+encodeURIComponent(x));rq.appendChild(b)});
    document.querySelectorAll('[data-reco]').forEach(a=>a.onclick=()=>Discovery.recordOpen(a.dataset.reco));
    return;
   }
@@ -68,6 +69,7 @@
     const more=document.getElementById('fanoutMore'),open=more.style.display!=='none';
     more.style.display=open?'none':'contents';
     fanoutToggle.textContent=open?fanoutToggle.dataset.collapsedLabel:'Show fewer ↑';
+    fanoutToggle.setAttribute('aria-expanded',open?'false':'true');
    };
   }
  }

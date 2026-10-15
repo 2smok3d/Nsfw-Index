@@ -7,7 +7,7 @@
    there were no service worker at all.
    Bump CACHE_VERSION on any shell-file change to force a refresh.
    ============================================================ */
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `noir-index-${CACHE_VERSION}`;
 
 const SHELL_ASSETS = [
@@ -16,6 +16,8 @@ const SHELL_ASSETS = [
   './manifest.json',
   './assets/css/theme.css',
   './assets/js/store.js',
+  './assets/js/home-memory.js',
+  './assets/js/discovery-engine.js',
   './assets/js/router.js',
   './assets/js/nav.js',
   './assets/js/palette.js',
