@@ -1,8 +1,8 @@
 /* ============================================================
    nav.js — shared chrome: age gate, header/nav, tab bar, toast,
    scroll-to-top. Built ONCE by NB.initChrome() when the app boots
-   (single-page shell — see router.js). Individual views
-   reconfigure the header search/actions via NB.configureHeader()
+   (single-page shell — see router.js). Individual views reconfigure
+   the header's page-specific action buttons via NB.configureHeader()
    on every navigation instead of the whole chrome being rebuilt.
    Depends on store.js being loaded first.
    ============================================================ */
@@ -59,11 +59,6 @@ const NB = (() => {
           </a>
           <nav class="primary" id="navPrimary">${links}</nav>
           <div class="hdr-spacer"></div>
-          <div class="srch-wrap" id="hdrSearchWrap" style="display:none">
-            <span class="srch-icon">⌕</span>
-            <input id="search" type="search" autocomplete="off">
-            <button class="srch-clr" id="sclr">✕</button>
-          </div>
           <div class="hdr-actions">
             <span id="hdrPageActions" style="display:contents"></span>
             <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)">⌘K</button>
@@ -104,35 +99,12 @@ const NB = (() => {
     });
   }
 
-  // Called by each view's render() to configure the shared header
-  // search box and page-specific action buttons for that view.
-  // Passing null/omitting a field hides/clears it.
+  // Called by each view's render() to configure page-specific action
+  // buttons in the header for that view. Passing null/omitting
+  // clears them. (The shared header has no search box of its own —
+  // the one real search bar lives on Home.)
   function configureHeader(opts) {
     opts = opts || {};
-    const wrap = document.getElementById('hdrSearchWrap');
-    const showSearch = !!opts.search;
-    wrap.style.display = showSearch ? 'flex' : 'none';
-    if (showSearch) {
-      // clone to strip any listeners from the previous view
-      const oldInput = document.getElementById('search');
-      const input = oldInput.cloneNode(true);
-      oldInput.parentNode.replaceChild(input, oldInput);
-      const oldClr = document.getElementById('sclr');
-      const clr = oldClr.cloneNode(true);
-      oldClr.parentNode.replaceChild(clr, oldClr);
-
-      input.placeholder = opts.search.placeholder || 'Search…';
-      input.value = opts.search.initial || '';
-      const fire = () => {
-        clr.classList.toggle('vis', !!input.value);
-        opts.search.onInput && opts.search.onInput(input.value.trim());
-      };
-      input.addEventListener('input', fire);
-      clr.onclick = () => { input.value = ''; fire(); input.focus(); };
-      if (opts.search.onEnter) input.addEventListener('keydown', e => { if (e.key === 'Enter') opts.search.onEnter(input.value.trim()); });
-      fire();
-    }
-
     const actionsEl = document.getElementById('hdrPageActions');
     const actions = opts.actions || [];
     actionsEl.innerHTML = actions.map(a => `<button class="hact${a.on ? ' on' : ''}" id="${a.id}" title="${a.title}">${a.icon}</button>`).join('');
@@ -236,8 +208,20 @@ const NB = (() => {
     document.addEventListener('keydown', e => {
       const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
       if (e.key === '/' && !inInput) {
-        const s = document.getElementById('search');
-        if (s && document.getElementById('hdrSearchWrap').style.display !== 'none') { e.preventDefault(); s.focus(); }
+        e.preventDefault();
+        // the one real search bar lives on Home — jump there and focus
+        // it from anywhere in the app, not just when already on Home
+        const existing = document.getElementById('srchInput');
+        if (existing) {
+          existing.focus();
+        } else {
+          const focusOnce = () => {
+            window.removeEventListener('hashchange', focusOnce);
+            setTimeout(() => document.getElementById('srchInput')?.focus(), 0);
+          };
+          window.addEventListener('hashchange', focusOnce);
+          Router.go('/');
+        }
       }
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
