@@ -171,6 +171,24 @@ if (existsSync(themeFile)) {
   fail('theme.css: file not found');
 }
 
+// ── 7. service worker precache completeness ──
+// Guards against a real gap found in an audit: home-memory.js and
+// discovery-engine.js were required by index.html but missing from
+// sw.js's SHELL_ASSETS, so the offline app shell would silently break
+// (Discovery/HomeMemory undefined on Home) after the very first visit
+// — no error in normal online use, nothing else here would catch it.
+if (existsSync(path.join(root, 'index.html')) && existsSync(swFile)) {
+  const indexSrc = readFileSync(path.join(root, 'index.html'), 'utf8');
+  const swSrc = readFileSync(swFile, 'utf8');
+  const scriptRe = /<script\s+src="([^"]+)"/g;
+  const scripts = [];
+  let m;
+  while ((m = scriptRe.exec(indexSrc))) scripts.push(m[1]);
+  const missingFromShell = scripts.filter(s => !swSrc.includes(`'./${s}'`) && !swSrc.includes(`"./${s}"`));
+  if (missingFromShell.length) fail(`sw.js: index.html loads script(s) missing from SHELL_ASSETS precache: ${missingFromShell.join(', ')}`);
+  else ok(`sw.js: all ${scripts.length} index.html script(s) precached`);
+}
+
 console.log('');
 if (failures) {
   console.error(`verify: ${failures} check(s) failed`);
