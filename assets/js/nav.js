@@ -129,9 +129,6 @@ const NB = (() => {
   function buildScrollTop() {
     const btn = document.getElementById('nb-stb');
     if (!btn) return;
-    btn.textContent = '↑';
-    btn.title = 'Scroll to top';
-    btn.setAttribute('aria-label', 'Scroll to top');
     btn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
     window.addEventListener('scroll', () => btn.classList.toggle('vis', scrollY > 500), { passive: true });
   }
