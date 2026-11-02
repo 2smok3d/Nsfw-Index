@@ -3,8 +3,11 @@
    Pure data, no logic. Consumed by views/directory.js and
    views/search.js.
 
-   One category by design — Taboo (step fetish, femdom, mommy
-   domme all live here, distinguished by tags, not sections).
+   Two categories — Taboo (step fetish, femdom, mommy domme) and
+   Ebony — each a flat list distinguished internally by tags, not
+   sections (views/directory.js renders every site in one grid
+   regardless of category; CATEGORIES only exists so
+   scripts/verify.mjs can catch a typo'd or unregistered category).
    Free sites only — no paywalled/subscription entries.
 
    Schema per entry:
@@ -14,7 +17,7 @@
                (views/search.js) never embeds or fetches another
                site's pages — it only ranks this local metadata and
                links out directly.
-     category  always 'taboo'
+     category  'taboo' or 'ebony' — must match an id in CATEGORIES
      tags      string[] — used by the tag filter chips and search
      hot       true → curator pick, used as the hero row until real
                visit data exists (visited sites then take over the
@@ -33,6 +36,7 @@
 
 const CATEGORIES = [
   { id: 'taboo', label: 'Taboo', blurb: 'Step fetish, femdom, and mommy domme — the whole focus, one list. Free sites only.' },
+  { id: 'ebony', label: 'Ebony', blurb: 'Ebony-focused free tubes.' },
 ];
 
 const SITES = [
@@ -105,6 +109,6 @@ const SITES = [
   { id: 'taboodaddy', name: 'TabooDaddy', url: 'https://www.taboodaddy.com', category: 'taboo', tags: ['tube', 'free'] },
   { id: 'taboohome', name: 'TabooHome', url: 'https://www.taboohome.net', category: 'taboo', tags: ['tube', 'free'] },
   { id: 'tabooporn', name: 'TabooPorn', url: 'https://www.tabooporn.to', category: 'taboo', tags: ['tube', 'free'] },
-  { id: 'ebonypulse', name: 'EbonyPulse', url: 'https://www.ebonypulse.tv', category: 'taboo', tags: ['tube', 'free', 'ebony'] },
-  { id: 'ebonygalore', name: 'EbonyGalore', url: 'https://www.ebonygalore.com', category: 'taboo', tags: ['tube', 'free', 'ebony'] },
+  { id: 'ebonypulse', name: 'EbonyPulse', url: 'https://www.ebonypulse.tv', category: 'ebony', tags: ['tube', 'free', 'ebony'] },
+  { id: 'ebonygalore', name: 'EbonyGalore', url: 'https://www.ebonygalore.com', category: 'ebony', tags: ['tube', 'free', 'ebony'] },
 ];

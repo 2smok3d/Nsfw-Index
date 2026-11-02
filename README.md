@@ -12,7 +12,7 @@ One page, three sections, addressed by hash (`index.html#/directory`, etc.) so t
 |---|---|
 | `#/` | Home IS the search: one query ranks every site in the directory locally by relevance, surfaces any of your own bookmarked videos that match, and offers one-tap buttons — sorted by how often you actually use each site — that open the same query on every site's own real search, each in a new tab. With no query, shows your recent searches and local history instead. |
 | `#/bookmarks` | Its own separate section — save specific videos by pasting a link, or drag the bookmarklet into your bookmarks bar and click it on any video page to capture its real title automatically. Filter by tag as the list grows (no second search bar here — just tag chips). |
-| `#/directory` | Every free site as one flat grid to browse — 57 sites, no categories, no featured sections, no second search bar, links go straight to each site's homepage, no paywalled entries |
+| `#/directory` | Every free site as one flat grid to browse — 64 sites across Taboo and Ebony, no category sections, no featured sections, no second search bar, links go straight to each site's homepage, no paywalled entries |
 
 The old separate files (`directory.html`, `tools.html`, `settings.html`) still exist as one-line redirects, so any existing bookmarks or home-screen icons keep working — the retired Tools and Settings sections now redirect to the home route.
 
@@ -26,7 +26,7 @@ The old separate files (`directory.html`, `tools.html`, `settings.html`) still e
 - **One search, two ways out** (`#/`) — a local index (names, tags, categories, notes, plus your own bookmarked videos) ranks results instantly, no fetching or embedding involved. Alongside it, "open this search on every site" turns the same query into one real button per site (`known search-URL pattern + your term`), sorted by how often you actually visit each one — each opening that site's own live results in a new tab. The app never loads another site's page itself, it just hands you the door. No "smart facets" or extra chrome — just the one search bar and what it finds.
 - **Bookmarks with a bookmarklet** (`#/bookmarks`) — its own separate page, not folded into Home. Paste a video's link to save it, or drag the "♥ Save to Noir Index" bookmarklet into your bookmarks bar once; clicking it while viewing any video reads that page's own `<title>`/`og:` tags (same-origin, in your browser, triggered by you — not a fetch this app performs) and opens the bookmark form here pre-filled. Filter by tag as the list grows — no duplicate search bar here. Saved videos also surface automatically on Home when they match your search.
 - **Most Visited** — the app quietly tracks which sites you actually click (locally, nothing leaves the browser) and sorts both the Directory grid and the multi-site search buttons by that usage, with a "🔥 N" badge on cards you've visited. Curated data is just the starting point until your own usage takes over.
-- **Command palette** (`⌘K` / `Ctrl+K`, anywhere, including a tap on mobile) — jump to any section instantly or fuzzy-search the whole Taboo directory without leaving where you are.
+- **Command palette** (`⌘K` / `Ctrl+K`, anywhere, including a tap on mobile) — jump to any section instantly or fuzzy-search the whole directory without leaving where you are.
 - **Mobile bottom tab bar** — on phones, a persistent native-app-style tab bar (Home / Directory / Saved) replaces a hamburger. Three sections, everything fits directly — no "More" bucket needed.
 
 ## Notes
