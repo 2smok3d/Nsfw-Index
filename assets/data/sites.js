@@ -100,4 +100,11 @@ const SITES = [
   { id: 'superporn', name: 'SuperPorn', url: 'https://www.superporn.com', category: 'taboo', tags: ['tube', 'free'], note: 'General free tube' },
   { id: 'watchpornto', name: 'WatchPorn.to', url: 'https://watchporn.to', su: 'https://watchporn.to/search/', sq: 'taboo', category: 'taboo', tags: ['tube', 'free', 'rare'], note: 'Rarer streaming-focused tube' },
   { id: 'porninja', name: 'Porninja', url: 'https://www.por.ninja', category: 'taboo', tags: ['tube', 'free', 'rare'], note: 'Rarer, smaller-catalog tube' },
+   { id: 'familypornhd', name: 'FamilyPornHD', url: 'https://www.familypornhd.com', category: 'taboo', tags: ['tube', 'free'] },
+   { id: 'tabootube', name: 'TabooTube', url: 'https://www.tabootube.xxx', category: 'taboo', tags: ['tube', 'free'] },
+   { id: 'taboodaddy', name: 'TabooDaddy', url: 'https://www.taboodaddy.com', category: 'taboo', tags: ['tube', 'free'] },
+   { id: 'taboohome', name: 'TabooHome', url: 'https://www.taboohome.net', category: 'taboo', tags: ['tube', 'free'] },
+   { id: 'tabooporn', name: 'TabooPorn', url: 'https://www.tabooporn.to', category: 'taboo', tags: ['tube', 'free'] },
+   { id: 'ebonypulse', name: 'EbonyPulse', url: 'https://www.ebonypulse.tv', category: 'ebony', tags: ['tube', 'free', 'ebony'] },
+   { id: 'ebonygalore', name: 'EbonyGalore', url: 'https://www.ebonygalore.com', category: 'ebony', tags: ['tube', 'free', 'ebony'] },
 ];
