@@ -61,6 +61,7 @@ const NB = (() => {
           <div class="hdr-spacer"></div>
           <div class="hdr-actions">
             <span id="hdrPageActions" style="display:contents"></span>
+            <button class="hact" id="installBtn" title="Install app" aria-label="Install app" style="display:none">⤓</button>
             <button class="hact" id="cmdkBtn" title="Quick jump (⌘K)" aria-label="Quick jump">⌘K</button>
           </div>
         </div>
