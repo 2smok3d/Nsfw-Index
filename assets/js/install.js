@@ -1,8 +1,11 @@
-/* Noir Index — PWA install affordance. Shows a header button when the
-   browser can install the app (Chrome/Edge/Android fire beforeinstallprompt),
-   or gives iOS Safari users the manual "Add to Home Screen" steps since
-   that platform never fires the event. Does nothing once already running
-   installed (display-mode: standalone). */
+/* Noir Index — PWA install affordance. Shows a header button whenever the
+   app isn't already running installed. Chrome/Edge/Android fire
+   beforeinstallprompt, so there the button triggers a real native install.
+   Brave, Firefox desktop, and anything else that never fires that event
+   (Brave in particular doesn't, even though it does support installing)
+   falls back to a toast with manual steps instead of just hiding the
+   button — a hidden button looks like installing isn't possible at all,
+   which isn't true, it just isn't automatable on every browser. */
 (function () {
   let deferredPrompt = null;
 
@@ -16,6 +19,11 @@
   function show() { const b = btn(); if (b) b.style.display = ''; }
   function hide() { const b = btn(); if (b) b.style.display = 'none'; }
 
+  function manualInstructions() {
+    if (isIOS()) return 'Tap Share, then "Add to Home Screen"';
+    return 'Open your browser\'s menu and look for "Install Noir Index" (or an install icon in the address bar)';
+  }
+
   function init() {
     const b = btn();
     if (!b || isStandalone()) return;
@@ -23,7 +31,6 @@
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
-      show();
     });
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
@@ -31,7 +38,7 @@
       if (window.toast) toast('Installed ✓', 'gold');
     });
 
-    if (isIOS()) show(); // no beforeinstallprompt on iOS — offer manual steps instead
+    show(); // always offer it — the click handler falls back to manual steps when there's no native prompt to trigger
 
     b.addEventListener('click', async () => {
       if (deferredPrompt) {
@@ -39,11 +46,10 @@
         deferredPrompt = null;
         prompt.prompt();
         const choice = await prompt.userChoice;
-        if (choice.outcome === 'dismissed') show();
-        else hide();
+        if (choice.outcome !== 'dismissed') hide();
         return;
       }
-      if (isIOS() && window.toast) toast('Tap Share, then "Add to Home Screen"', 'gold');
+      if (window.toast) toast(manualInstructions(), 'gold');
     });
   }
 
