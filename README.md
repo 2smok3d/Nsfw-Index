@@ -18,7 +18,9 @@ The old separate files (`directory.html`, `tools.html`, `settings.html`) still e
 
 ## Design
 
-"Index Noir" — cool near-black, electric violet, hot rose. One typeface (Instrument Sans) throughout, no external font/CDN requests — the whole app works offline once loaded, e.g. via GitHub Pages or a plain `file://` open. Mobile-first: every layout is designed at phone width first, with wider breakpoints as the enhancement, not the baseline. No decorative chrome beyond what's needed — no marketing copy, no title blocks, no featured-site mosaics — just the search bar, the buttons, and the results.
+"Index Noir" — cool near-black, electric violet, hot rose. One typeface (Instrument Sans) throughout, no external font/CDN requests. Mobile-first: every layout is designed at phone width first, with wider breakpoints as the enhancement, not the baseline. No decorative chrome beyond what's needed — no marketing copy, no title blocks, no featured-site mosaics — just the search bar, the buttons, and the results.
+
+Browsing works fine opened straight from a local file (`file://`) — nothing here needs a server to render. **Installing it does not**: service workers and the install prompt only activate on a real `https://` (or `localhost`) origin, a browser-level security rule with no workaround. Push to `main` and this repo auto-deploys to GitHub Pages (enable it once under the repo's **Settings → Pages → Source: GitHub Actions**) to get a real URL — open that on your phone and both the offline cache and the Install button actually work.
 
 ## Premium features
 
